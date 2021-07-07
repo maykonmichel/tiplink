@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "tiplink/out",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
