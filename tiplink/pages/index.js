@@ -1,6 +1,6 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import Footer from "../components/footer"
 
 export default function Home() {
   return (
@@ -24,20 +24,8 @@ export default function Home() {
 
         </div>
       </main>
+      <Footer/>
 
-      <footer className={styles.footer}>
-        Copyright 2021
-        <a
-          href="https://solana.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div className={styles.box}>
-            Powered by{' '}
-            <Image src="/solana.png" alt="Solana Logo" width={98} height={40} />
-          </div>
-        </a>
-      </footer>
     </div>
   )
 }

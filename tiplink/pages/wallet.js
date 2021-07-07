@@ -1,9 +1,9 @@
 
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import  { Keypair, Connection } from '@solana/web3.js';
+import  { Keypair} from '@solana/web3.js';
 import { encode as b58encode, decode as b58decode } from 'bs58';
 import { useEffect, useState } from "react";
+import Footer  from "../components/footer";
 
 function Form(keypair) {
   const sendMoney = event => {
@@ -56,6 +56,7 @@ export default function Wallet() {
     // let conn = new Connection("https://api.devnet.solana.com");
     let balance = 0.;
     // conn.getBalance(keypair?.publicKey).then(result => {balance = result;});
+    console.log("keypair", keypair);
     
     body = <div>
       <p>Public key: {keypair?.publicKey.toString()}</p>
@@ -75,20 +76,7 @@ export default function Wallet() {
       <main className={styles.main}>
       {body}
       </main>
-
-      <footer className={styles.footer}>
-        Copyright 2021
-        <a
-          href="https://solana.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div className={styles.box}>
-            Powered by{' '}
-            <Image src="/solana.png" alt="Solana Logo" width={98} height={40} />
-          </div>
-        </a>
-      </footer>
+      <Footer/>
     </div>
   )
 }
