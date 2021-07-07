@@ -1,9 +1,26 @@
 
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import  { Keypair } from '@solana/web3.js';
+import  { Keypair, Connection } from '@solana/web3.js';
 import { encode as b58encode, decode as b58decode } from 'bs58';
 import { useEffect, useState } from "react";
+
+function Form(keypair) {
+  const sendMoney = event => {
+    event.preventDefault() // don't redirect the page
+    // where we'll add our form logic
+  }
+
+  return (
+    <form onSubmit={sendMoney}>
+      <label htmlFor="address">Address</label>
+      <input id="address" type="text" autoComplete="address" required />
+      <label htmlFor="amount">Amount</label>
+      <input id="amount" type="text" autoComplete="amount" required />
+      <button type="submit">Send</button>
+    </form>
+  )
+}
 
 export default function Wallet() {
   const [keypair, setKeypair] = useState(undefined);
@@ -28,6 +45,7 @@ export default function Wallet() {
     }
   }, []);
 
+  // TODO remove this guy
   if(keypair !== undefined) {
     console.log("pubkey: ", keypair.publicKey.toString());
     console.log("secretKey: ",  b58encode(keypair.secretKey));
@@ -35,9 +53,15 @@ export default function Wallet() {
 
   let body = undefined;
   if(errorMsg === "") {
+    // let conn = new Connection("https://api.devnet.solana.com");
+    let balance = 0.;
+    // conn.getBalance(keypair?.publicKey).then(result => {balance = result;});
+    
     body = <div>
       <p>Public key: {keypair?.publicKey.toString()}</p>
       <p>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</p>
+      <p>Balance: {balance}</p>
+      <Form keypair={keypair}/>
     </div>;
   } else {
     body = <div>
