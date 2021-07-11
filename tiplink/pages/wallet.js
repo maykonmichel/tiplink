@@ -1,11 +1,27 @@
 
 import styles from '../styles/Home.module.css'
-import  { Keypair} from '@solana/web3.js';
+import  { Keypair, Connection} from '@solana/web3.js';
 import { encode as b58encode, decode as b58decode } from 'bs58';
 import { useEffect, useState } from "react";
 import Footer  from "../components/footer";
 
-function Form(keypair) {
+function Balance({ publicKey, endpoint }) {
+    const [ balance, setBalance ] = useState(0);
+    let conn = new Connection(endpoint);
+    if(publicKey !== undefined) {
+      conn.getBalance(publicKey).then( (b) => {
+        setBalance(b);
+      }).catch( (error) => {
+        console.error(error);
+      });
+    }
+    // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
+    return (
+      <p>Balance: {balance / 1e9}</p>
+    );
+}
+
+function Form({ keypair }) {
   const sendMoney = event => {
     event.preventDefault() // don't redirect the page
     // where we'll add our form logic
@@ -25,6 +41,7 @@ function Form(keypair) {
 export default function Wallet() {
   const [keypair, setKeypair] = useState(undefined);
   const [errorMsg, setErrorMsg] = useState("");
+  const endpoint = "https://api.devnet.solana.com";
 
   // TODO this makes the URL really long and unsightly
   // TODO better error message handling
@@ -47,21 +64,20 @@ export default function Wallet() {
 
   // TODO remove this guy
   if(keypair !== undefined) {
-    console.log("pubkey: ", keypair.publicKey.toString());
-    console.log("secretKey: ",  b58encode(keypair.secretKey));
+    // console.log("pubkey: ", keypair.publicKey.toString());
+    // console.log("secretKey: ",  b58encode(keypair.secretKey));
+    // console.log("b58: ", keypair?.publicKey.toBase58());
   }
 
   let body = undefined;
   if(errorMsg === "") {
-    // let conn = new Connection("https://api.devnet.solana.com");
-    let balance = 0.;
-    // conn.getBalance(keypair?.publicKey).then(result => {balance = result;});
-    console.log("keypair", keypair);
+    // console.log("keypair", keypair);
     
     body = <div>
       <p>Public key: {keypair?.publicKey.toString()}</p>
       <p>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</p>
-      <p>Balance: {balance}</p>
+      <p>Endpoint: {endpoint}</p>
+      <Balance publicKey={keypair?.publicKey} endpoint={endpoint}/>
       <Form keypair={keypair}/>
     </div>;
   } else {
