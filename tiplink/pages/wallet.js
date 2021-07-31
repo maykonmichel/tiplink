@@ -1,9 +1,13 @@
 
 import styles from '../styles/Home.module.css'
-import  { Keypair, Connection} from '@solana/web3.js';
+import  { Keypair, Connection, Transaction, sendAndConfirmTransaction, LAMPORTS_PER_SOL, clusterApiUrl } from '@solana/web3.js';
+import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import { encode as b58encode, decode as b58decode } from 'bs58';
 import { useEffect, useState } from "react";
 import Footer  from "../components/footer";
+
+const rawToHuman = (amount) => amount / LAMPORTS_PER_SOL;
+const humanToRaw = (amount) => amount * LAMPORTS_PER_SOL;
 
 function Balance({ publicKey, endpoint }) {
     const [ balance, setBalance ] = useState(0);
@@ -15,22 +19,89 @@ function Balance({ publicKey, endpoint }) {
         console.error(error);
       });
     }
+    console.log(balance);
     // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
     return (
-      <p>Balance: {balance / 1e9}</p>
+      <p>Balance: {rawToHuman(balance)}</p>
     );
 }
 
-function Form({ keypair }) {
-  const sendMoney = event => {
-    event.preventDefault() // don't redirect the page
-    // where we'll add our form logic
+function AirdropForm({ keypair, endpoint }) {
+  const requestDrop = async event => {
+    event.preventDefault();
+    const amt = event.target.amount.value;
+    console.log("requesting airdrop of ", amt, "SOL for ", keypair.publicKey);
+    let conn = new Connection(endpoint);
+    var fromAirdropSignature = await conn.requestAirdrop(
+      keypair.publicKey,
+      humanToRaw(amt),
+    );
+    //wait for airdrop confirmation
+    let res = await conn.confirmTransaction(fromAirdropSignature);
+    console.log(res);
+  }
+  return (
+    <form onSubmit={requestDrop}>
+      <label htmlFor="amount">Amount</label>
+      <input id="amount" type="text" autoComplete="amount" required />
+      <button type="submit">Request Airdrop</button>
+    </form>
+  )
+}
+
+function Form({ fromWallet, endpoint }) {
+  const sendMoney = async event => {
+    event.preventDefault()
+    let conn = new Connection(endpoint);
+
+    //create new token mint
+    let mint = await Token.createMint(
+      conn,
+      fromWallet,
+      fromWallet.publicKey,
+      null,
+      9,
+      Token.TOKEN_PROGRAM_ID,
+    );
+
+    //get the token account of the fromWallet Solana address, if it does not exist, create it
+    let fromTokenAccount = await mint.getOrCreateAssociatedAccountInfo(
+      fromWallet.publicKey,
+    );
+
+    //get the token account of the toWallet Solana address, if it does not exist, create it
+    var toTokenAccount = await mint.getOrCreateAssociatedAccountInfo(
+      b58decode(event.target.destPubKey.value)
+    );
+
+    const amount = humantoRaw(event.target.amount.value);
+
+    // Add token transfer instructions to transaction
+    var transaction = new Transaction().add(
+      Token.createTransferInstruction(
+        TOKEN_PROGRAM_ID,
+        fromTokenAccount.address,
+        toTokenAccount.address,
+        fromWallet.publicKey,
+        [],
+        amount,
+      ),
+    );
+
+    const signature = await sendAndConfirmTransaction(
+      conn,
+      transaction,
+      [fromWallet],
+      {commitment: 'confirmed'},
+    );
+    console.log('SIGNATURE', signature);
+    // result.user => 'Ada Lovelace'
   }
 
   return (
     <form onSubmit={sendMoney}>
       <label htmlFor="address">Address</label>
-      <input id="address" type="text" autoComplete="address" required />
+      <input id="destPubKey" type="text" autoComplete="address" required />
       <label htmlFor="amount">Amount</label>
       <input id="amount" type="text" autoComplete="amount" required />
       <button type="submit">Send</button>
@@ -41,7 +112,8 @@ function Form({ keypair }) {
 export default function Wallet() {
   const [keypair, setKeypair] = useState(undefined);
   const [errorMsg, setErrorMsg] = useState("");
-  const endpoint = "https://api.devnet.solana.com";
+  const endpoint = "devnet"
+  const endpointUrl = clusterApiUrl(endpoint);
 
   // TODO this makes the URL really long and unsightly
   // TODO better error message handling
@@ -77,8 +149,10 @@ export default function Wallet() {
       <p>Public key: {keypair?.publicKey.toString()}</p>
       <p>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</p>
       <p>Endpoint: {endpoint}</p>
-      <Balance publicKey={keypair?.publicKey} endpoint={endpoint}/>
-      <Form keypair={keypair}/>
+      <p>Endpoint URL: {endpointUrl}</p>
+      <Balance publicKey={keypair?.publicKey} endpoint={endpointUrl}/>
+      <AirdropForm keypair={keypair} endpoint={endpointUrl} />
+      <Form fromWallet={keypair} endpoint={endpointUrl}/>
     </div>;
   } else {
     body = <div>
