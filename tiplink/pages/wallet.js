@@ -1,6 +1,14 @@
 
 import styles from '../styles/Home.module.css'
-import  { Keypair, Connection, Transaction, sendAndConfirmTransaction, LAMPORTS_PER_SOL, clusterApiUrl } from '@solana/web3.js';
+import  { 
+  Keypair,
+  PublicKey,
+  Connection,
+  Transaction,
+  sendAndConfirmTransaction,
+  LAMPORTS_PER_SOL,
+  clusterApiUrl 
+} from '@solana/web3.js';
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import { encode as b58encode, decode as b58decode } from 'bs58';
 import { useEffect, useState } from "react";
@@ -19,7 +27,7 @@ function Balance({ publicKey, endpoint }) {
         console.error(error);
       });
     }
-    console.log(balance);
+    // console.log(balance);
     // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
     return (
       <p>Balance: {rawToHuman(balance)}</p>
@@ -30,7 +38,7 @@ function AirdropForm({ keypair, endpoint }) {
   const requestDrop = async event => {
     event.preventDefault();
     const amt = event.target.amount.value;
-    console.log("requesting airdrop of ", amt, "SOL for ", keypair.publicKey);
+    // console.log("requesting airdrop of ", amt, "SOL for ", keypair.publicKey);
     let conn = new Connection(endpoint);
     var fromAirdropSignature = await conn.requestAirdrop(
       keypair.publicKey,
@@ -38,7 +46,7 @@ function AirdropForm({ keypair, endpoint }) {
     );
     //wait for airdrop confirmation
     let res = await conn.confirmTransaction(fromAirdropSignature);
-    console.log(res);
+    // console.log(res);
   }
   return (
     <form onSubmit={requestDrop}>
@@ -54,14 +62,16 @@ function Form({ fromWallet, endpoint }) {
     event.preventDefault()
     let conn = new Connection(endpoint);
 
+    // console.log("publicKey: ", fromWallet.publicKey);
     //create new token mint
+    // console.log("Creating mint");
     let mint = await Token.createMint(
       conn,
       fromWallet,
       fromWallet.publicKey,
       null,
       9,
-      Token.TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
     );
 
     //get the token account of the fromWallet Solana address, if it does not exist, create it
@@ -70,11 +80,21 @@ function Form({ fromWallet, endpoint }) {
     );
 
     //get the token account of the toWallet Solana address, if it does not exist, create it
+    const toPubKey = new PublicKey(event.target.destPubKey.value);
     var toTokenAccount = await mint.getOrCreateAssociatedAccountInfo(
-      b58decode(event.target.destPubKey.value)
+      toPubKey
     );
 
-    const amount = humantoRaw(event.target.amount.value);
+    // this is apparently a human-readable SOL amount? 
+    const amount = parseFloat(event.target.amount.value);
+
+    //minting 1 new token to the "fromTokenAccount" account we just returned/created
+    await mint.mintTo(
+      fromTokenAccount.address,
+      fromWallet.publicKey,
+      [],
+      humanToRaw(amount),
+    );
 
     // Add token transfer instructions to transaction
     var transaction = new Transaction().add(
@@ -84,7 +104,7 @@ function Form({ fromWallet, endpoint }) {
         toTokenAccount.address,
         fromWallet.publicKey,
         [],
-        amount,
+        humanToRaw(amount),
       ),
     );
 
@@ -95,7 +115,6 @@ function Form({ fromWallet, endpoint }) {
       {commitment: 'confirmed'},
     );
     console.log('SIGNATURE', signature);
-    // result.user => 'Ada Lovelace'
   }
 
   return (
