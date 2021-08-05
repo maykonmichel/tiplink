@@ -121,6 +121,7 @@ function Form({ fromWallet, endpoint }) {
     <form onSubmit={sendMoney}>
       <label htmlFor="address">Address</label>
       <input id="destPubKey" type="text" autoComplete="address" required />
+      <br></br>
       <label htmlFor="amount">Amount</label>
       <input id="amount" type="text" autoComplete="amount" required />
       <button type="submit">Send</button>
@@ -171,6 +172,7 @@ export default function Wallet() {
       <p>Endpoint URL: {endpointUrl}</p>
       <Balance publicKey={keypair?.publicKey} endpoint={endpointUrl}/>
       <AirdropForm keypair={keypair} endpoint={endpointUrl} />
+      <br></br>
       <Form fromWallet={keypair} endpoint={endpointUrl}/>
     </div>;
   } else {
