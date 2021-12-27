@@ -19,7 +19,7 @@ const rawToHuman = (amount) => amount / LAMPORTS_PER_SOL;
 const humanToRaw = (amount) => amount * LAMPORTS_PER_SOL;
 
 function Balance({ publicKey, endpoint }) {
-    const [ balance, setBalance ] = useState(0);
+    const [ balance, setBalance ] = useState(NaN);
     let conn = new Connection(endpoint);
     if(publicKey !== undefined) {
       conn.getBalance(publicKey).then( (b) => {
@@ -31,15 +31,16 @@ function Balance({ publicKey, endpoint }) {
     // console.log(balance);
     // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
     return (
-      <p>Balance: {rawToHuman(balance)}</p>
+      <p>Balance: {isNaN(balance) ? "Loading..." : rawToHuman(balance)}</p>
     );
 }
 
 function AirdropForm({ keypair, endpoint }) {
   const requestDrop = async event => {
     event.preventDefault();
-    const amt = event.target.amount.value;
-    console.log("requesting airdrop of ", amt, "SOL for ", keypair.publicKey);
+    // you get errors if you request more than 1 SOL sometimes
+    const amt = 1;
+    console.log("requesting airdrop of 1 SOL for ", keypair.publicKey);
     let conn = new Connection(endpoint);
     var fromAirdropSignature = await conn.requestAirdrop(
       keypair.publicKey,
@@ -51,8 +52,6 @@ function AirdropForm({ keypair, endpoint }) {
   }
   return (
     <form onSubmit={requestDrop}>
-      <label htmlFor="amount">Amount: </label>
-      <input id="amount" type="text" autoComplete="amount" required />
       <button type="submit">Request Airdrop</button>
     </form>
   )
@@ -93,8 +92,9 @@ function Form({ fromWallet, conn }) {
       <label htmlFor="address">Address: </label>
       <input id="destPubKey" type="text" autoComplete="address" required />
       <br></br>
-      <label htmlFor="amount">Amount: </label>
+      <label htmlFor="amount">Amount:   </label>
       <input id="amount" type="text" autoComplete="amount" required />
+      <br></br>
       <button type="submit">Send</button>
     </form>
   )
@@ -103,9 +103,13 @@ function Form({ fromWallet, conn }) {
 export default function Wallet() {
   const [keypair, setKeypair] = useState(undefined);
   const [errorMsg, setErrorMsg] = useState("");
-  const endpoint = "devnet"
+  const [endpoint, setEndpoint] = useState("devnet");
   const endpointUrl = clusterApiUrl(endpoint);
   const conn = new Connection(endpointUrl);
+
+  const handleEndpointChange = (event) => { 
+    setEndpoint(event.target.value);
+  };
 
   // TODO this makes the URL really long and unsightly
   // TODO better error message handling
@@ -140,12 +144,20 @@ export default function Wallet() {
     body = <div>
       <p>Public key: {keypair?.publicKey.toString()}</p>
       <p>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</p>
-      <p>Endpoint: {endpoint}</p>
+      <label htmlFor="endpoint_dropdown">Endpoint: </label>
+      <select id="endpoint_dropdown" name="endpoint" value={endpoint} onChange={handleEndpointChange}>
+        <option value="devnet">devnet</option>
+        <option value="testnet">testnet</option>
+        <option value="mainnet-beta">mainnet-beta</option>
+      </select>
       <p>Endpoint URL: {endpointUrl}</p>
+
       <Balance publicKey={keypair?.publicKey} endpoint={endpointUrl}/>
-      <AirdropForm keypair={keypair} endpoint={endpointUrl} />
-      <br></br>
       <Form fromWallet={keypair} conn={conn}/>
+      <br></br>
+      {endpoint === "devnet" && 
+        <AirdropForm keypair={keypair} endpoint={endpointUrl} />
+      }
     </div>;
   } else {
     body = <div>
