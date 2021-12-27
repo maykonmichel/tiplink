@@ -7,7 +7,8 @@ import  {
   Transaction,
   sendAndConfirmTransaction,
   LAMPORTS_PER_SOL,
-  clusterApiUrl 
+  clusterApiUrl,
+  SystemProgram
 } from '@solana/web3.js';
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import { encode as b58encode, decode as b58decode } from 'bs58';
@@ -38,7 +39,7 @@ function AirdropForm({ keypair, endpoint }) {
   const requestDrop = async event => {
     event.preventDefault();
     const amt = event.target.amount.value;
-    // console.log("requesting airdrop of ", amt, "SOL for ", keypair.publicKey);
+    console.log("requesting airdrop of ", amt, "SOL for ", keypair.publicKey);
     let conn = new Connection(endpoint);
     var fromAirdropSignature = await conn.requestAirdrop(
       keypair.publicKey,
@@ -46,67 +47,37 @@ function AirdropForm({ keypair, endpoint }) {
     );
     //wait for airdrop confirmation
     let res = await conn.confirmTransaction(fromAirdropSignature);
-    // console.log(res);
+    console.log("airdropped", res);
   }
   return (
     <form onSubmit={requestDrop}>
-      <label htmlFor="amount">Amount</label>
+      <label htmlFor="amount">Amount: </label>
       <input id="amount" type="text" autoComplete="amount" required />
       <button type="submit">Request Airdrop</button>
     </form>
   )
 }
 
-function Form({ fromWallet, endpoint }) {
+function Form({ fromWallet, conn }) {
   const sendMoney = async event => {
-    event.preventDefault()
-    let conn = new Connection(endpoint);
-
-    // console.log("publicKey: ", fromWallet.publicKey);
-    //create new token mint
-    // console.log("Creating mint");
-    let mint = await Token.createMint(
-      conn,
-      fromWallet,
-      fromWallet.publicKey,
-      null,
-      9,
-      TOKEN_PROGRAM_ID,
-    );
-
-    //get the token account of the fromWallet Solana address, if it does not exist, create it
-    let fromTokenAccount = await mint.getOrCreateAssociatedAccountInfo(
-      fromWallet.publicKey,
-    );
-
     //get the token account of the toWallet Solana address, if it does not exist, create it
-    const toPubKey = new PublicKey(event.target.destPubKey.value);
-    var toTokenAccount = await mint.getOrCreateAssociatedAccountInfo(
-      toPubKey
-    );
-
+    const sPubKey = event.target.destPubKey.value;
     // this is apparently a human-readable SOL amount? 
     const amount = parseFloat(event.target.amount.value);
+    const toPubKey = new PublicKey(sPubKey);
 
-    //minting 1 new token to the "fromTokenAccount" account we just returned/created
-    await mint.mintTo(
-      fromTokenAccount.address,
-      fromWallet.publicKey,
-      [],
-      humanToRaw(amount),
+    console.log("sendMoney ", amount, " SOL from ", fromWallet.publicKey.toBase58(), " to ", toPubKey.toBase58());
+    event.preventDefault()
+
+    const transaction = new Transaction().add(
+     SystemProgram.transfer({
+       fromPubkey: fromWallet.publicKey,
+       toPubkey: toPubKey,
+       lamports: humanToRaw(amount),
+     }),
     );
 
-    // Add token transfer instructions to transaction
-    var transaction = new Transaction().add(
-      Token.createTransferInstruction(
-        TOKEN_PROGRAM_ID,
-        fromTokenAccount.address,
-        toTokenAccount.address,
-        fromWallet.publicKey,
-        [],
-        humanToRaw(amount),
-      ),
-    );
+    console.log("transaction", transaction);
 
     const signature = await sendAndConfirmTransaction(
       conn,
@@ -119,10 +90,10 @@ function Form({ fromWallet, endpoint }) {
 
   return (
     <form onSubmit={sendMoney}>
-      <label htmlFor="address">Address</label>
+      <label htmlFor="address">Address: </label>
       <input id="destPubKey" type="text" autoComplete="address" required />
       <br></br>
-      <label htmlFor="amount">Amount</label>
+      <label htmlFor="amount">Amount: </label>
       <input id="amount" type="text" autoComplete="amount" required />
       <button type="submit">Send</button>
     </form>
@@ -134,6 +105,7 @@ export default function Wallet() {
   const [errorMsg, setErrorMsg] = useState("");
   const endpoint = "devnet"
   const endpointUrl = clusterApiUrl(endpoint);
+  const conn = new Connection(endpointUrl);
 
   // TODO this makes the URL really long and unsightly
   // TODO better error message handling
@@ -173,7 +145,7 @@ export default function Wallet() {
       <Balance publicKey={keypair?.publicKey} endpoint={endpointUrl}/>
       <AirdropForm keypair={keypair} endpoint={endpointUrl} />
       <br></br>
-      <Form fromWallet={keypair} endpoint={endpointUrl}/>
+      <Form fromWallet={keypair} conn={conn}/>
     </div>;
   } else {
     body = <div>
