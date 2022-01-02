@@ -20,7 +20,7 @@ import FormControl from '@mui/material/FormControl';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -409,28 +409,41 @@ export default function Wallet() {
       </AppBar>
       <div className={styles.container}>
         <main className={styles.main}>
-          <Container>
-            {url !== "" && 
+        <Grid
+          container
+          spacing={0}
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+          style={{ minHeight: '100vh' }}
+        >
+          {url !== "" && 
+          <div>
             <QRCode value={url}/>
-            }
-            <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
-            <Balance publicKey={keypair?.publicKey} conn={conn}/>
-            <Link href={explorerLink} target="_blank">Explorer</Link>
             <br></br>
-            <br></br>
-            {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
-            {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
+          </div>
+          }
+          <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
+          <Balance publicKey={keypair?.publicKey} conn={conn}/>
+          <Link href={explorerLink} target="_blank">Explorer</Link>
+          <br></br>
+          <br></br>
+          {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
+          {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
 
-            <Form fromWallet={keypair} conn={conn}/>
-            <br></br>
-            <AddMoneyPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
-            <br></br>
-            <WithdrawToPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
-            <br></br>
-            {endpoint === "devnet" && 
-              <AirdropForm keypair={keypair} endpoint={endpointUrl} />
-            }
-          </Container>
+          <Form fromWallet={keypair} conn={conn}/>
+          <br></br>
+          <AddMoneyPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
+          <br></br>
+          <WithdrawToPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
+          <br></br>
+          {endpoint === "devnet" && 
+            <AirdropForm keypair={keypair} endpoint={endpointUrl} />
+          }
+   
+        </Grid> 
+
+
         </main>
         <Footer/>
       </div>
