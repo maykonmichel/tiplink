@@ -347,6 +347,8 @@ export default function Wallet() {
       setConnected(window.solana.isConnected);
       // TODO eager connection doesn't work, as if the user disconnects and refreshes the page, it auto-reconnects
       // window.solana.connect({ onlyIfTrusted: true});
+    } else {
+      console.log("Phantom not installed.");
     }
     // document.removeEventListener("contextmenu");
   }, [provider, connected]);
