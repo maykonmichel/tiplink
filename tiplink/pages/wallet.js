@@ -15,6 +15,35 @@ import { encode as b58encode, decode as b58decode } from 'bs58';
 import { useEffect, useState } from "react";
 import Footer  from "../components/footer";
 
+import AppBar from '@mui/material/AppBar';
+import FormControl from '@mui/material/FormControl';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TextField from "@mui/material/TextField";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      light: '#757ce8',
+      main: '#3f50b5',
+      dark: '#002884',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#000000',
+      main: '#ffffff',
+      dark: '#ba000d',
+      contrastText: '#000',
+    },
+  },
+});
+
 const rawToHuman = (amount) => amount / LAMPORTS_PER_SOL;
 const humanToRaw = (amount) => amount * LAMPORTS_PER_SOL;
 
@@ -50,9 +79,9 @@ function AirdropForm({ keypair, endpoint }) {
     console.log("airdropped", res);
   }
   return (
-    <form onSubmit={requestDrop}>
-      <button type="submit">Request Airdrop</button>
-    </form>
+    <FormControl onSubmit={requestDrop}>
+      <Button variant="outlined" type="submit">Request Airdrop</Button>
+    </FormControl>
   )
 }
 
@@ -87,17 +116,45 @@ function Form({ fromWallet, conn }) {
   }
 
   return (
-    <form onSubmit={sendMoney}>
-      <label htmlFor="address">Address: </label>
-      <input id="destPubKey" type="text" autoComplete="address" required />
+    <FormControl onSubmit={sendMoney}>
+      <h2>Withdraw</h2>
+      <TextField label="Address" id="destPubKey" type="text" autoComplete="address" required />
+      <TextField label="Amount" id="amount" type="text" autoComplete="amount" required />
+      <Button type="submit" variant="outlined">Send</Button>
       <br></br>
-      <label htmlFor="amount">Amount:   </label>
-      <input id="amount" type="text" autoComplete="amount" required />
-      <br></br>
-      <button type="submit">Send</button>
-    </form>
+    </FormControl>
   )
 }
+
+function PhantomWidget({ provider, connected }) {
+  // console.log("provider: ", provider);
+  const connectPhantom = (e) => {
+    if((provider !== undefined) && provider.isPhantom){
+      console.log(provider);
+      provider.connect();
+    } else {
+      window.open("https://phantom.app/", "_blank");
+    }
+  };
+
+  const disconnectPhantom = (e) => {
+    provider.disconnect();
+  };
+
+  if(!connected) {
+    return(
+        <Button color="secondary" variant="outlined" onClick={connectPhantom}>Connect Phantom</Button>
+    );
+  } else {
+    return (
+      <div>
+        <Button color="secondary" variant = "outlined" onClick={disconnectPhantom}>Disconnect Phantom</Button>
+      </div>
+    );
+  }
+}
+
+
 
 export default function Wallet() {
   const [keypair, setKeypair] = useState(undefined);
@@ -109,6 +166,28 @@ export default function Wallet() {
   );
   const endpointUrl = clusterApiUrl(endpoint);
   const conn = new Connection(endpointUrl);
+
+  const [provider, setProvider] = useState(undefined);
+  const [connected, setConnected] = useState(undefined);
+  const onPhantomConnection = () => {
+    // console.log("onPhantomConnection");
+    setConnected(true);
+  };
+  const onPhantomDisconnection = () => {
+    setConnected(false);
+  }
+
+  useEffect(() => {
+    if("solana" in window) {
+      setProvider(window.solana);
+      window.solana.on("connect", onPhantomConnection);
+      window.solana.on("disconnect", onPhantomDisconnection);
+      setConnected(window.solana.isConnected);
+      // TODO eager connection doesn't work, as if the user disconnects and refreshes the page, it auto-reconnects
+      // window.solana.connect({ onlyIfTrusted: true});
+    }
+    // document.removeEventListener("contextmenu");
+  }, [provider, connected]);
 
   const handleEndpointChange = (event) => { 
     setEndpoint(event.target.value);
@@ -146,17 +225,12 @@ export default function Wallet() {
     // console.log("keypair", keypair);
     
     body = <div>
-      <p>Public key: {keypair?.publicKey.toString()}</p>
-      <p>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</p>
-      <label htmlFor="endpoint_dropdown">Endpoint: </label>
-      <select id="endpoint_dropdown" name="endpoint" value={endpoint} onChange={handleEndpointChange}>
-        <option value="devnet">devnet</option>
-        <option value="testnet">testnet</option>
-        <option value="mainnet-beta">mainnet-beta</option>
-      </select>
-      <p>Endpoint URL: {endpointUrl}</p>
-
+      <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
       <Balance publicKey={keypair?.publicKey} conn={conn}/>
+      {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
+      {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
+
+      <br></br>
       <Form fromWallet={keypair} conn={conn}/>
       <br></br>
       {endpoint === "devnet" && 
@@ -171,11 +245,27 @@ export default function Wallet() {
 
 
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-      {body}
-      </main>
-      <Footer/>
-    </div>
+    <ThemeProvider theme={theme}>
+      <AppBar position="sticky" className="appbar">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Tiplink
+          </Typography>
+
+          <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="endpoint-label" id="endpoint_dropdown" name="endpoint" value={endpoint} onChange={handleEndpointChange}>
+            <MenuItem value="devnet">devnet</MenuItem>
+            <MenuItem value="testnet">testnet</MenuItem>
+            <MenuItem value="mainnet-beta">mainnet-beta</MenuItem>
+          </Select>
+          <PhantomWidget provider={provider} connected={connected}/>
+        </Toolbar>
+      </AppBar>
+      <div className={styles.container}>
+        <main className={styles.main}>
+        {body}
+        </main>
+        <Footer/>
+      </div>
+    </ThemeProvider>
   )
 }
