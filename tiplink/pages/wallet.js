@@ -18,11 +18,10 @@ import Footer  from "../components/footer";
 const rawToHuman = (amount) => amount / LAMPORTS_PER_SOL;
 const humanToRaw = (amount) => amount * LAMPORTS_PER_SOL;
 
-function Balance({ publicKey, endpoint }) {
+function Balance({ publicKey, conn }) {
     const [ balance, setBalance ] = useState(NaN);
-    let conn = new Connection(endpoint);
     if(publicKey !== undefined) {
-      conn.getBalance(publicKey).then( (b) => {
+      conn.getBalance(publicKey, "processed").then( (b) => {
         setBalance(b);
       }).catch( (error) => {
         console.error(error);
@@ -103,7 +102,11 @@ function Form({ fromWallet, conn }) {
 export default function Wallet() {
   const [keypair, setKeypair] = useState(undefined);
   const [errorMsg, setErrorMsg] = useState("");
-  const [endpoint, setEndpoint] = useState("devnet");
+  const defaultEndpoint = "mainnet-beta";
+  const endpointKey = "tiplink-endpoint";
+  const [endpoint, setEndpoint] = useState(
+    typeof window !== "undefined" ? window.localStorage.getItem(endpointKey, defaultEndpoint) : defaultEndpoint
+  );
   const endpointUrl = clusterApiUrl(endpoint);
   const conn = new Connection(endpointUrl);
 
@@ -114,6 +117,7 @@ export default function Wallet() {
   // TODO this makes the URL really long and unsightly
   // TODO better error message handling
   useEffect(() => {
+    localStorage.setItem(endpointKey, endpoint)
     let kp = undefined;
     if(window.location.hash === "") {
       kp = Keypair.generate();
@@ -128,7 +132,7 @@ export default function Wallet() {
         setErrorMsg(err.toString());
       }
     }
-  }, []);
+  }, [endpoint]);
 
   // TODO remove this guy
   if(keypair !== undefined) {
@@ -152,7 +156,7 @@ export default function Wallet() {
       </select>
       <p>Endpoint URL: {endpointUrl}</p>
 
-      <Balance publicKey={keypair?.publicKey} endpoint={endpointUrl}/>
+      <Balance publicKey={keypair?.publicKey} conn={conn}/>
       <Form fromWallet={keypair} conn={conn}/>
       <br></br>
       {endpoint === "devnet" && 
