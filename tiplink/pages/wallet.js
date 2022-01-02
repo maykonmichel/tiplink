@@ -329,9 +329,9 @@ export default function Wallet() {
   const [endpoint, setEndpoint] = useState(defaultEndpoint);
   const endpointUrl = clusterApiUrl(endpoint);
   const conn = new Connection(endpointUrl);
-
   const [provider, setProvider] = useState(undefined);
   const [connected, setConnected] = useState(undefined);
+  const [url, setUrl] = useState("");
   const onPhantomConnection = () => {
     // console.log("onPhantomConnection");
     setConnected(true);
@@ -339,6 +339,10 @@ export default function Wallet() {
   const onPhantomDisconnection = () => {
     setConnected(false);
   }
+
+  useEffect(() => {
+    setUrl(window.location.href);
+  });
 
   useEffect(() => {
     if("solana" in window) {
@@ -406,7 +410,9 @@ export default function Wallet() {
       <div className={styles.container}>
         <main className={styles.main}>
           <Container>
-            <QRCode value={window.location.href}/>
+            {url !== "" && 
+            <QRCode value={url}/>
+            }
             <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
             <Balance publicKey={keypair?.publicKey} conn={conn}/>
             <Link href={explorerLink} target="_blank">Explorer</Link>
