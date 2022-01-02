@@ -22,8 +22,13 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
+import Dialog from '@mui/material/Dialog';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -79,18 +84,24 @@ function AirdropForm({ keypair, endpoint }) {
     console.log("airdropped", res);
   }
   return (
-    <FormControl onSubmit={requestDrop}>
-      <Button variant="outlined" type="submit">Request Airdrop</Button>
-    </FormControl>
+      <Button variant="outlined" type="submit" onClick={requestDrop}>Request Airdrop</Button>
   )
 }
 
 function Form({ fromWallet, conn }) {
+  const [open, setOpen] = useState(false);
+  const [address, setAddress] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const handleClose = () => {
+    setOpen(false);
+  }
+
   const sendMoney = async event => {
     //get the token account of the toWallet Solana address, if it does not exist, create it
-    const sPubKey = event.target.destPubKey.value;
+    handleClose();
+    const sPubKey = address;
     // this is apparently a human-readable SOL amount? 
-    const amount = parseFloat(event.target.amount.value);
     const toPubKey = new PublicKey(sPubKey);
 
     console.log("sendMoney ", amount, " SOL from ", fromWallet.publicKey.toBase58(), " to ", toPubKey.toBase58());
@@ -114,15 +125,47 @@ function Form({ fromWallet, conn }) {
     );
     console.log('SIGNATURE', signature);
   }
+  
+
+  const handleOpen = () => {
+    setOpen(true);
+  }
+
+  const handleAddressChange = (e) => { 
+    setAddress(e.target.value);
+  }
+
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value);
+  }
 
   return (
-    <FormControl onSubmit={sendMoney}>
-      <h2>Withdraw</h2>
-      <TextField label="Address" id="destPubKey" type="text" autoComplete="address" required />
-      <TextField label="Amount" id="amount" type="text" autoComplete="amount" required />
-      <Button type="submit" variant="outlined">Send</Button>
-      <br></br>
-    </FormControl>
+    <div>
+      <Button variant="outlined" onClick={handleOpen}>Send</Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>
+        Send
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        </DialogTitle>
+        <DialogContentText>Please enter a valid Solana address to withrdaw funds. Please be careful, there isn't any validation.</DialogContentText>
+        <form action="/" method="POST" onSubmit={(e) => { e.preventDefault(); handleClose(); } } style={{padding: "10px"}}>
+          <TextField label="SOL Address" value={address} onChange={handleAddressChange} id="destPubKey" type="text" autoComplete="address" required  fullWidth variant="standard"/>
+          <TextField label="Amount" value={amount} onChange={handleAmountChange} id="amount" type="numeric" autoComplete="amount" required  fullWidth variant="standard"/>
+          <Button type="submit" onClick={sendMoney}>Send</Button>
+        </form>
+      </Dialog>
+    </div>
   )
 }
 
@@ -161,9 +204,7 @@ export default function Wallet() {
   const [errorMsg, setErrorMsg] = useState("");
   const defaultEndpoint = "mainnet-beta";
   const endpointKey = "tiplink-endpoint";
-  const [endpoint, setEndpoint] = useState(
-    typeof window !== "undefined" ? window.localStorage.getItem(endpointKey, defaultEndpoint) : defaultEndpoint
-  );
+  const [endpoint, setEndpoint] = useState(defaultEndpoint);
   const endpointUrl = clusterApiUrl(endpoint);
   const conn = new Connection(endpointUrl);
 
@@ -191,12 +232,13 @@ export default function Wallet() {
 
   const handleEndpointChange = (event) => { 
     setEndpoint(event.target.value);
+    localStorage.setItem(endpointKey, event.target.value);
   };
 
   // TODO this makes the URL really long and unsightly
   // TODO better error message handling
   useEffect(() => {
-    localStorage.setItem(endpointKey, endpoint)
+    setEndpoint(localStorage.getItem(endpointKey, defaultEndpoint));
     let kp = undefined;
     if(window.location.hash === "") {
       kp = Keypair.generate();
