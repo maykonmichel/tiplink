@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -29,7 +30,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Link from '@mui/material/Link';
-import {Link as LinkIcon} from '@mui/icons-material/Link';
+import QRCode from 'qrcode.react';
 
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -386,36 +387,6 @@ export default function Wallet() {
   }
   const explorerLink = "https://explorer.solana.com/address/" + keypair?.publicKey.toString() + "?cluster=" + endpoint;
 
-  let body = undefined;
-  if(errorMsg === "") {
-    // console.log("keypair", keypair);
-    
-    body = <div>
-      <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
-      <Balance publicKey={keypair?.publicKey} conn={conn}/>
-      <Link href={explorerLink} target="_blank">Explorer</Link>
-      <br></br>
-      <br></br>
-      {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
-      {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
-
-      <Form fromWallet={keypair} conn={conn}/>
-      <br></br>
-      <AddMoneyPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
-      <br></br>
-      <WithdrawToPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
-      <br></br>
-      {endpoint === "devnet" && 
-        <AirdropForm keypair={keypair} endpoint={endpointUrl} />
-      }
-    </div>;
-  } else {
-    body = <div>
-      <p>{errorMsg}</p>
-    </div>;
-  }
-
-
   return (
     <ThemeProvider theme={theme}>
       <AppBar position="sticky" className="appbar">
@@ -434,7 +405,26 @@ export default function Wallet() {
       </AppBar>
       <div className={styles.container}>
         <main className={styles.main}>
-        {body}
+          <Container>
+            <QRCode value={window.location.href}/>
+            <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
+            <Balance publicKey={keypair?.publicKey} conn={conn}/>
+            <Link href={explorerLink} target="_blank">Explorer</Link>
+            <br></br>
+            <br></br>
+            {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
+            {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
+
+            <Form fromWallet={keypair} conn={conn}/>
+            <br></br>
+            <AddMoneyPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
+            <br></br>
+            <WithdrawToPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
+            <br></br>
+            {endpoint === "devnet" && 
+              <AirdropForm keypair={keypair} endpoint={endpointUrl} />
+            }
+          </Container>
         </main>
         <Footer/>
       </div>
