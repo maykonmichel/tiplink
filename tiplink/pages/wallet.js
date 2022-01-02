@@ -28,6 +28,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Link from '@mui/material/Link';
+import {Link as LinkIcon} from '@mui/icons-material/Link';
 
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -198,6 +200,125 @@ function PhantomWidget({ provider, connected }) {
 }
 
 
+function AddMoneyPhantom({ wallet, conn, provider, connected }) {
+  const [open, setOpen] = useState(false);
+  const [amount, setAmount] = useState("");
+
+  const handleClose = () => {
+    setOpen(false);
+  }
+
+  const sendMoney = async event => {
+    //get the token account of the toWallet Solana address, if it does not exist, create it
+    handleClose();
+    // this is apparently a human-readable SOL amount? 
+
+    console.log("sendMoney ", amount, " SOL from ", provider.publicKey.toBase58(), " to ", wallet.publicKey.toBase58());
+    event.preventDefault()
+
+    const transaction = new Transaction().add(
+     SystemProgram.transfer({
+       fromPubkey: provider.publicKey,
+       toPubkey: wallet.publicKey,
+       lamports: humanToRaw(amount),
+     }),
+    );
+    transaction.feePayer = provider.publicKey;
+    transaction.recentBlockhash = (await conn.getRecentBlockhash()).blockhash;
+    console.log("transaction", transaction);
+
+    const signature = (await provider.signAndSendTransaction(transaction)).signature;
+    console.log('SIGNATURE', signature);
+    await conn.confirmTransaction(signature);
+  }
+  
+
+  const handleOpen = () => { 
+    if(!connected) {
+      alert("Please connect Phantom to deposit, or send SOL directly to public key.");
+      return;
+    }
+    setOpen(true); 
+  }
+  const handleAmountChange = (e) => { setAmount(e.target.value); }
+
+  return (
+    <div>
+      <Button variant="outlined" onClick={handleOpen}>Deposit from Phantom</Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>
+        Deposit
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        </DialogTitle>
+        <DialogContentText>Enter an amount to add from Phantom wallet</DialogContentText>
+        <form action="/" method="POST" onSubmit={(e) => { e.preventDefault(); handleClose(); } } style={{padding: "10px"}}>
+          <TextField label="Amount" value={amount} onChange={handleAmountChange} id="amount" type="numeric" autoComplete="amount" required  fullWidth variant="standard"/>
+          <Button type="submit" onClick={sendMoney}>Deposit</Button>
+        </form>
+      </Dialog>
+    </div>
+  )
+}
+
+function WithdrawToPhantom({ wallet, conn, provider, connected }) {
+
+  const sendMoney = async event => {
+    event.preventDefault()
+
+    if(!connected) { 
+      alert("Please connect Phantom to withdraw money");
+      return;
+    } 
+
+
+    const balance = await conn.getBalance(wallet.publicKey, "processed");
+    const recentBlockhash = (await conn.getRecentBlockhash()).blockhash;
+    const feeCalculator = (await conn.getFeeCalculatorForBlockhash(recentBlockhash));
+    console.log(feeCalculator);
+    const fees = feeCalculator.value.lamportsPerSignature * 100;
+    console.log(fees);
+    const amount = balance - fees;
+    console.log(amount);
+    console.log("sendMoney ", amount, " SOL from ", wallet.publicKey.toBase58(), " to ", provider.publicKey.toBase58());
+
+    const transaction = new Transaction().add(
+     SystemProgram.transfer({
+       fromPubkey: wallet.publicKey,
+       toPubkey: provider.publicKey,
+       lamports: amount,
+     }),
+    );
+
+    const signature = await sendAndConfirmTransaction(
+      conn,
+      transaction,
+      [wallet],
+      {commitment: 'confirmed'},
+    );
+    console.log('SIGNATURE', signature)
+    alert("Withdrew " + rawToHuman(amount) + " SOL from " + wallet.publicKey.toBase58() + "to " + provider.publicKey.toBase58() );
+  }
+
+
+  return (
+    <div>
+      <Button variant="outlined" onClick={sendMoney}>Withdraw to Phantom</Button>
+    </div>
+  )
+}
+
+
 
 export default function Wallet() {
   const [keypair, setKeypair] = useState(undefined);
@@ -261,6 +382,7 @@ export default function Wallet() {
     // console.log("secretKey: ",  b58encode(keypair.secretKey));
     // console.log("b58: ", keypair?.publicKey.toBase58());
   }
+  const explorerLink = "https://explorer.solana.com/address/" + keypair?.publicKey.toString() + "?cluster=" + endpoint;
 
   let body = undefined;
   if(errorMsg === "") {
@@ -269,11 +391,17 @@ export default function Wallet() {
     body = <div>
       <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
       <Balance publicKey={keypair?.publicKey} conn={conn}/>
+      <Link href={explorerLink} target="_blank">Explorer</Link>
+      <br></br>
+      <br></br>
       {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
       {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
 
-      <br></br>
       <Form fromWallet={keypair} conn={conn}/>
+      <br></br>
+      <AddMoneyPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
+      <br></br>
+      <WithdrawToPhantom wallet={keypair} conn={conn} provider={provider} connected={connected}/>
       <br></br>
       {endpoint === "devnet" && 
         <AirdropForm keypair={keypair} endpoint={endpointUrl} />
