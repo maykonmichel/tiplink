@@ -175,19 +175,18 @@ function Form({ fromWallet, conn }) {
 function PhantomWidget({ provider, connected }) {
   // console.log("provider: ", provider);
   const connectPhantom = (e) => {
-    if((provider !== undefined) && provider.isPhantom){
-      console.log(provider);
       provider.connect();
-    } else {
-      window.open("https://phantom.app/", "_blank");
-    }
   };
 
   const disconnectPhantom = (e) => {
     provider.disconnect();
   };
 
-  if(!connected) {
+  if((provider === undefined) || (!provider.isPhantom)) {
+    return(
+        <Button color="secondary" variant="outlined" href="https://phantom.app/">Get Phantom</Button>
+    )
+  } else if(!connected) {
     return(
         <Button color="secondary" variant="outlined" onClick={connectPhantom}>Connect Phantom</Button>
     );
@@ -352,9 +351,7 @@ export default function Wallet() {
       setConnected(window.solana.isConnected);
       // TODO eager connection doesn't work, as if the user disconnects and refreshes the page, it auto-reconnects
       // window.solana.connect({ onlyIfTrusted: true});
-    } else {
-      console.log("Phantom not installed.");
-    }
+    } 
     // document.removeEventListener("contextmenu");
   }, [provider, connected]);
 
