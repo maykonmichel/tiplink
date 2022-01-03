@@ -325,6 +325,7 @@ export default function Wallet() {
   const [errorMsg, setErrorMsg] = useState("");
   const defaultEndpoint = "mainnet-beta";
   const endpointKey = "tiplink-endpoint";
+  const possibleEndpoints = ["devnet", "testnet", "mainnet-beta"];
   const [endpoint, setEndpoint] = useState(defaultEndpoint);
   const endpointUrl = clusterApiUrl(endpoint);
   const conn = new Connection(endpointUrl);
@@ -363,7 +364,13 @@ export default function Wallet() {
   // TODO this makes the URL really long and unsightly
   // TODO better error message handling
   useEffect(() => {
-    setEndpoint(localStorage.getItem(endpointKey, defaultEndpoint));
+    const localEndpoint = localStorage.getItem(endpointKey);
+    if(possibleEndpoints.includes(localEndpoint)) {
+      setEndpoint(localEndpoint);
+    } else {
+      localStorage.setItem(endpointKey, defaultEndpoint);
+      setEndpoint(defaultEndpoint);
+    }
     let kp = undefined;
     if(window.location.hash === "") {
       kp = Keypair.generate();
@@ -379,7 +386,6 @@ export default function Wallet() {
       }
     }
   }, [endpoint]);
-
   // TODO remove this guy
   if(keypair !== undefined) {
     // console.log("pubkey: ", keypair.publicKey.toString());
