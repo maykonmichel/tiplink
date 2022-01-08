@@ -175,18 +175,23 @@ function Form({ fromWallet, conn }) {
 function PhantomWidget({ provider, connected }) {
   // console.log("provider: ", provider);
   const connectPhantom = (e) => {
-      provider.connect();
+      if((provider !== undefined) && provider.isPhantom) {
+        provider.connect();
+      } else {
+        if(provider === undefined) {
+          console.log("PhantomWidget connectPhantom undefined provider");
+        } else {
+          console.log("PhantomWidget connectPhantom nonPhantom provider");
+        }
+        window.open("https://phantom.app/", "_blank");
+      }
   };
 
   const disconnectPhantom = (e) => {
     provider.disconnect();
   };
 
-  if((provider === undefined) || (!provider.isPhantom)) {
-    return(
-        <Button color="secondary" variant="outlined" href="https://phantom.app/">Get Phantom</Button>
-    )
-  } else if(!connected) {
+  if(!connected) {
     return(
         <Button color="secondary" variant="outlined" onClick={connectPhantom}>Connect Phantom</Button>
     );
