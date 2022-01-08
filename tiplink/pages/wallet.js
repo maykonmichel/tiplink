@@ -350,14 +350,18 @@ export default function Wallet() {
   });
 
   useEffect(() => {
-    if("solana" in window) {
-      setProvider(window.solana);
-      window.solana.on("connect", onPhantomConnection);
-      window.solana.on("disconnect", onPhantomDisconnection);
-      setConnected(window.solana.isConnected);
-      // TODO eager connection doesn't work, as if the user disconnects and refreshes the page, it auto-reconnects
-      // window.solana.connect({ onlyIfTrusted: true});
-    } 
+    window.addEventListener('load', async (event) => {
+      if (window.solana) {
+        setProvider(window.solana);
+        window.solana.on("connect", onPhantomConnection);
+        window.solana.on("disconnect", onPhantomDisconnection);
+        setConnected(window.solana.isConnected);
+        // TODO eager connection doesn't work, as if the user disconnects and refreshes the page, it auto-reconnects
+        // window.solana.connect({ onlyIfTrusted: true});
+      } else {
+        console.log("Please download phantom wallet for a more seamless experience");
+      }
+    });
     // document.removeEventListener("contextmenu");
   }, [provider, connected]);
 
@@ -426,10 +430,10 @@ export default function Wallet() {
           style={{ minHeight: '100vh' }}
         >
           {url !== "" && 
-          <div>
-            <QRCode value={url}/>
-            <br></br>
-          </div>
+            <figure>
+              <QRCode value={url} id="walletQr"/>
+              <figcaption style={{textAlign: "center"}}>Tiplink QR</figcaption>
+            </figure>
           }
           <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
           <Balance publicKey={keypair?.publicKey} conn={conn}/>
