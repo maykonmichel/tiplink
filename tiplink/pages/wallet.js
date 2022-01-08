@@ -66,8 +66,9 @@ function Balance({ publicKey, conn }) {
     }
     // console.log(balance);
     // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
+    // after fees, you have 0.000045 SOL in wallet when you withdraw, so want this to round to 0
     return (
-      <p>Balance: {isNaN(balance) ? "Loading..." : rawToHuman(balance)}</p>
+      <p>Balance: {isNaN(balance) ? "Loading..." : rawToHuman(balance).toFixed(4)}</p>
     );
 }
 
@@ -290,11 +291,13 @@ function WithdrawToPhantom({ wallet, conn, provider, connected }) {
     const balance = await conn.getBalance(wallet.publicKey, "processed");
     const recentBlockhash = (await conn.getRecentBlockhash()).blockhash;
     const feeCalculator = (await conn.getFeeCalculatorForBlockhash(recentBlockhash));
-    console.log(feeCalculator);
-    const fees = feeCalculator.value.lamportsPerSignature * 100;
-    console.log(fees);
+    // console.log(feeCalculator);
+    const feeMult = 10;
+    const fees = feeCalculator.value.lamportsPerSignature * feeMult;
+    // console.log(fees);
     const amount = balance - fees;
-    console.log(amount);
+
+    // console.log(amount);
     console.log("sendMoney ", amount, " SOL from ", wallet.publicKey.toBase58(), " to ", provider.publicKey.toBase58());
 
     const transaction = new Transaction().add(
