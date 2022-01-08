@@ -68,7 +68,7 @@ function Balance({ publicKey, conn }) {
     // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
     // after fees, you have 0.000045 SOL in wallet when you withdraw, so want this to round to 0
     return (
-      <p>Balance: {isNaN(balance) ? "Loading..." : rawToHuman(balance).toFixed(4)}</p>
+      <p>Balance: {isNaN(balance) ? "Loading..." : rawToHuman(balance).toFixed(4) + " SOL"}</p>
     );
 }
 
