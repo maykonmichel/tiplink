@@ -1,0 +1,13 @@
+import { PrismaClient } from '@prisma/client'
+
+
+export default async (req, res) => {
+  if(req.method == 'POST') {
+    const prisma = new PrismaClient()
+    const wallet = await prisma.$queryRaw`insert into wallet (pubkey, cipher) values (${req.query.pubkey}, ${req.query.cipher}) RETURNING id`
+    prisma.$disconnect();
+    res.status(200).json({slug: wallet[0].id});
+  } else {
+    res.status(501).json({message: "only POST request to create_wallet supported"});
+  }
+}
