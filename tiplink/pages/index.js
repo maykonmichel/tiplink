@@ -2,21 +2,14 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Footer from "../components/footer";
 import  { Keypair } from '@solana/web3.js';
-import { SodiumPlus } from "sodium-plus";
 import Router from "next/router";
 import { encode as b58encode } from 'bs58';
 import Button from '@mui/material/Button';
 import { xor, kdf, randBuf} from "../lib/crypto";
+import CircularProgress from '@mui/material/CircularProgress';
+import { useState } from "react";
 
-let sodium;
-
-
-const createWalletShort = async (e) => { 
-  e.preventDefault();
-  if(!sodium) {
-    // Select a backend automatically, but expect this to be sodium wrappers
-    sodium = await SodiumPlus.auto();
-  }
+const createWalletShort = async () => { 
   const kp = Keypair.generate();
   const pk = kp.secretKey;
 
@@ -62,6 +55,13 @@ const createWallet = (e) => {
 }
 
 export default function Home() {
+  const [ loading, setLoading ] = useState(false);
+  const onClickShort = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    createWalletShort();
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -76,9 +76,12 @@ export default function Home() {
         </h1>
 
         <div className={styles.grid}>
-          <a className={styles.card} onClick={createWalletShort}>
-            <h2>Create a Wallet</h2>
-            <p>Send tip links with crypto!</p>
+          <a className={styles.card} onClick={onClickShort} style={{display: "flex", justifyContent:"space-around"}}>
+            <div>
+              <h2>Create a Wallet</h2>
+              <p>Send tip links with crypto!</p>
+            </div>
+            <CircularProgress style={{display: loading ? "block": "none"}}/>
           </a>
           <Button onClick={createWallet} variant="outlined">Create Wallet Serverless</Button>
         </div>
