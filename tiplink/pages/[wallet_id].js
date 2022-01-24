@@ -1,5 +1,4 @@
 import Wallet from "../components/wallet";
-import { useRouter } from 'next/router'
 import { useEffect, useState } from "react";
 import { decode as b58decode } from 'bs58';
 import {xor, kdf} from "../lib/crypto";
@@ -22,15 +21,14 @@ const getPrivateKey = async (slug) => {
 }
 
 const WalletWrapper = () => {
-  const router = useRouter();
-  const slug = router.query.wallet_id;
   const [pk, setPk] = useState(null);
 
   useEffect(() => {
+    const slug = window.location.href.split("/")[3].split("#")[0];
     const sp = async () => {
       setPk(await getPrivateKey(slug));
     }
-    if(window.location.hash !== "") {
+    if((window.location.hash !== "") && (pk === null)) {
       sp();
     }
   }, []);
