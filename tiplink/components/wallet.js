@@ -9,7 +9,7 @@ import  {
   clusterApiUrl,
   SystemProgram
 } from '@solana/web3.js';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Footer  from "../components/footer";
 
 import AppBar from '@mui/material/AppBar';
@@ -27,6 +27,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Link from '@mui/material/Link';
 import QRCode from 'qrcode.react';
+import SolanaContext from "../context/SolanaContext";
 
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -333,36 +334,15 @@ const Wallet = ({ secretKey }) => {
   const [endpoint, setEndpoint] = useState(defaultEndpoint);
   const endpointUrl = clusterApiUrl(endpoint);
   const conn = new Connection(endpointUrl);
-  const [provider, setProvider] = useState(undefined);
-  const [connected, setConnected] = useState(undefined);
   const [url, setUrl] = useState("");
-  const onPhantomConnection = () => {
-    // console.log("onPhantomConnection");
-    setConnected(true);
-  };
-  const onPhantomDisconnection = () => {
-    setConnected(false);
-  }
+  const solCtx = useContext(SolanaContext);
+  const provider = solCtx.provider;
+  const connected = solCtx.connected;
 
   useEffect(() => {
     setUrl(window.location.href);
   });
 
-  useEffect(() => {
-    window.addEventListener('load', async (event) => {
-      if (window.solana) {
-        setProvider(window.solana);
-        window.solana.on("connect", onPhantomConnection);
-        window.solana.on("disconnect", onPhantomDisconnection);
-        setConnected(window.solana.isConnected);
-        // TODO eager connection doesn't work, as if the user disconnects and refreshes the page, it auto-reconnects
-        // window.solana.connect({ onlyIfTrusted: true});
-      } else {
-        console.log("Please download phantom wallet for a more seamless experience");
-      }
-    });
-    // document.removeEventListener("contextmenu");
-  }, [provider, connected]);
 
   const handleEndpointChange = (event) => { 
     setEndpoint(event.target.value);
