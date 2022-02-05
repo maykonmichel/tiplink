@@ -4,6 +4,7 @@ import { decode as b58decode } from 'bs58';
 import {xor, kdf} from "../lib/crypto";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import { Keypair } from "@solana/web3.js";
 
 const getPrivateKey = async (slug) => {
   const base = window.location.origin;
@@ -15,11 +16,12 @@ const getPrivateKey = async (slug) => {
     }
   });
   const content = await rawResponse.json();
-  const serverKey = b58decode(content.cipher);
+  console.log(content.salt);
   const salt = b58decode(content.salt);
   const pwShort = b58decode(window.location.hash.substr(1));
-  const pw = await kdf(serverKey.length, pwShort, salt);
-  return xor(serverKey, pw);
+  const seed = await kdf(32, pwShort, salt);
+  const kp = Keypair.fromSeed(seed);
+  return kp.secretKey;
 }
 
 const WalletWrapper = () => {

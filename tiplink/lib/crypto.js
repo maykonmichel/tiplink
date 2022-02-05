@@ -29,8 +29,8 @@ const kdf = async (fullLength, pwShort, salt) => {
     fullLength,
     pwShort,
     salt,
-    sodium.CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
-    sodium.CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
+    na.CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
+    na.CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
   );
   return pwKey.getBuffer();
 }
@@ -40,6 +40,12 @@ const randBuf = async (l) => {
   return na.randombytes_buf(l);
 }
 
+const getSalt = async () => {
+  const na = await getSodium();
+  return randBuf(na.CRYPTO_PWHASH_SALTBYTES);
+}
+
+
 module.exports = {
-  xor, randBuf, kdf
+  xor, getSalt, kdf, randBuf
 };

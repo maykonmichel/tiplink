@@ -5,23 +5,25 @@ import  { Keypair } from '@solana/web3.js';
 import Router from "next/router";
 import { encode as b58encode } from 'bs58';
 import Button from '@mui/material/Button';
-import { xor, kdf, randBuf} from "../lib/crypto";
+import { getSalt, kdf, randBuf } from "../lib/crypto";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useState } from "react";
 
-const createWalletShort = async () => { 
-  const kp = Keypair.generate();
-  const pk = kp.secretKey;
 
+const createWalletShort = async () => { 
   // generate short pw that lives in anchor
+  const seedLength = 32;
   const pwShort = await randBuf(8);
   const anchor = b58encode(pwShort);
 
   // derive full length pw
   // TODO we want Argon2id in optional algorithm field
-  const salt = await randBuf(16);
-  const pw = await kdf(pk.length, pwShort, salt);
-  const serverKey = xor(pw, pk);
+  const salt = await getSalt();
+  const seed = await kdf(seedLength, pwShort, salt);
+  // const goodKp = Keypair.generate();
+  // console.log(goodKp.secretKey.length);
+  const kp = Keypair.fromSeed(seed);
+
 
   // console.log("pk: ", pk);
   // console.log("anchor: ", anchor);
@@ -30,7 +32,7 @@ const createWalletShort = async () => {
   // console.log("derived pk: ", xor(serverKey, pw));
 
   const endpoint = window.location.origin + "/api/create_wallet";
-  const rawResponse = await fetch(endpoint, {
+  const msg = {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -38,10 +40,10 @@ const createWalletShort = async () => {
     },
     body: JSON.stringify({
       pubkey: kp.publicKey,
-      cipher: b58encode(serverKey),
       salt: b58encode(salt)
     })
-  });
+  };
+  const rawResponse = await fetch(endpoint, msg);
   const content = await rawResponse.json();
   const slug = content.slug;
   Router.push("/" + slug + "#" + anchor);
