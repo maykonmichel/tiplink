@@ -54,6 +54,12 @@ const humanToRaw = (amount) => amount * LAMPORTS_PER_SOL;
 
 function Balance({ publicKey, conn }) {
     const [ balance, setBalance ] = useState(NaN);
+    const [ price, setPrice ] = useState(NaN);
+
+    useEffect(() => {
+      getPrice().then((apiPrice) => setPrice(apiPrice));
+    }, []);
+
     if(publicKey !== undefined) {
       conn.getBalance(publicKey, "processed").then( (b) => {
         setBalance(b);
@@ -61,13 +67,33 @@ function Balance({ publicKey, conn }) {
         console.error(error);
       });
     }
+
+    const solBalance = isNaN(balance) ? "Loading..." : rawToHuman(balance).toFixed(4) + " SOL";
+    const usd = rawToHuman(balance) * price;
+    const usdBalance  = isNaN(usd) ? "" : "$" + usd.toFixed(2);
     // console.log(balance);
     // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
     // after fees, you have 0.000045 SOL in wallet when you withdraw, so want this to round to 0
     return (
-      <p>Balance: {isNaN(balance) ? "Loading..." : rawToHuman(balance).toFixed(4) + " SOL"}</p>
+      <div>
+        <p>Balance (SOL): {solBalance}</p>
+        <p>Balance (USD): {usdBalance}</p>
+        <p>Exchange Rate: {price.toFixed(2)}</p>
+
+      </div>
     );
 }
+
+const getPrice = async () => {
+  const endpoint = "https://serum-api.bonfida.com/orderbooks/SOLUSDC";
+  const resp = await fetch(endpoint);
+  const content = await resp.json();
+  const book = content.data;
+  const bid = book.bids[0].price;
+  const ask = book.asks[0].price;
+  return (bid + ask) / 2;
+}
+
 
 function AirdropForm({ keypair, endpoint }) {
   const requestDrop = async event => {
@@ -338,7 +364,7 @@ const Wallet = ({ secretKey }) => {
   const solCtx = useContext(SolanaContext);
   const provider = solCtx.provider;
   const connected = solCtx.connected;
-
+  
   useEffect(() => {
     setUrl(window.location.href);
   });
@@ -360,6 +386,7 @@ const Wallet = ({ secretKey }) => {
       setEndpoint(defaultEndpoint);
     }
   }, [endpoint]);
+
   
   const explorerLink = "https://explorer.solana.com/address/" + keypair?.publicKey.toString() + "?cluster=" + endpoint;
 
@@ -396,7 +423,7 @@ const Wallet = ({ secretKey }) => {
             </figure>
           }
           <Typography>Public key: {keypair?.publicKey.toString()}</Typography>
-          <Balance publicKey={keypair?.publicKey} conn={conn}/>
+          <Balance publicKey={keypair?.publicKey} conn={conn} />
           <Link href={explorerLink} target="_blank">Explorer</Link>
           <br></br>
           <br></br>
