@@ -1,12 +1,12 @@
 import Wallet from "../components/wallet";
 import { useEffect, useState } from "react";
 import { decode as b58decode } from 'bs58';
-import {xor, kdf} from "../lib/crypto";
+import {kdf} from "../lib/crypto";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { Keypair } from "@solana/web3.js";
 
-const getPrivateKey = async (slug) => {
+const getPrivateKey = async (slug: string) => {
   const base = window.location.origin;
   const endpoint = base + "/api/get_wallet?slug=" + slug;
   const rawResponse = await fetch(endpoint, {
@@ -25,19 +25,22 @@ const getPrivateKey = async (slug) => {
 }
 
 const WalletWrapper = () => {
-  const [pk, setPk] = useState(null);
+  const [pk, setPk] = useState<Uint8Array>();
 
   useEffect(() => {
     const slug = window.location.href.split("/")[3].split("#")[0];
     const sp = async () => {
-      setPk(await getPrivateKey(slug));
+      const res = (await getPrivateKey(slug));
+      if(res !== null){
+        setPk(res);
+      }
     }
     if((window.location.hash !== "") && (pk === null)) {
       sp();
     }
   }, []);
 
-  if(pk !== null) {
+  if(pk !== undefined) {
     return(
       <Wallet secretKey={pk}/>
     );

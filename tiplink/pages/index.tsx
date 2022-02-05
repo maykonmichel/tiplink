@@ -7,7 +7,7 @@ import { encode as b58encode } from 'bs58';
 import Button from '@mui/material/Button';
 import { getSalt, kdf, randBuf } from "../lib/crypto";
 import CircularProgress from '@mui/material/CircularProgress';
-import { useState } from "react";
+import { useState, MouseEvent } from "react";
 
 
 const createWalletShort = async () => { 
@@ -49,16 +49,16 @@ const createWalletShort = async () => {
   Router.push("/" + slug + "#" + anchor);
 }
 
-const createWallet = (e) => {
+const createWallet = (e: MouseEvent<HTMLButtonElement>) => {
   e.preventDefault();
   const pk = b58encode(Keypair.generate().secretKey);
-  console.log(pk);
+  // console.log(pk);
   Router.push("/wallet#" + pk);
 }
 
 export default function Home() {
   const [ loading, setLoading ] = useState(false);
-  const onClickShort = (e) => {
+  const onClickShort = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setLoading(true);
     createWalletShort();

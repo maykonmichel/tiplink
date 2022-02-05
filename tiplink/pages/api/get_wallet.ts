@@ -1,11 +1,13 @@
 import { PrismaClient } from '@prisma/client'
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async (req, res) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   if(req.method == 'GET') {
     const prisma = new PrismaClient()
+    const slug = Array.isArray(req.query.slug) ? req.query.slug[0] : req.query.slug;
     const result = await prisma.wallet.findUnique({
       where: {
-        id: req.query.slug,
+        id: slug,
       },
       select: {
         salt: true,
