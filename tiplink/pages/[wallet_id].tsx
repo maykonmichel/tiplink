@@ -16,7 +16,6 @@ const getPrivateKey = async (slug: string) => {
     }
   });
   const content = await rawResponse.json();
-  console.log(content.salt);
   const salt = b58decode(content.salt);
   const pwShort = b58decode(window.location.hash.substr(1));
   const seed = await kdf(32, pwShort, salt);
@@ -35,7 +34,7 @@ const WalletWrapper = () => {
         setPk(res);
       }
     }
-    if((window.location.hash !== "") && (pk === null)) {
+    if((window.location.hash !== "") && (pk === undefined)) {
       sp();
     }
   }, []);

@@ -39,7 +39,7 @@ const createWalletShort = async () => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      pubkey: kp.publicKey,
+      pubkey: kp.publicKey.toBase58(),
       salt: b58encode(salt)
     })
   };
