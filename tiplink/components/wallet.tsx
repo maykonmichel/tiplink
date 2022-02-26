@@ -72,6 +72,7 @@ type LinkContent = {linkKeypair: Keypair};
 const LinkContext = createContext<LinkContent>(undefined!);
 const useLink = () => useContext(LinkContext);
 
+
 const Balance = () => {
   const { linkKeypair } = useLink();
   const { connection } = useConnection();
@@ -360,7 +361,6 @@ const CreateLinkForm = () => {
   const [ amount, setAmount ] = useState("");
   const linkPubkey = linkKeypair.publicKey;
   const [ newLink, setNewLink ] = useState("");
-  const { connected, publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
 
   const createNewTipLink = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -376,14 +376,6 @@ const CreateLinkForm = () => {
     const feeCalculator: FeeCalculator = maybeContext.value!;
     // console.log(feeCalculator);
 
-    if(!connected) { 
-      alert("Please connect Phantom to create link");
-      return;
-    } 
-    if((publicKey === null) || (publicKey === undefined)){
-      alert("Please connect Phantom to create link");
-      return;
-    }
 
     const { slug, anchor, keypair } = await createLink();
     const newLink = window.location.origin + "/" + slug + "#" + anchor;
@@ -392,18 +384,20 @@ const CreateLinkForm = () => {
     console.log("CreateLinkForm amt: ", amt);
     const transaction = new Transaction().add(
      SystemProgram.transfer({
-       fromPubkey: publicKey,
+       fromPubkey: linkPubkey,
        toPubkey: keypair.publicKey,
        lamports: amt
      }),
     );
-    transaction.feePayer = publicKey;
+    transaction.feePayer = linkPubkey;
     transaction.recentBlockhash = recentBlockhash;
 
-    const signature = (await sendTransaction(transaction, connection));
-    console.log('SIGNATURE', signature);
-    await connection.confirmTransaction(signature);
-
+    await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [linkKeypair],
+      {commitment: 'confirmed'},
+    );
     // console.log('SIGNATURE', signature)
   }
 
@@ -415,10 +409,7 @@ const CreateLinkForm = () => {
       <TextField label="New Link" value={newLink} fullWidth variant="standard"/>
     </div>
   );
-
 }
-
-
 
 
 const Wallet = (props: {secretKey: Uint8Array}) => {
@@ -477,7 +468,6 @@ const Wallet = (props: {secretKey: Uint8Array}) => {
     }
   }
 
-  // TODO this makes the URL really long and unsightly
   // TODO better error message handling
   useEffect(() => {
     const localEndpoint = localStorage.getItem(endpointKey);
@@ -495,6 +485,7 @@ const Wallet = (props: {secretKey: Uint8Array}) => {
       setDisplayMode(defaultDisplayMode);
     }
   }, [endpoint]);
+
 
   
   const explorerLink = "https://explorer.solana.com/address/" + linkKeypair.publicKey.toString() + "?cluster=" + endpoint;
@@ -517,12 +508,14 @@ const Wallet = (props: {secretKey: Uint8Array}) => {
                     <MenuItem value={"advanced"}>advanced</MenuItem>
                   </Select>
 
+                  {displayMode === "advanced" && 
                   <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="endpoint-label" 
                   id="endpoint_dropdown" name="endpoint" value={endpoint} onChange={handleEndpointChange}>
                     <MenuItem value={devCluster}>{devCluster}</MenuItem>
                     <MenuItem value={testCluster}>{testCluster}</MenuItem>
                     <MenuItem value={mainCluster}>{mainCluster}</MenuItem>
                   </Select>
+                  }
                   <WalletMultiButton/>
                   <WalletDisconnectButton/>
                 </Toolbar>

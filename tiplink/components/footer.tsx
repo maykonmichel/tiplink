@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css'
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      Copyright 2021
+      Copyright 2022
       <a
         href="https://solana.com/"
         target="_blank"
