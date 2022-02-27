@@ -17,8 +17,6 @@ type LinkContent = {
     deposit(amt: number): Promise<void>;
     extConnected: boolean;
     extPublicKey: PublicKey | null;
-    updateBalance(): void;
-    getBalanceSOLAsync(): Promise<number>;
 };
 export const LinkContext = createContext<LinkContent>(undefined!);
 export const useLink = () => useContext(LinkContext);

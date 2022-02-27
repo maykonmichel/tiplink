@@ -1,9 +1,4 @@
-import { useConnection } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { useState, useEffect } from 'react';
-import { useLink } from './useLink';
-
-
+import { useLink } from '../useLink';
 
 const Balance = () => {
   const { getBalanceSOL, getBalanceUSD, getExchangeRate } = useLink();

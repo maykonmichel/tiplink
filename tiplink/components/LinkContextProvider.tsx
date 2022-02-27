@@ -167,8 +167,6 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
                 deposit,
                 extConnected,
                 extPublicKey,
-                updateBalance,
-                getBalanceSOLAsync
             }}
         >
             {children}
