@@ -1,16 +1,11 @@
 import styles from '../../styles/Home.module.css'
-import  { Cluster } from '@solana/web3.js';
-import { useEffect, useState, MouseEvent } from "react";
-import { SelectChangeEvent } from "@mui/material"
 import Footer  from "../footer";
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
 const QRCode = require("qrcode.react");
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
@@ -21,8 +16,6 @@ import  Balance from './balance';
 import { useLink } from '../useLink';
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
-import { useEndpoint } from "../useEndpoint";
-import { AirdropForm } from './AirdropForm';
 import WithdrawForm  from "./WithdrawForm";
 import AddMoneyPhantom from "./AddMoneyPhantom";
 import WithdrawToPhantom from "./WithdrawToPhantom";
@@ -47,6 +40,8 @@ const theme = createTheme({
 
 const UI = () => {
   // const explorerLink = "https://explorer.solana.com/address/" + linkKeypair.publicKey.toString() + "?cluster=" + endpoint;
+  const { getBalanceUSD } = useLink();
+  const balanceUSD = getBalanceUSD();
   return(
     <ThemeProvider theme={theme}>
       <AppBar position="sticky" className="appbar" style={{ background: '#ffffff' }} elevation={0}>
@@ -67,6 +62,10 @@ const UI = () => {
           justifyContent="center"
           style={{ minHeight: '100vh' }}
         >
+          <Typography component="div" variant="h5">This is ${balanceUSD.toFixed(2)} in crypto.</Typography>
+          <Typography component="div">The link to this page contains this value, make sure you don't lose it!</Typography>
+
+          <TextField value={window.location.href} disabled={true} style={{borderRadius: 1}}/>
           {/* {(displayMode === "advanced") && (url !== "") && 
             <figure>
               <QRCode value={url} id="walletQr"/>
