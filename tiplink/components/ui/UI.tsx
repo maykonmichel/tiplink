@@ -20,6 +20,7 @@ import WithdrawForm  from "./WithdrawForm";
 import AddMoneyPhantom from "./AddMoneyPhantom";
 import WithdrawToPhantom from "./WithdrawToPhantom";
 import CreateLinkForm from "./CreateLinkForm";
+import CopyLink from "./CopyLink";
 
 const theme = createTheme({
   palette: {
@@ -65,7 +66,7 @@ const UI = () => {
           <Typography component="div" variant="h5">This is ${balanceUSD.toFixed(2)} in crypto.</Typography>
           <Typography component="div">The link to this page contains this value, make sure you don't lose it!</Typography>
 
-          <TextField value={window.location.href} disabled={true} style={{borderRadius: 1}}/>
+          <CopyLink/>
           {/* {(displayMode === "advanced") && (url !== "") && 
             <figure>
               <QRCode value={url} id="walletQr"/>
