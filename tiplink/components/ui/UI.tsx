@@ -5,14 +5,12 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
 const QRCode = require("qrcode.react");
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
     WalletDisconnectButton,
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
-import  Balance from './balance';
 import { useLink } from '../useLink';
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -21,6 +19,7 @@ import AddMoneyPhantom from "./AddMoneyPhantom";
 import WithdrawToPhantom from "./WithdrawToPhantom";
 import CreateLinkForm from "./CreateLinkForm";
 import CopyLink from "./CopyLink";
+import LinkCard from "./LinkCard";
 
 const theme = createTheme({
   palette: {
@@ -67,24 +66,7 @@ const UI = () => {
           <Typography component="div">The link to this page contains this value, make sure you don't lose it!</Typography>
 
           <CopyLink/>
-          {/* {(displayMode === "advanced") && (url !== "") && 
-            <figure>
-              <QRCode value={url} id="walletQr"/>
-              <figcaption style={{textAlign: "center"}}>Tiplink QR</figcaption>
-            </figure>
-          } */}
-          {/* {displayMode === "advanced" && 
-            <Typography>Public key: {linkKeypair.publicKey.toString()}</Typography>
-          } */}
-          <Balance />
-          {/* {displayMode === "advanced" && 
-          <Link href={explorerLink} target="_blank">Explorer</Link>
-          } */}
-          <br></br>
-          <br></br>
-          {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
-          {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
-
+          {/* <LinkCard/> */}
           <WithdrawForm/>
           <br></br>
           <AddMoneyPhantom/>
