@@ -1,16 +1,5 @@
 import styles from '../styles/Home.module.css'
-import  { 
-  Keypair,
-  Cluster,
-  PublicKey,
-  Connection,
-  Transaction,
-  sendAndConfirmTransaction,
-  LAMPORTS_PER_SOL,
-  clusterApiUrl,
-  SystemProgram,
-  FeeCalculator,
-} from '@solana/web3.js';
+import  { Keypair, Cluster, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { useEffect, useState, MouseEvent, useMemo } from "react";
 import { SelectChangeEvent } from "@mui/material"
@@ -32,19 +21,21 @@ import CloseIcon from '@mui/icons-material/Close';
 import Link from '@mui/material/Link';
 const QRCode = require("qrcode.react");
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { ConnectionProvider, WalletProvider, useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { ConnectionProvider, WalletProvider, useConnection } from '@solana/wallet-adapter-react';
 import {
     WalletModalProvider,
     WalletDisconnectButton,
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
+import  Balance from './balance';
+import { useLink, LinkContext } from './useLink';
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
 
-import { createContext, useContext } from "react";
 import { createLink } from "../lib/link";
-
-const FEE_MULT = 10;
+import { LinkProvider } from "./LinkContextProvider";
+import { useEndpoint } from "./useEndpoint";
+import { EndpointProvider } from "./EndpointProvider";
 
 const theme = createTheme({
   palette: {
@@ -63,120 +54,38 @@ const theme = createTheme({
   },
 });
 
-
-const rawToHuman = (amount: number) => amount / LAMPORTS_PER_SOL;
-const humanToRaw = (amount: number) => amount * LAMPORTS_PER_SOL;
-
-// so we don't have to keep passing the linkKeypair everywhere
-type LinkContent = {linkKeypair: Keypair};
-const LinkContext = createContext<LinkContent>(undefined!);
-const useLink = () => useContext(LinkContext);
-
-
-const Balance = () => {
-  const { linkKeypair } = useLink();
-  const { connection } = useConnection();
-  const publicKey = linkKeypair.publicKey;
-  const [ balance, setBalance ] = useState(NaN);
-  const [ price, setPrice ] = useState(NaN);
-
-  useEffect(() => {
-    getPrice().then((apiPrice) => setPrice(apiPrice));
-  }, []);
-
-  if(publicKey !== undefined) {
-    connection.getBalance(publicKey, "processed").then( (b) => {
-      setBalance(b);
-    }).catch( (error) => {
-      console.error(error);
-    });
-  }
-
-  const solBalance = isNaN(balance) ? "Loading..." : rawToHuman(balance).toFixed(4) + " SOL";
-  const usd = rawToHuman(balance) * price;
-  const usdBalance  = isNaN(usd) ? "" : "$" + usd.toFixed(2);
-  // console.log(balance);
-  // it seems 1 SOL maps to 1e9 of whatever units getBalance returns
-  // after fees, you have 0.000045 SOL in wallet when you withdraw, so want this to round to 0
-  return (
-    <div>
-      <p>Balance (SOL): {solBalance}</p>
-      <p>Balance (USD): {usdBalance}</p>
-      <p>Exchange Rate: {price.toFixed(2)}</p>
-
-    </div>
-  );
-}
-
-const getPrice = async () => {
-  const endpoint = "https://serum-api.bonfida.com/orderbooks/SOLUSDC";
-  const resp = await fetch(endpoint);
-  const content = await resp.json();
-  const book = content.data;
-  const bid = book.bids[0].price;
-  const ask = book.asks[0].price;
-  return (bid + ask) / 2;
-}
-
-
 const AirdropForm = () => {
-  const { linkKeypair } = useLink();
-  const linkPubkey = linkKeypair.publicKey;
-
-  const { connection } = useConnection();
+  const { airdrop } = useLink();
   const requestDrop = async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     // you get errors if you request more than 1 SOL sometimes
     const amt = 1;
-    console.log("requesting airdrop of 1 SOL for ", linkPubkey);
-    var fromAirdropSignature = await connection.requestAirdrop(
-      linkPubkey,
-      humanToRaw(amt),
-    );
-    //wait for airdrop confirmation
-    let res = await connection.confirmTransaction(fromAirdropSignature);
-    console.log("airdropped", res);
+    return await airdrop(amt);
   }
   return (
       <Button variant="outlined" type="submit" onClick={requestDrop}>Request Airdrop</Button>
   )
 }
 
+const UpdateBalanceButton = () => {
+  const { updateBalance } = useLink();
+  return (
+      <Button variant="outlined" type="submit" onClick={updateBalance}>Update Balance</Button>
+  )
+
+}
+
 
 function WithdrawForm() {
-  const { linkKeypair } = useLink();
-  const { connection } = useConnection();
+  const { sendSOL } = useLink();
   const [open, setOpen] = useState(false);
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
 
   const sendMoney = async (event: MouseEvent<HTMLButtonElement>) => {
-    //get the token account of the toWallet Solana address, if it does not exist, create it
     setOpen(false);
-    const sPubKey = address;
-    // this is apparently a human-readable SOL amount? 
-    const toPubKey = new PublicKey(sPubKey);
     event.preventDefault();
-
-    // console.log("sendMoney ", amount, " SOL from ", linkKeypair.publicKey.toBase58(), " to ", toPubKey.toBase58());
-
-    const transaction = new Transaction().add(
-     SystemProgram.transfer({
-       fromPubkey: linkKeypair.publicKey,
-       toPubkey: toPubKey,
-       lamports: humanToRaw(parseFloat(amount)),
-     }),
-    );
-
-    // console.log("transaction", transaction);
-
-    await sendAndConfirmTransaction(
-      connection,
-      transaction,
-      [linkKeypair],
-      {commitment: 'confirmed'},
-    );
-    // console.log('SIGNATURE', signature);
+    await sendSOL(new PublicKey(address), parseFloat(amount));
   }
 
   return (
@@ -211,11 +120,7 @@ function WithdrawForm() {
 
 
 const AddMoneyPhantom = () => {
-  const { linkKeypair } = useLink();
-  const { connection } = useConnection();
-  const { connected, publicKey, sendTransaction } = useWallet();
-  const linkPubkey = linkKeypair.publicKey;
-
+  const { deposit, extConnected } = useLink();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
 
@@ -226,35 +131,13 @@ const AddMoneyPhantom = () => {
   const sendMoney = async (event: MouseEvent<HTMLButtonElement>) => {
     //get the token account of the toWallet Solana address, if it does not exist, create it
     handleClose();
-    // this is apparently a human-readable SOL amount? 
-
-    // console.log("sendMoney ", amount, " SOL from ", provider.publicKey.toBase58(), " to ", wallet.publicKey.toBase58());
-    if((publicKey === undefined) || (publicKey === null)) {
-      alert("Please connect phantom to add money");
-      return;
-    }
-
     event.preventDefault()
-
-    const transaction = new Transaction().add(
-     SystemProgram.transfer({
-       fromPubkey: publicKey,
-       toPubkey: linkPubkey,
-       lamports: humanToRaw(parseFloat(amount)),
-     }),
-    );
-    transaction.feePayer = publicKey;
-    transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-    console.log("transaction", transaction);
-
-    const signature = (await sendTransaction(transaction, connection));
-    console.log('SIGNATURE', signature);
-    await connection.confirmTransaction(signature);
+    await deposit(parseFloat(amount));
   }
   
 
   const handleOpen = () => { 
-    if(!connected) {
+    if(!extConnected) {
       alert("Please connect Phantom to deposit, or send SOL directly to public key.");
       return;
     }
@@ -292,59 +175,21 @@ const AddMoneyPhantom = () => {
 }
 
 const WithdrawToPhantom = () => {
-  const { linkKeypair } = useLink();
-  const linkPubkey = linkKeypair.publicKey;
-
-  const { connection } = useConnection();
-  const { wallet, connected } = useWallet();
-
+  const { linkKeypair, sendSOL, getFees, getBalanceSOL, extConnected, extPublicKey } = useLink();
   const sendMoney = async (event: MouseEvent<HTMLButtonElement> )=> {
     event.preventDefault()
-
-    if(!connected) { 
-      alert("Please connect Phantom to withdraw money");
-      return;
+    if(!extConnected) { 
+        alert("Please connect Phantom to withdraw money");
+        return;
     } 
 
-    const publicKey = wallet?.adapter?.publicKey;
-    if((publicKey === null) || (publicKey === undefined)){
-      alert("Please connect Phantom to withdraw money");
-      return;
+    if((extPublicKey === null) || (extPublicKey === undefined)){
+        alert("Please connect Phantom to withdraw money");
+        return;
     }
-
-
-    const balance = await connection.getBalance(linkPubkey, "processed");
-    const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-    const maybeContext = (await connection.getFeeCalculatorForBlockhash(recentBlockhash));
-    if(maybeContext === null) {
-      alert("Could not get fee calculator");
-      return;
-    }
-    const feeCalculator: FeeCalculator = maybeContext.value!;
-    // console.log(feeCalculator);
-    const fees = feeCalculator.lamportsPerSignature * FEE_MULT;
-    // console.log(fees);
-    const amount = balance - fees;
-
-    // console.log(amount);
-    // console.log("sendMoney ", amount, " SOL from ", wallet.publicKey.toBase58(), " to ", provider.publicKey().toBase58());
-
-    const transaction = new Transaction().add(
-     SystemProgram.transfer({
-       fromPubkey: linkPubkey,
-       toPubkey: publicKey,
-       lamports: amount,
-     }),
-    );
-
-    const signature = await sendAndConfirmTransaction(
-      connection,
-      transaction,
-      [linkKeypair],
-      {commitment: 'confirmed'},
-    );
-    console.log('SIGNATURE', signature)
-    alert("Withdrew " + rawToHuman(amount) + " SOL from " + linkPubkey.toBase58() + "to " + publicKey.toBase58() );
+    const fees = await getFees();
+    const balance = await getBalanceSOL();
+    await sendSOL(extPublicKey, balance - fees);
   }
 
 
@@ -357,48 +202,25 @@ const WithdrawToPhantom = () => {
 
 const CreateLinkForm = () => {
   // TODO check-list to use pre-existing balance
-  const { linkKeypair } = useLink();
+  const { linkKeypair, sendSOL, getFees, getBalanceSOL } = useLink();
   const [ amount, setAmount ] = useState("");
-  const linkPubkey = linkKeypair.publicKey;
   const [ newLink, setNewLink ] = useState("");
-  const { connection } = useConnection();
 
   const createNewTipLink = async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
-    // TODO reuse this bit
-    const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-    const maybeContext = (await connection.getFeeCalculatorForBlockhash(recentBlockhash));
-    if(maybeContext === null) {
-      alert("Could not get fee calculator");
-      return;
+    const fees = await getFees();
+    const balance = await getBalanceSOL();
+    const amt = parseFloat(amount) + fees;
+    if(amt > balance) {
+      alert("Cannot withdraw " + amt + ", please add more funds to tiplink");
     }
-    const feeCalculator: FeeCalculator = maybeContext.value!;
-    // console.log(feeCalculator);
-
 
     const { slug, anchor, keypair } = await createLink();
     const newLink = window.location.origin + "/" + slug + "#" + anchor;
     setNewLink(newLink);
-    const amt = humanToRaw(parseFloat(amount)) + feeCalculator.lamportsPerSignature * FEE_MULT;
-    console.log("CreateLinkForm amt: ", amt);
-    const transaction = new Transaction().add(
-     SystemProgram.transfer({
-       fromPubkey: linkPubkey,
-       toPubkey: keypair.publicKey,
-       lamports: amt
-     }),
-    );
-    transaction.feePayer = linkPubkey;
-    transaction.recentBlockhash = recentBlockhash;
 
-    await sendAndConfirmTransaction(
-      connection,
-      transaction,
-      [linkKeypair],
-      {commitment: 'confirmed'},
-    );
-    // console.log('SIGNATURE', signature)
+    await sendSOL(keypair.publicKey, amt);
   }
 
   // should this store this history of whatever links we've created in the past?
@@ -411,54 +233,24 @@ const CreateLinkForm = () => {
   );
 }
 
-
-const Wallet = (props: {secretKey: Uint8Array}) => {
-  const secretKey = props.secretKey;
-  // console.log("Wallet secretKey", secretKey);
-  const linkKeypair = Keypair.fromSecretKey(secretKey);
-  const endpointKey = "tiplink-endpoint";
-  const devCluster: Cluster = "devnet";
-  const testCluster: Cluster = "testnet";
-  const mainCluster: Cluster = "mainnet-beta";
-  const [endpoint, setEndpoint] = useState<Cluster>(mainCluster);
-  const endpointUrl = clusterApiUrl(endpoint);
-
+const UI = () => {
   const defaultDisplayMode = "basic";
   const displayKey = "tiplink-display";
   const [ displayMode, setDisplayMode ] = useState<string>("basic");
+  const { linkKeypair } = useLink();
+  const { endpoint, setEndpointStr} = useEndpoint();
+  const explorerLink = "https://explorer.solana.com/address/" + linkKeypair.publicKey.toString() + "?cluster=" + endpoint;
 
-  const [url, setUrl] = useState("");
-  const wallets = useMemo(
-    () => [new PhantomWalletAdapter()], [endpointUrl]
-  );
-  
+  // TODO better error message handling
   useEffect(() => {
-    setUrl(window.location.href);
-  });
-
-  const setEndpointStr = (endpoint: string | null) => {
-    if(endpoint === null) {
-      return false;
+    const localAdvanced = localStorage.getItem(displayKey);
+    if(localAdvanced === "advanced" || localAdvanced === "basic") {
+      setDisplayMode(localAdvanced);
+    } else {
+      localStorage.setItem(displayKey, defaultDisplayMode);
+      setDisplayMode(defaultDisplayMode);
     }
-
-    if(endpoint === devCluster) {
-      setEndpoint(devCluster);
-      return  true;
-    } else if(endpoint === testCluster) {
-      setEndpoint(testCluster);
-      return true;
-    } else if(endpoint === mainCluster){
-      setEndpoint(mainCluster);
-      return true;
-    } 
-    return false;
-  }
-
-
-  const handleEndpointChange = (event: SelectChangeEvent<Cluster>) => { 
-    setEndpointStr(event.target.value);
-    localStorage.setItem(endpointKey, event.target.value);
-  };
+  }, []);
 
   const handleModeChange = (event: SelectChangeEvent<string>) => {
     const v = event.target.value;
@@ -468,109 +260,123 @@ const Wallet = (props: {secretKey: Uint8Array}) => {
     }
   }
 
-  // TODO better error message handling
-  useEffect(() => {
-    const localEndpoint = localStorage.getItem(endpointKey);
-    const success = setEndpointStr(localEndpoint);
-    if(!success) {
-      localStorage.setItem(endpointKey, mainCluster);
-      setEndpoint(mainCluster);
-    }
+  const handleEndpointChange = (event: SelectChangeEvent<Cluster>) => { 
+    setEndpointStr(event.target.value);
+  };
 
-    const localAdvanced = localStorage.getItem(displayKey);
-    if(localAdvanced === "advanced" || localAdvanced === "basic") {
-      setDisplayMode(localAdvanced);
-    } else {
-      localStorage.setItem(displayKey, defaultDisplayMode);
-      setDisplayMode(defaultDisplayMode);
-    }
-  }, [endpoint]);
+  return(
+    <ThemeProvider theme={theme}>
+      <AppBar position="sticky" className="appbar">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Tiplink
+          </Typography>
 
+          <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="mode-label" 
+          id="mode_dropdown" name="mode" value={displayMode} onChange={handleModeChange}>
+            <MenuItem value={"basic"}>basic</MenuItem>
+            <MenuItem value={"advanced"}>advanced</MenuItem>
+          </Select>
 
+          {displayMode === "advanced" && 
+          <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="endpoint-label" 
+          id="endpoint_dropdown" name="endpoint" value={endpoint} onChange={handleEndpointChange}>
+            <MenuItem value="devnet">devnet</MenuItem>
+            <MenuItem value="testnet">testnet</MenuItem>
+            <MenuItem value="mainnet-beta">mainnet-beta</MenuItem>
+          </Select>
+          }
+          <WalletMultiButton/>
+          <WalletDisconnectButton/>
+        </Toolbar>
+      </AppBar>
+      <div className={styles.container}>
+        <main className={styles.main}>
+        <Grid
+          container
+          spacing={0}
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+          style={{ minHeight: '100vh' }}
+        >
+          {/* {(displayMode === "advanced") && (url !== "") && 
+            <figure>
+              <QRCode value={url} id="walletQr"/>
+              <figcaption style={{textAlign: "center"}}>Tiplink QR</figcaption>
+            </figure>
+          } */}
+          {displayMode === "advanced" && 
+            <Typography>Public key: {linkKeypair.publicKey.toString()}</Typography>
+          }
+          <Balance />
+          {displayMode === "advanced" && 
+          <Link href={explorerLink} target="_blank">Explorer</Link>
+          }
+          <br></br>
+          <br></br>
+          {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
+          {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
+
+          <WithdrawForm/>
+          <br></br>
+          <AddMoneyPhantom/>
+          <br></br>
+          <WithdrawToPhantom/>
+          <CreateLinkForm/>
+          <br></br>
+          {endpoint === "devnet" && 
+            <AirdropForm />
+          }
+          <UpdateBalanceButton/>
   
-  const explorerLink = "https://explorer.solana.com/address/" + linkKeypair.publicKey.toString() + "?cluster=" + endpoint;
+        </Grid> 
 
+
+        </main>
+        <Footer/>
+      </div>
+    </ThemeProvider>
+
+  );
+
+}
+
+const UIWrapper = (props: {secretKey: Uint8Array}) => {
+  const { endpoint } = useEndpoint();
+  const endpointUrl = clusterApiUrl(endpoint);
+  console.log(endpointUrl);
+  const linkKeypair = Keypair.fromSecretKey(props.secretKey);
+  const wallets = useMemo(
+    () => [new PhantomWalletAdapter()], [endpointUrl]
+  );
   return (
     <ConnectionProvider endpoint={endpointUrl}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <LinkContext.Provider value={{ linkKeypair }}>
-            <ThemeProvider theme={theme}>
-              <AppBar position="sticky" className="appbar">
-                <Toolbar>
-                  <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    Tiplink
-                  </Typography>
-
-                  <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="mode-label" 
-                  id="mode_dropdown" name="mode" value={displayMode} onChange={handleModeChange}>
-                    <MenuItem value={"basic"}>basic</MenuItem>
-                    <MenuItem value={"advanced"}>advanced</MenuItem>
-                  </Select>
-
-                  {displayMode === "advanced" && 
-                  <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="endpoint-label" 
-                  id="endpoint_dropdown" name="endpoint" value={endpoint} onChange={handleEndpointChange}>
-                    <MenuItem value={devCluster}>{devCluster}</MenuItem>
-                    <MenuItem value={testCluster}>{testCluster}</MenuItem>
-                    <MenuItem value={mainCluster}>{mainCluster}</MenuItem>
-                  </Select>
-                  }
-                  <WalletMultiButton/>
-                  <WalletDisconnectButton/>
-                </Toolbar>
-              </AppBar>
-              <div className={styles.container}>
-                <main className={styles.main}>
-                <Grid
-                  container
-                  spacing={0}
-                  direction="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  style={{ minHeight: '100vh' }}
-                >
-                  {(displayMode === "advanced") && (url !== "") && 
-                    <figure>
-                      <QRCode value={url} id="walletQr"/>
-                      <figcaption style={{textAlign: "center"}}>Tiplink QR</figcaption>
-                    </figure>
-                  }
-                  {displayMode === "advanced" && 
-                    <Typography>Public key: {linkKeypair.publicKey.toString()}</Typography>
-                  }
-                  <Balance />
-                  {displayMode === "advanced" && 
-                  <Link href={explorerLink} target="_blank">Explorer</Link>
-                  }
-                  <br></br>
-                  <br></br>
-                  {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
-                  {/* <Typography>Endpoint URL: {endpointUrl}</Typography> */}
-
-                  <WithdrawForm/>
-                  <br></br>
-                  <AddMoneyPhantom/>
-                  <br></br>
-                  <WithdrawToPhantom/>
-                  <CreateLinkForm/>
-                  <br></br>
-                  {endpoint === devCluster && 
-                    <AirdropForm />
-                  }
-          
-                </Grid> 
-
-
-                </main>
-                <Footer/>
-              </div>
-            </ThemeProvider>
-          </LinkContext.Provider>
+          <LinkProvider linkKeypair={linkKeypair} endpointUrl={endpointUrl}>
+            <UI/>
+          </LinkProvider>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
-  )
+  );
 }
+
+
+const Wallet = (props: {secretKey: Uint8Array}) => {
+  const [url, setUrl] = useState("");
+  
+  useEffect(() => {
+    setUrl(window.location.href);
+  });
+
+  return (
+    <EndpointProvider>
+      <UIWrapper secretKey={props.secretKey}/>
+    </EndpointProvider>
+  );
+}
+
 
 export default Wallet;
