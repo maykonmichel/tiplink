@@ -139,7 +139,15 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
         const feeCalc = feeCalculator.lamportsPerSignature;
         const feeLamports = feeCalc * FEE_MULT;
         const fee = feeLamports / LAMPORTS_PER_SOL;
-        return (feeCalculator.lamportsPerSignature * FEE_MULT) / LAMPORTS_PER_SOL;
+        // console.log(
+        //     "feeCalculator lamportsPerSignature:  ", 
+        //     feeCalculator.lamportsPerSignature,
+        //      ", FEE_MULT: ", FEE_MULT,
+        //      ", fee_lamports: ", feeLamports,
+        //      ", LAMPORTS_PER_SOL: ", LAMPORTS_PER_SOL,
+        //      ", fee_sol: ", fee
+        // );
+        return fee;
     }
 
     const getBalanceSOL = () => {
