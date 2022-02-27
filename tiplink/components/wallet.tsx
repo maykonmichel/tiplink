@@ -214,6 +214,7 @@ const CreateLinkForm = () => {
     const amt = parseFloat(amount) + fees;
     if(amt > balance) {
       alert("Cannot withdraw " + amt + ", please add more funds to tiplink");
+      return;
     }
 
     const { slug, anchor, keypair } = await createLink();
