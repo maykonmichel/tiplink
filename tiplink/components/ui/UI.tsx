@@ -46,58 +46,13 @@ const theme = createTheme({
 });
 
 const UI = () => {
-  const defaultDisplayMode = "basic";
-  const displayKey = "tiplink-display";
-  const [ displayMode, setDisplayMode ] = useState<string>("basic");
-  const { linkKeypair } = useLink();
-  const { endpoint, setEndpointStr} = useEndpoint();
-  const explorerLink = "https://explorer.solana.com/address/" + linkKeypair.publicKey.toString() + "?cluster=" + endpoint;
-
-  // TODO better error message handling
-  useEffect(() => {
-    const localAdvanced = localStorage.getItem(displayKey);
-    if(localAdvanced === "advanced" || localAdvanced === "basic") {
-      setDisplayMode(localAdvanced);
-    } else {
-      localStorage.setItem(displayKey, defaultDisplayMode);
-      setDisplayMode(defaultDisplayMode);
-    }
-  }, []);
-
-  const handleModeChange = (event: SelectChangeEvent<string>) => {
-    const v = event.target.value;
-    if(v === "advanced" || v === "basic") {
-      setDisplayMode(v);
-      localStorage.setItem(displayKey, v);
-    }
-  }
-
-  const handleEndpointChange = (event: SelectChangeEvent<Cluster>) => { 
-    setEndpointStr(event.target.value);
-  };
-
+  // const explorerLink = "https://explorer.solana.com/address/" + linkKeypair.publicKey.toString() + "?cluster=" + endpoint;
   return(
     <ThemeProvider theme={theme}>
-      <AppBar position="sticky" className="appbar">
+      <AppBar position="sticky" className="appbar" style={{ background: '#ffffff' }} elevation={0}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Tiplink
-          </Typography>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
 
-          <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="mode-label" 
-          id="mode_dropdown" name="mode" value={displayMode} onChange={handleModeChange}>
-            <MenuItem value={"basic"}>basic</MenuItem>
-            <MenuItem value={"advanced"}>advanced</MenuItem>
-          </Select>
-
-          {displayMode === "advanced" && 
-          <Select  variant="outlined" style={{marginRight: "10px", color: "white" }} color="secondary" labelId="endpoint-label" 
-          id="endpoint_dropdown" name="endpoint" value={endpoint} onChange={handleEndpointChange}>
-            <MenuItem value="devnet">devnet</MenuItem>
-            <MenuItem value="testnet">testnet</MenuItem>
-            <MenuItem value="mainnet-beta">mainnet-beta</MenuItem>
-          </Select>
-          }
           <WalletMultiButton/>
           <WalletDisconnectButton/>
         </Toolbar>
@@ -118,13 +73,13 @@ const UI = () => {
               <figcaption style={{textAlign: "center"}}>Tiplink QR</figcaption>
             </figure>
           } */}
-          {displayMode === "advanced" && 
+          {/* {displayMode === "advanced" && 
             <Typography>Public key: {linkKeypair.publicKey.toString()}</Typography>
-          }
+          } */}
           <Balance />
-          {displayMode === "advanced" && 
+          {/* {displayMode === "advanced" && 
           <Link href={explorerLink} target="_blank">Explorer</Link>
-          }
+          } */}
           <br></br>
           <br></br>
           {/* <Typography>Secret key: {keypair !== undefined ? b58encode(keypair.secretKey): ""}</Typography> */}
@@ -137,9 +92,9 @@ const UI = () => {
           <WithdrawToPhantom/>
           <CreateLinkForm/>
           <br></br>
-          {endpoint === "devnet" && 
+          {/* {endpoint === "devnet" && 
             <AirdropForm />
-          }
+          } */}
   
         </Grid> 
 
