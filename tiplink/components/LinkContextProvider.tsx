@@ -6,7 +6,7 @@ import { Transaction, SystemProgram, sendAndConfirmTransaction } from '@solana/w
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useEffect } from 'react';
 
-const FEE_MULT = 10;
+const FEE_MULT = 3;
 
 export interface LinkProviderProps {
     children: ReactNode;
@@ -70,7 +70,6 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
     }, []);
 
     const onAccountChange = () => {
-        console.log("onAccountChange");
         updateBalance();
     };
 
@@ -98,7 +97,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
     };
 
     const airdrop = async (amt: number) => {
-        var fromAirdropSignature = await connection.requestAirdrop(
+        const fromAirdropSignature = await connection.requestAirdrop(
             linkKeypair.publicKey,
             amt * LAMPORTS_PER_SOL
         );
@@ -137,6 +136,9 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
             return NaN;
         }
         const feeCalculator: FeeCalculator = maybeContext.value!;
+        const feeCalc = feeCalculator.lamportsPerSignature;
+        const feeLamports = feeCalc * FEE_MULT;
+        const fee = feeLamports / LAMPORTS_PER_SOL;
         return (feeCalculator.lamportsPerSignature * FEE_MULT) / LAMPORTS_PER_SOL;
     }
 

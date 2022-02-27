@@ -18,7 +18,6 @@ import UI from "./ui/UI";
 const UIWrapper = (props: {secretKey: Uint8Array}) => {
   const { endpoint } = useEndpoint();
   const endpointUrl = clusterApiUrl(endpoint);
-  console.log(endpointUrl);
   const linkKeypair = Keypair.fromSecretKey(props.secretKey);
   const wallets = useMemo(
     () => [new PhantomWalletAdapter()], [endpointUrl]
