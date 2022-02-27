@@ -1,5 +1,6 @@
 import  { Keypair, clusterApiUrl } from '@solana/web3.js';
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { useEffect, useState, useMemo } from "react";
 const QRCode = require("qrcode.react");
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -20,7 +21,7 @@ const UIWrapper = (props: {secretKey: Uint8Array}) => {
   const endpointUrl = clusterApiUrl(endpoint);
   const linkKeypair = Keypair.fromSecretKey(props.secretKey);
   const wallets = useMemo(
-    () => [new PhantomWalletAdapter()], [endpointUrl]
+    () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], [endpointUrl]
   );
   return (
     <ConnectionProvider endpoint={endpointUrl}>
