@@ -18,7 +18,7 @@ import WithdrawForm  from "./WithdrawForm";
 import AddMoneyPhantom from "./AddMoneyPhantom";
 import WithdrawToPhantom from "./WithdrawToPhantom";
 import CreateLinkForm from "./CreateLinkForm";
-import CopyLink from "./CopyLink";
+import HeaderLinkExport from "./HeaderLinkExport";
 import LinkCard from "./LinkCard";
 
 const theme = createTheme({
@@ -65,7 +65,8 @@ const UI = () => {
           <Typography component="div" variant="h5">This is ${balanceUSD.toFixed(2)} in crypto.</Typography>
           <Typography component="div">The link to this page contains this value, make sure you don't lose it!</Typography>
 
-          <CopyLink/>
+          <HeaderLinkExport/>
+
           {/* <LinkCard/> */}
           <WithdrawForm/>
           <br></br>
