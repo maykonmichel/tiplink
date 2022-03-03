@@ -5,6 +5,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
 const QRCode = require("qrcode.react");
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
@@ -19,6 +20,7 @@ import AddMoneyPhantom from "./AddMoneyPhantom";
 import WithdrawToPhantom from "./WithdrawToPhantom";
 import CreateLinkForm from "./CreateLinkForm";
 import HeaderLinkExport from "./HeaderLinkExport";
+import OptionRow from "./OptionRow";
 import LinkCard from "./LinkCard";
 
 const theme = createTheme({
@@ -75,11 +77,20 @@ const UI = () => {
           <WithdrawToPhantom/>
           <CreateLinkForm/>
           <br></br>
+
+          <div style={{maxWidth: '36rem'}}>
+            <Divider/>
+            <OptionRow
+              title=''
+              subtitle=''/>
+            <Divider/>
+          </div>
+
           {/* {endpoint === "devnet" && 
             <AirdropForm />
           } */}
   
-        </Grid> 
+        </Grid>
 
 
         </main>
