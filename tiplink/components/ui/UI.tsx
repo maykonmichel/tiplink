@@ -82,8 +82,9 @@ const UI = () => {
           <div style={{maxWidth: '36rem'}}>
             <Divider/>
             <OptionRow
-              title=''
-              subtitle=''/>
+              title='Use QR code'
+              subtitle='Show a QR code for this wallet. You can scan it with any Solana-compatible wallet.'
+            />
             <Divider/>
           </div>
 

@@ -8,7 +8,12 @@ import Typography from '@mui/material/Typography';
 // Icons
 import BookmarkOutlined from '@mui/icons-material/BookmarkOutlined';
 
-const OptionRow = (icon: SvgIcon, title: String, subtitle: String) => {
+type Props = {
+  title: string,
+  subtitle: string,
+}
+
+const OptionRow: React.FC<Props> = ({title, subtitle}) => {
   return(
     <ListItem component='div' disablePadding>
       <ListItemButton sx={{padding: '1rem 0rem 1rem 0rem'}}>
