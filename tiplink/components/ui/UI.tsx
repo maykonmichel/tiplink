@@ -42,7 +42,7 @@ const theme = createTheme({
 
 const UI = () => {
   // const explorerLink = "https://explorer.solana.com/address/" + linkKeypair.publicKey.toString() + "?cluster=" + endpoint;
-  const { getBalanceUSD } = useLink();
+  const { linkKeypair, getBalanceUSD } = useLink();
   const balanceUSD = getBalanceUSD();
   return(
     <ThemeProvider theme={theme}>
@@ -70,6 +70,7 @@ const UI = () => {
           <HeaderLinkExport/>
 
           {/* <LinkCard/> */}
+          <Typography component="div">Public Key: {linkKeypair.publicKey.toBase58()}</Typography>
           <WithdrawForm/>
           <br></br>
           <AddMoneyPhantom/>
