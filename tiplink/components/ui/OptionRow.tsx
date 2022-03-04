@@ -1,29 +1,25 @@
-import ButtonBase from '@mui/material/ButtonBase';
 import ListItem from '@mui/material/ListItem';
-import SvgIcon from '@mui/material/SvgIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-// Icons
-import BookmarkOutlined from '@mui/icons-material/BookmarkOutlined';
-
 type Props = {
+  icon: React.ReactNode,
   title: string,
   subtitle: string,
 }
 
-const OptionRow: React.FC<Props> = ({title, subtitle}) => {
+const OptionRow: React.FC<Props> = ({icon, title, subtitle}) => {
   return(
     <ListItem component='div' disablePadding>
-      <ListItemButton sx={{padding: '1rem 0rem 1rem 0rem'}}>
+      <ListItemButton sx={{padding: '1rem'}}>
         <Box sx={{display: 'flex'}}>
-          <Box sx={{padding: '1rem'}}>
-            <BookmarkOutlined/>
+          <Box sx={{padding: '0.25rem 1rem 0rem 0rem'}}>
+            {icon}
           </Box>
-          <Box sx={{display: 'flex', flexDirection: 'column', padding: '0rem 1rem 0rem 1rem'}}>
-            <Typography>{title}</Typography>
-            <Typography>{subtitle}</Typography>
+          <Box sx={{display: 'flex', flexDirection: 'column'}}>
+            <Typography variant='body1' component='span'>{title}</Typography>
+            <Typography variant='body2' component='span'>{subtitle}</Typography>
           </Box>
         </Box>
       </ListItemButton>
