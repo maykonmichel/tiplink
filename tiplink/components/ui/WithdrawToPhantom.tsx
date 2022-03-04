@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import { useLink } from '../useLink';
 
 const WithdrawToPhantom = () => {
-  const { sendSOL, getFees, getBalanceSOL, extConnected, extPublicKey } = useLink();
+  const { sendSOL, getFees, balanceSOL, extConnected, extPublicKey } = useLink();
   const sendMoney = async (event: MouseEvent<HTMLButtonElement> )=> {
     event.preventDefault()
     if(!extConnected) { 
@@ -16,8 +16,7 @@ const WithdrawToPhantom = () => {
         return;
     }
     const fees = await getFees();
-    const balance = await getBalanceSOL();
-    await sendSOL(extPublicKey, balance - fees);
+    await sendSOL(extPublicKey, balanceSOL - fees);
   }
 
 
