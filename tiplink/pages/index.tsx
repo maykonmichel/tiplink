@@ -53,7 +53,7 @@ export default function Home() {
           <Button onClick={createWallet} variant="outlined">Create Wallet Serverless</Button>
         </div>
       </main>
-      <Footer/>
+      {/* <Footer/> */}
 
     </div>
   )

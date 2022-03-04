@@ -53,8 +53,7 @@ const theme = createTheme({
 
 const UI = () => {
   // const explorerLink = 'https://explorer.solana.com/address/' + linkKeypair.publicKey.toString() + '?cluster=' + endpoint;
-  const { linkKeypair, getBalanceUSD } = useLink();
-  const balanceUSD = getBalanceUSD();
+  const { linkKeypair, balanceUSD } = useLink();
   return(
     <ThemeProvider theme={theme}>
       <AppBar position='sticky' className='appbar' elevation={0}>

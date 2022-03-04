@@ -10,13 +10,14 @@ type LinkContent = {
     linkKeypair: Keypair;
     sendSOL(destination: PublicKey, amt: number): Promise<TransactionSignature>;
     getFees(): Promise<number>;
-    getBalanceSOL(): number;
-    getBalanceUSD(): number;
-    getExchangeRate(): number;
+    balanceSOL: number;
+    balanceUSD: number;
+    exchangeRate: number;
     airdrop(amt: number): Promise<RpcResponseAndContext<SignatureResult>>;
     deposit(amt: number): Promise<void>;
     extConnected: boolean;
     extPublicKey: PublicKey | null;
+    scheduleBalanceUpdate(t: number): void;
 };
 export const LinkContext = createContext<LinkContent>(undefined!);
 export const useLink = () => useContext(LinkContext);

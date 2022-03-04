@@ -1,10 +1,9 @@
-import React, { FC, ReactNode, useState } from 'react';
+import React, { FC, ReactNode, useState, useEffect } from 'react';
 import { LinkContext, BalanceCallback } from './useLink';
-import { Keypair, PublicKey, FeeCalculator} from '@solana/web3.js';
+import { Keypair, PublicKey, FeeCalculator, AccountInfo, Context, 
+    Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL, 
+} from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction, SystemProgram, sendAndConfirmTransaction } from '@solana/web3.js';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { useEffect } from 'react';
 
 const FEE_MULT = 3;
 
@@ -31,7 +30,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
     // in Lamportsj
     const [ balance, setBalance ] = useState(NaN);
     // in USD / SOL
-    const [ price, setPrice ] = useState(NaN);
+    const [ exchangeRate, setExchangeRate ] = useState(NaN);
     const [ subscriptionId, setSubscriptionId ] = useState(0);
 
     const getBalanceSOLAsync = async () => {
@@ -58,19 +57,22 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
     }, [])
 
     const updateBalance = () => {
+        // console.log("updateBalance");
         fetchBalance((b) => {setBalance(b);});
     }
 
     useEffect(() => {
-        getPrice().then((apiPrice) => setPrice(apiPrice));
+        getPrice().then((apiPrice) => setExchangeRate(apiPrice));
     }, []);
 
     useEffect(() => {
         updateBalance();
     }, []);
 
-    const onAccountChange = () => {
-        updateBalance();
+    const onAccountChange = (accountInfo: AccountInfo<Buffer>, context: Context) => {
+        const l = accountInfo.lamports;
+        // console.log("onAccountChange lamports=", l);
+        setBalance(l);
     };
 
     useEffect(() => {
@@ -92,7 +94,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
             connection,
             transaction,
             [linkKeypair],
-            {commitment: 'confirmed'},
+            {commitment: 'processed'},
         );
     };
 
@@ -105,6 +107,10 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
         return await connection.confirmTransaction(fromAirdropSignature);
     }
 
+    const scheduleBalanceUpdate = (t: number) => {
+        setTimeout(() => {updateBalance();}, t);
+    }
+
     const deposit = async (amt: number) => {
         // console.log("sendMoney ", amount, " SOL from ", provider.publicKey.toBase58(), " to ", wallet.publicKey.toBase58());
         if((extPublicKey === undefined) || (extPublicKey === null)) {
@@ -113,31 +119,33 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
             return;
         }
 
+        const amtLamports = amt * LAMPORTS_PER_SOL
+
         const transaction = new Transaction().add(
             SystemProgram.transfer({
                 fromPubkey: extPublicKey,
                 toPubkey: linkKeypair.publicKey,
-                lamports: amt * LAMPORTS_PER_SOL,
+                lamports: amtLamports
             }),
         );
-        transaction.feePayer = extPublicKey;
-        transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-        console.log("transaction", transaction);
-
-        const signature = (await extSendTransaction(transaction, connection));
-        console.log('SIGNATURE', signature);
-        await connection.confirmTransaction(signature);
+        const signature = await extSendTransaction(transaction, connection);
+        // console.log("fromPubkey: ", extPublicKey.toBase58(), ", toPubKey: ", linkKeypair.publicKey, ", lamports: ", amtLamports, ", signature: ", signature);
+        await connection.confirmTransaction(signature, 'processed');
+        scheduleBalanceUpdate(1000);
     }
 
     const getFees = async  () => {
-        const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
-        const maybeContext = (await connection.getFeeCalculatorForBlockhash(recentBlockhash));
-        if(maybeContext === null) {
-            return NaN;
-        }
-        const feeCalculator: FeeCalculator = maybeContext.value!;
-        const feeCalc = feeCalculator.lamportsPerSignature;
-        const feeLamports = feeCalc * FEE_MULT;
+        const recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+        // TODO this is deprecated, use getFeeForMessage instead.
+        // const maybeContext = (await connection.getFeeCalculatorForBlockhash(recentBlockhash));
+        // if(maybeContext === null) {
+            // return NaN;
+        // }
+        // const feeCalculator: FeeCalculator = maybeContext.value!;
+        // const feeCalc = feeCalculator.lamportsPerSignature;
+        // const feeLamports = feeCalc * FEE_MULT;
+        const feeLamports = 5000 * FEE_MULT;
         const fee = feeLamports / LAMPORTS_PER_SOL;
         // console.log(
         //     "feeCalculator lamportsPerSignature:  ", 
@@ -150,19 +158,9 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
         return fee;
     }
 
-    const getBalanceSOL = () => {
-        return balance / LAMPORTS_PER_SOL;
-    }
 
-    const getBalanceUSD = () => {
-        return getBalanceSOL() * price;
-    }
-    
-    const getExchangeRate = () => {
-        return price;
-    }
-
-
+    const balanceSOL = balance / LAMPORTS_PER_SOL;
+    const balanceUSD = balanceSOL * exchangeRate;
 
     return (
         <LinkContext.Provider
@@ -170,13 +168,14 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
                 linkKeypair,
                 sendSOL,
                 getFees,
-                getBalanceSOL,
-                getBalanceUSD,
-                getExchangeRate,
+                balanceSOL,
+                balanceUSD,
+                exchangeRate,
                 airdrop,
                 deposit,
                 extConnected,
                 extPublicKey,
+                scheduleBalanceUpdate
             }}
         >
             {children}

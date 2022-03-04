@@ -6,9 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import { useLink } from '../useLink';
 
 const LinkCard = () => {
-    const { getBalanceSOL, getBalanceUSD } = useLink();
-    const balanceSOL = getBalanceSOL();
-    const balanceUSD = getBalanceUSD();
+    const { balanceSOL, balanceUSD } = useLink();
     const url = window.location.href;
     return(
         <Card className="linkCard">
