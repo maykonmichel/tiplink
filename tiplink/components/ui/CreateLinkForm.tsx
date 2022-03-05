@@ -6,7 +6,7 @@ import { createLink } from "../../lib/link";
 
 const CreateLinkForm = () => {
   // TODO check-list to use pre-existing balance
-  const { linkKeypair, sendSOL, getFees, getBalanceSOL } = useLink();
+  const { sendSOL, getFees, balanceSOL } = useLink();
   const [ amount, setAmount ] = useState("");
   const [ newLink, setNewLink ] = useState("");
 
@@ -14,9 +14,8 @@ const CreateLinkForm = () => {
     event.preventDefault();
 
     const fees = await getFees();
-    const balance = await getBalanceSOL();
     const amt = parseFloat(amount) + fees;
-    if(amt > balance) {
+    if(amt > balanceSOL) {
       alert("Cannot withdraw " + amt + ", please add more funds to tiplink");
       return;
     }
