@@ -6,9 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -16,7 +14,6 @@ import {
   WalletDisconnectButton,
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
-const QRCode = require('qrcode.react');
 
 import WithdrawForm  from './WithdrawForm';
 import AddMoneyPhantom from './AddMoneyPhantom';
@@ -29,12 +26,8 @@ import ActionsPanelRow from './ActionsPanelRow';
 import ActionsPanelTitleBar from './ActionsPanelTitleBar';
 import DualCtaRow from './DualCtaRow';
 import CurrencyInput from './CurrencyInput';
+import ActionMenu from "./actions/ActionMenu";
 
-import {
-  Refresh as IconRecreate,
-  MergeRounded as IconCombine,
-  AccountBalanceWalletRounded as IconWallet
-} from '@mui/icons-material';
 
 const theme = createTheme({
   palette: {
@@ -88,39 +81,7 @@ const UI = () => {
                 marginBottom='1.5rem'>
                 <LinkCard/>
               </Box>
-
-              <Box width='100%'>
-                <ActionsPanelTitleBar
-                  title='Options'
-                  backOnClick={() => {}}/>
-                <DualCtaRow
-                  cta1Label='Send'
-                  cta2Label='Deposit'
-                  cta1OnClick={() => {
-
-                  }}
-                  cta2OnClick={() => {
-
-                  }}/>
-                <Divider/>
-                <List>
-                  <ActionsPanelRow
-                    icon={<IconRecreate/>}
-                    title='Recreate this TipLink'
-                    subtitle='Move the entire value to a new TipLink so only you have the link.'/>
-                  <Divider/>
-                  <ActionsPanelRow
-                    icon={<IconCombine/>}
-                    title='Combine with another TipLink'
-                    subtitle='You can combine some or all of another TipLink’s value into this TipLink.'/>
-                  <Divider/>
-                  <ActionsPanelRow
-                    icon={<IconWallet/>}
-                    title='Deposit from your wallet'
-                    subtitle='Deposit Solana from your connected wallet.'/>
-                  <Divider/>
-                </List>
-              </Box>
+              <ActionMenu/>
 
               {/* {endpoint === 'devnet' && 
                 <AirdropForm />
