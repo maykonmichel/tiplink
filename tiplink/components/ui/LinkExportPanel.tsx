@@ -8,7 +8,7 @@ import {
   BookmarkBorder as IconBookmark,
   QrCodeRounded as IconQrCode,
 } from '@mui/icons-material';
-import QRModal from "./QRModal";
+// import QRModal from "./QRModal";
 
 const LinkExportPanel = () => {
   const [ url, setUrl ] = useState('');
@@ -47,7 +47,7 @@ const LinkExportPanel = () => {
         {renderButton('Bookmark', <IconBookmark/>, bookmark)}
         {renderButton('QR Code', <IconQrCode/>, () => { setQrOpen(true);})}
       </Box>
-      <QRModal open={qrOpen} handleClose={handleCloseQRModal} value={url}/>
+      {/* <QRModal open={qrOpen} handleClose={handleCloseQRModal} value={url}/> */}
     </Box>
   );
 };

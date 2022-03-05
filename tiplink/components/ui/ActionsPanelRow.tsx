@@ -9,7 +9,7 @@ type Props = {
   subtitle: string,
 }
 
-const OptionRow: React.FC<Props> = ({icon, title, subtitle}) => {
+const ActionsPanelRow: React.FC<Props> = ({icon, title, subtitle}) => {
   return(
     <ListItem component='div' disablePadding>
       <ListItemButton sx={{padding: '1rem'}}>
@@ -27,4 +27,4 @@ const OptionRow: React.FC<Props> = ({icon, title, subtitle}) => {
   );
 };
 
-export default OptionRow;
+export default ActionsPanelRow;

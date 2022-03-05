@@ -7,6 +7,7 @@ import Footer  from '../footer';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -25,7 +26,8 @@ import CreateLinkForm from './CreateLinkForm';
 
 import LinkExportPanel from './LinkExportPanel';
 import LinkCard from './LinkCard';
-import OptionRow from './OptionRow';
+import ActionsPanelRow from './ActionsPanelRow';
+import ActionsPanelTitleBar from './ActionsPanelTitleBar';
 import DualCtaRow from './DualCtaRow';
 
 import {
@@ -88,6 +90,9 @@ const UI = () => {
               </Box>
 
               <Box width='100%'>
+                <ActionsPanelTitleBar
+                  title='Options'
+                  backOnClick={() => {}}/>
                 <DualCtaRow
                   cta1Label='Send'
                   cta2Label='Deposit'
@@ -98,21 +103,23 @@ const UI = () => {
 
                   }}/>
                 <Divider/>
-                <OptionRow
-                  icon={<IconRecreate/>}
-                  title='Recreate this TipLink'
-                  subtitle='Move the entire value to a new TipLink so only you have the link.'/>
-                <Divider/>
-                <OptionRow
-                  icon={<IconCombine/>}
-                  title='Combine with another TipLink'
-                  subtitle='You can combine some or all of another TipLink\’s value into this TipLink.'/>
-                <Divider/>
-                <OptionRow
-                  icon={<IconWallet/>}
-                  title='Deposit from your wallet'
-                  subtitle='Deposit Solana from your connected wallet.'/>
-                <Divider/>
+                <List>
+                  <ActionsPanelRow
+                    icon={<IconRecreate/>}
+                    title='Recreate this TipLink'
+                    subtitle='Move the entire value to a new TipLink so only you have the link.'/>
+                  <Divider/>
+                  <ActionsPanelRow
+                    icon={<IconCombine/>}
+                    title='Combine with another TipLink'
+                    subtitle='You can combine some or all of another TipLink\’s value into this TipLink.'/>
+                  <Divider/>
+                  <ActionsPanelRow
+                    icon={<IconWallet/>}
+                    title='Deposit from your wallet'
+                    subtitle='Deposit Solana from your connected wallet.'/>
+                  <Divider/>
+                </List>
               </Box>
 
               {/* {endpoint === 'devnet' && 
