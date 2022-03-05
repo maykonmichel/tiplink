@@ -136,7 +136,7 @@ const UI = () => {
               <br></br>
           </Grid>
         </main>
-        <Footer/>
+        {/* <Footer/> */}
       </div>
     </ThemeProvider>
   );
