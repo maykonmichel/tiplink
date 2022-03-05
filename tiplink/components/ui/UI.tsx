@@ -3,7 +3,6 @@ import { useLink } from '../useLink';
 import styles from '../../styles/Home.module.css'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Footer  from '../footer';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -29,6 +28,7 @@ import LinkCard from './LinkCard';
 import ActionsPanelRow from './ActionsPanelRow';
 import ActionsPanelTitleBar from './ActionsPanelTitleBar';
 import DualCtaRow from './DualCtaRow';
+import CurrencyInput from './CurrencyInput';
 
 import {
   Refresh as IconRecreate,
@@ -112,7 +112,7 @@ const UI = () => {
                   <ActionsPanelRow
                     icon={<IconCombine/>}
                     title='Combine with another TipLink'
-                    subtitle='You can combine some or all of another TipLink\’s value into this TipLink.'/>
+                    subtitle='You can combine some or all of another TipLink’s value into this TipLink.'/>
                   <Divider/>
                   <ActionsPanelRow
                     icon={<IconWallet/>}
@@ -133,6 +133,9 @@ const UI = () => {
               <br></br>
               <WithdrawToPhantom/>
               <CreateLinkForm/>
+              <CurrencyInput
+                primaryCurrency='USD'
+                secondaryCurrency='SOL'/>
               <br></br>
           </Grid>
         </main>
