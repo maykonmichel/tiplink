@@ -95,8 +95,14 @@ const UI = () => {
               <WithdrawToPhantom/>
               <CreateLinkForm/>
               <CurrencyInput
-                primaryCurrency='USD'
-                secondaryCurrency='SOL'/>
+                fiatCurrency='USD'
+                cryptoCurrency='SOL'
+                cryptoPrice={100}
+                quickInputOptions={[
+                  {label: '$1', cryptoCurrencyValue: 0.1},
+                  {label: '$2', cryptoCurrencyValue: 0.2},
+                  {label: '$3', cryptoCurrencyValue: 0.3},
+                ]}/>
               <br></br>
           </Grid>
         </main>

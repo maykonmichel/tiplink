@@ -7,21 +7,44 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 
 type Props = {
-  primaryCurrency: string,
-  secondaryCurrency: string
+  fiatCurrency: string,
+  cryptoCurrency: string,
+  cryptoPrice: number,
+  quickInputOptions?: QuickInputOption[],
 }
 
-const CurrencyInput: React.FC<Props> = ({primaryCurrency, secondaryCurrency}) => {
-  const [ currency, setCurrency ] = useState(primaryCurrency);
+type QuickInputOption = {
+  label: string,
+  cryptoCurrencyValue: number,
+}
+
+const CurrencyInput: React.FC<Props> = ({
+    fiatCurrency,
+    cryptoCurrency,
+    cryptoPrice,
+    quickInputOptions}) => {
+  const [ currency, setCurrency ] = useState(fiatCurrency);
 
   const getInverseCurrency = (): string => {
-    return currency === primaryCurrency ? secondaryCurrency : primaryCurrency;
+    return currency === fiatCurrency ? cryptoCurrency : fiatCurrency;
   }
 
   const toggleCurrency = () => {
     setCurrency(getInverseCurrency());
     // TODO: Update the amount
   }
+
+  const quickInputOptionsRows = [];
+  if (quickInputOptions) {
+    for (let option of quickInputOptions) {
+      quickInputOptionsRows.push(renderButton(option.label, () => {}));
+    }
+  }
+  const quickInputOptionsComponent = quickInputOptionsRows.length > 0
+    ? <Box sx={{display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem'}}>
+        {quickInputOptionsRows}
+      </Box>
+    : null;
 
   return (
     <Box width='16rem'>
@@ -32,17 +55,14 @@ const CurrencyInput: React.FC<Props> = ({primaryCurrency, secondaryCurrency}) =>
           <InputAdornment position='start'>
             <Chip label={currency} onClick={toggleCurrency}/>
           </InputAdornment>}/>
-      <Box sx={{display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem'}}>
-        {renderButton('$1', () => {})}
-        {renderButton('$2', () => {})}
-        {renderButton('$5', () => {})}
-      </Box>
+      {quickInputOptionsComponent}
       <Typography 
         width='100%'
         marginTop='0.25rem'
         textAlign='center'
         variant='subtitle2' 
-        >0.123 {getInverseCurrency()}</Typography>
+        >0.123 {getInverseCurrency()}
+      </Typography>
     </Box>
   );
 };
