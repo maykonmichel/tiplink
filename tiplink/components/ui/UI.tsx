@@ -48,7 +48,7 @@ const UI = () => {
   const { linkKeypair, balanceUSD } = useLink();
   return(
     <ThemeProvider theme={theme}>
-      <AppBar position='sticky' className='appbar' elevation={0}>
+      <AppBar color="transparent" position="relative" className='appbar' elevation={0}>
         <Toolbar>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}></Typography>
           <WalletMultiButton/>
@@ -87,19 +87,8 @@ const UI = () => {
               <Typography marginTop='8rem' component='div' textAlign='center'>[CONTENT BELOW THIS IS TEMPORARY]<br/>Public Key: {linkKeypair.publicKey.toBase58()}</Typography>
               <WithdrawForm/>
               <br></br>
-              <AddMoneyPhantom/>
-              <br></br>
               <WithdrawToPhantom/>
               <CreateLinkForm/>
-              <CurrencyInput
-                fiatCurrency='USD'
-                cryptoCurrency='SOL'
-                cryptoPrice={100}
-                quickInputOptions={[
-                  {label: '$1', cryptoCurrencyValue: 0.1},
-                  {label: '$2', cryptoCurrencyValue: 0.2},
-                  {label: '$3', cryptoCurrencyValue: 0.3},
-                ]}/>
               <br></br>
           </Grid>
         </main>

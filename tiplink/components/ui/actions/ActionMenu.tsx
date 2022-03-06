@@ -1,5 +1,6 @@
 import DefaultActions from './DefaultActions';
 import DepositActions from "./DepositActions";
+import DepositWallet from "./DepositWallet";
 import { ActionStateProvider } from './ActionStateProvider';
 import { useActionState } from "./useActionState";
 
@@ -10,7 +11,8 @@ const ActionMenuDisplay = () => {
             {
                 {
                     'initial': <DefaultActions/>,
-                    'deposit': <DepositActions/>
+                    'deposit': <DepositActions/>,
+                    'depositWallet': <DepositWallet/>
                 }[actionState]
             }
         </div>

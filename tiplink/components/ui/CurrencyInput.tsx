@@ -5,28 +5,23 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
+import { useLink } from "../useLink";
 
 type Props = {
-  fiatCurrency: string,
-  cryptoCurrency: string,
-  cryptoPrice: number,
-  quickInputOptions?: QuickInputOption[],
+  primaryCurrency: string,
+  secondaryCurrency: string,
+  amountSOL: number, // amount in SOL
+  setAmountSOL(a: number): void,
+  quickAmounts?: boolean,
 }
 
-type QuickInputOption = {
-  label: string,
-  cryptoCurrencyValue: number,
-}
-
-const CurrencyInput: React.FC<Props> = ({
-    fiatCurrency,
-    cryptoCurrency,
-    cryptoPrice,
-    quickInputOptions}) => {
-  const [ currency, setCurrency ] = useState(fiatCurrency);
+const CurrencyInput: React.FC<Props> = ({primaryCurrency, secondaryCurrency, amountSOL, setAmountSOL, quickAmounts=false}) => {
+  const [ currency, setCurrency ] = useState(primaryCurrency);
+  const [ amount, setAmount ] = useState("");
+  const { exchangeRate } = useLink();
 
   const getInverseCurrency = (): string => {
-    return currency === fiatCurrency ? cryptoCurrency : fiatCurrency;
+    return currency === primaryCurrency ? secondaryCurrency : primaryCurrency;
   }
 
   const toggleCurrency = () => {
@@ -34,35 +29,48 @@ const CurrencyInput: React.FC<Props> = ({
     // TODO: Update the amount
   }
 
-  const quickInputOptionsRows = [];
-  if (quickInputOptions) {
-    for (let option of quickInputOptions) {
-      quickInputOptionsRows.push(renderButton(option.label, () => {}));
+  const getInverseCurrencyDisplay = () => {
+    const invC = getInverseCurrency();
+    const amtF = parseFloat(amount);
+    if(isNaN(amtF)) {
+      return "";
+    }
+    const invAmt = invC === 'SOL' ? amtF / exchangeRate : amtF * exchangeRate;
+    const decimals = invC == 'USD' ? 2 : 4;
+    return invAmt.toFixed(decimals) + " " + invC;
+  }
+
+  const onChange = (v: string) => {
+    setAmount(v);
+    const amtF = parseFloat(v);
+    if(!isNaN(amtF)) {
+      setAmountSOL(currency == 'SOL' ? amtF : amtF / exchangeRate);
     }
   }
-  const quickInputOptionsComponent = quickInputOptionsRows.length > 0
-    ? <Box sx={{display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem'}}>
-        {quickInputOptionsRows}
-      </Box>
-    : null;
 
   return (
     <Box width='16rem'>
       <OutlinedInput
         fullWidth
-        onChange={() => {}}
+        value={amount}
+        onChange={(e) => {onChange(e.target.value);}}
         startAdornment={
           <InputAdornment position='start'>
             <Chip label={currency} onClick={toggleCurrency}/>
           </InputAdornment>}/>
-      {quickInputOptionsComponent}
+      {quickAmounts && 
+        <Box sx={{display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem'}}>
+          {renderButton('$1', () => {})}
+          {renderButton('$2', () => {})}
+          {renderButton('$5', () => {})}
+        </Box>
+      }
       <Typography 
         width='100%'
         marginTop='0.25rem'
         textAlign='center'
         variant='subtitle2' 
-        >0.123 {getInverseCurrency()}
-      </Typography>
+        >{getInverseCurrencyDisplay()}</Typography>
     </Box>
   );
 };

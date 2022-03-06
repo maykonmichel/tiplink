@@ -13,6 +13,7 @@ import QRModal from "./QRModal";
 const LinkExportPanel = () => {
   const [ url, setUrl ] = useState('');
   const [ qrOpen, setQrOpen ] = useState(false);
+  const [ copied, setCopied ] = useState<boolean>(false)
 
   useEffect(() => {
       setUrl(window.location.href);
@@ -34,6 +35,11 @@ const LinkExportPanel = () => {
     }
   }
 
+  const copy = () => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+  }
+
   return(
     <Box width='100%'>
       <Box 
@@ -43,7 +49,7 @@ const LinkExportPanel = () => {
       </Box>
 
       <Box sx={{display: 'flex', gap: '1rem', width: '100%', marginTop: '1rem'}}>
-        {renderButton('Copy', <IconCopy/>, () => navigator.clipboard.writeText(url))}
+        {renderButton(copied ? 'Copied': 'Copy', <IconCopy/>, copy)}
         {renderButton('Bookmark', <IconBookmark/>, bookmark)}
         {renderButton('QR Code', <IconQrCode/>, () => { setQrOpen(true);})}
       </Box>
