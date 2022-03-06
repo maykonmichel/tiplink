@@ -84,7 +84,7 @@ const UI = () => {
                 <AirdropForm />
               } */}
 
-              <Typography marginTop='8rem' component='div' textAlign='center'>[CONTENT BELOW THIS IS TEMPORARY]<br/>Public Key: {linkKeypair.publicKey.toBase58()}</Typography>
+              <Typography marginTop='8rem' component='div' textAlign='center'>[CONTENT BELOW THIS IS TEMPORARY]</Typography>
               <WithdrawForm/>
               <br></br>
               <WithdrawToPhantom/>

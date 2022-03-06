@@ -17,7 +17,7 @@ const DepositActions = () => {
     const { goBack, setActionState } = useActionState();
     const { linkKeypair } = useLink();
     const [ open, setOpen ] = useState<boolean>(false);
-    const qrMessage = "Scan publicKey in any solana-compatible wallet."
+    const qrMessage = "Scan public key in any solana-compatible wallet."
 
     return(
         <Box width='100%'>
@@ -34,8 +34,8 @@ const DepositActions = () => {
                 <Divider/>
                 <ActionsPanelRow
                 icon={<IconQRCode/>}
-                title='Public Key'
-                subtitle='Click to reveal wallet public key.'
+                title='Deposit via Public Key'
+                subtitle="Click to reveal your wallet's public address, as QR code or copiable text."
                 onClick={() => {setOpen(true);}}
                 />
                 <Divider/>

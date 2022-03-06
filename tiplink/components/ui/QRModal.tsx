@@ -2,6 +2,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Button  from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import { ContentCopy as IconCopy } from '@mui/icons-material';
 const QRCode = require('qrcode.react');
 
 const style = {
@@ -31,10 +34,22 @@ const QRModal = (props: QRProps) => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         >
-            <Box sx={style} style={{textAlign: "center"}}>
+            <Box sx={style} style={{textAlign: "center", flexDirection: "column"}}>
                 <Typography style={{marginBottom: "0.5rem"}}>{props.message}</Typography>
                 <QRCode value={props.value} style={{marginBottom: "0.5rem"}}/>
-                <Typography noWrap style={{marginBottom: "0.5rem"}}>{props.value}</Typography>
+                <TextField
+                fullWidth
+                value={props.value}
+                style={{marginBottom: "0.5rem"}}
+                InputProps={{
+                    endAdornment: (
+                        <IconButton edge="end" color="primary" 
+                        onClick={() => {navigator.clipboard.writeText(props.value);}}>
+                            <IconCopy/>
+                        </IconButton>
+                    )
+                }}
+                />
                 <Button variant="outlined" onClick={props.handleClose}>Done</Button>
             </Box>
         </Modal>
