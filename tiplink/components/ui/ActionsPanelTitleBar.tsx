@@ -16,7 +16,7 @@ const ActionsPanelTitleBar: React.FC<Props> = ({title, backOnClick}) => {
     <Box width='100%'>
       <Box display='flex' position='relative'>
         <Typography width='100%' position='absolute' alignSelf='center' textAlign='center' variant='subtitle1'>{title}</Typography>
-        <IconButton aria-label='back'><IconBack/></IconButton>
+        <IconButton aria-label='back' onClick={backOnClick}><IconBack/></IconButton>
       </Box>
       <Divider sx={{marginTop: '0.25rem'}}/>
     </Box>

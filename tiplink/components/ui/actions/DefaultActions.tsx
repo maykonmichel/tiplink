@@ -9,9 +9,11 @@ import {
   MergeRounded as IconCombine,
   AccountBalanceWalletRounded as IconWallet
 } from '@mui/icons-material';
+import { useActionState } from "./useActionState";
 
 
 const DefaultActions = () => {
+    const { setActionState } = useActionState();
     return(
         <Box width='100%'>
             <ActionsPanelTitleBar
@@ -21,10 +23,9 @@ const DefaultActions = () => {
                 cta1Label='Send'
                 cta2Label='Deposit'
                 cta1OnClick={() => {
-
                 }}
                 cta2OnClick={() => {
-
+                    setActionState("deposit");
                 }}/>
             <Divider/>
             <List>
