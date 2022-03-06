@@ -13,12 +13,13 @@ const DepositWallet = () => {
     const [ amountSOL, setAmountSOL ] = useState<number>(NaN);
     const { extConnected, deposit } = useLink();
 
-    const depositFromWallet = () => {
+    const depositFromWallet = async () => {
         if(!extConnected) {
             alert("Please connect Solana wallet to deposit.");
             return;
         }
-        deposit(amountSOL);
+        console.log("depositFromWallet ", amountSOL);
+        await deposit(amountSOL);
     }
 
     return(
