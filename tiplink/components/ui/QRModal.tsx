@@ -17,6 +17,7 @@ const style = {
 };
 
 type QRProps = {
+    message: string;
     open: boolean;
     handleClose: () => void;
     value: string;
@@ -31,7 +32,7 @@ const QRModal = (props: QRProps) => {
         aria-describedby="modal-modal-description"
         >
             <Box sx={style} style={{textAlign: "center"}}>
-                <Typography style={{marginBottom: "0.5rem"}}>Scan this QR code to open directly to this TipLink.</Typography>
+                <Typography style={{marginBottom: "0.5rem"}}>{props.message}</Typography>
                 <QRCode value={props.value} style={{marginBottom: "0.5rem"}}/>
                 <Typography noWrap style={{marginBottom: "0.5rem"}}>{props.value}</Typography>
                 <Button variant="outlined" onClick={props.handleClose}>Done</Button>
