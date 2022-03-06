@@ -19,8 +19,13 @@ export const EndpointProvider  : FC<EndpointProviderProps> = ({ children }) => {
         return null;
     }
 
-    const localEndpoint = checkEndpoint(localStorage.getItem(endpointKey));
-    const [endpoint, setEndpoint] = useState<Cluster>(localEndpoint === null ? endpointDefault : localEndpoint);
+
+    // TODO revive this when we go for advanced mode
+    // const localEndpoint = checkEndpoint(localStorage.getItem(endpointKey));
+    // const [endpoint, setEndpoint] = useState<Cluster>(localEndpoint === null ? endpointDefault : localEndpoint);
+
+    const [endpoint, setEndpoint] = useState<Cluster>(endpointDefault);
+    localStorage.setItem(endpointKey, endpointDefault);
     
 
     const setEndpointStr = (endpoint: string | null) => {
@@ -33,13 +38,18 @@ export const EndpointProvider  : FC<EndpointProviderProps> = ({ children }) => {
         return true;
     }
 
+    // TODO revive this when we go for advanced mode
+    // useEffect(() => {
+    //     const localEndpoint = localStorage.getItem(endpointKey);
+    //     const success = setEndpointStr(localEndpoint);
+    //     if(!success) {
+    //         localStorage.setItem(endpointKey, endpointDefault);
+    //         setEndpoint(endpointDefault);
+    //     }
+    // }, [endpoint]);
+
     useEffect(() => {
-        const localEndpoint = localStorage.getItem(endpointKey);
-        const success = setEndpointStr(localEndpoint);
-        if(!success) {
-            localStorage.setItem(endpointKey, endpointDefault);
-            setEndpoint(endpointDefault);
-        }
+        localStorage.setItem(endpointKey, endpointDefault);
     }, [endpoint]);
 
 
