@@ -1,17 +1,28 @@
 import DefaultActions from './DefaultActions';
-import { useState } from 'react';
+import DepositActions from "./DepositActions";
+import { ActionStateProvider } from './ActionStateProvider';
+import { useActionState } from "./useActionState";
 
-
-const ActionMenu = () => {
-    const [state, setState] = useState<string>("initial");
+const ActionMenuDisplay = () => {
+    const { actionState } = useActionState();
     return(
         <div>
             {
                 {
-                    'initial': <DefaultActions/>
-                }[state]
+                    'initial': <DefaultActions/>,
+                    'deposit': <DepositActions/>
+                }[actionState]
             }
         </div>
+    );
+}
+
+
+const ActionMenu = () => {
+    return(
+        <ActionStateProvider>
+            <ActionMenuDisplay/>
+        </ActionStateProvider>
     );
 }
 
