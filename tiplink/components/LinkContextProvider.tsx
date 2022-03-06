@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useState, useEffect } from 'react';
 import { LinkContext, BalanceCallback } from './useLink';
-import { Keypair, PublicKey, FeeCalculator, AccountInfo, Context, 
+import { Keypair, PublicKey, AccountInfo, Context, 
     Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL, 
 } from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
@@ -135,8 +135,6 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
     }
 
     const getFees = async  () => {
-        const recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
         // TODO this is deprecated, use getFeeForMessage instead.
         // const maybeContext = (await connection.getFeeCalculatorForBlockhash(recentBlockhash));
         // if(maybeContext === null) {
