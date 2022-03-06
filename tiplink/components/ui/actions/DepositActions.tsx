@@ -8,10 +8,16 @@ import {
   QrCodeRounded as IconQRCode
 } from '@mui/icons-material';
 import { useActionState } from "./useActionState";
+import QRModal from "../QRModal";
+import { useLink }  from "../../useLink";
+import { useState } from "react";
 
 
 const DepositActions = () => {
     const { goBack, setActionState } = useActionState();
+    const { linkKeypair } = useLink();
+    const [ open, setOpen ] = useState<boolean>(false);
+    const qrMessage = "Scan publicKey in any solana-compatible wallet."
 
     return(
         <Box width='100%'>
@@ -29,9 +35,12 @@ const DepositActions = () => {
                 <ActionsPanelRow
                 icon={<IconQRCode/>}
                 title='Public Key'
-                subtitle='Click to reveal wallet public key.'/>
+                subtitle='Click to reveal wallet public key.'
+                onClick={() => {setOpen(true);}}
+                />
                 <Divider/>
             </List>
+            <QRModal message={qrMessage} open={open} handleClose={() => {setOpen(false);}} value={linkKeypair.publicKey.toBase58()}/>
         </Box>
     );
 }

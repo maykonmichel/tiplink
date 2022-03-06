@@ -39,6 +39,7 @@ const LinkExportPanel = () => {
     navigator.clipboard.writeText(url);
     setCopied(true);
   }
+  const qrMessage = "Scan this QR code to open directly to this TipLink.";
 
   return(
     <Box width='100%'>
@@ -53,7 +54,7 @@ const LinkExportPanel = () => {
         {renderButton('Bookmark', <IconBookmark/>, bookmark)}
         {renderButton('QR Code', <IconQrCode/>, () => { setQrOpen(true);})}
       </Box>
-      <QRModal open={qrOpen} handleClose={handleCloseQRModal} value={url}/> 
+      <QRModal message={qrMessage} open={qrOpen} handleClose={handleCloseQRModal} value={url}/> 
     </Box>
   );
 };
