@@ -7,12 +7,13 @@ type Props = {
   icon: React.ReactNode,
   title: string,
   subtitle: string,
+  onClick? (): void
 }
 
-const ActionsPanelRow: React.FC<Props> = ({icon, title, subtitle}) => {
+const ActionsPanelRow: React.FC<Props> = ({icon, title, subtitle, onClick = () => {}}) => {
   return(
     <ListItem component='div' disablePadding>
-      <ListItemButton sx={{padding: '1rem'}}>
+      <ListItemButton sx={{padding: '1rem'}} onClick={onClick}>
         <Box sx={{display: 'flex'}}>
           <Box sx={{padding: '0.25rem 1rem 0rem 0rem'}}>
             {icon}

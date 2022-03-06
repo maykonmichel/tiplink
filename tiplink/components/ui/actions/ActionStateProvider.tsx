@@ -10,7 +10,8 @@ export const ActionStateProvider: FC<ActionStateProviderProps> = ({ children }) 
     const goBack = () => {
         const prevState = {
             initial: "initial",
-            deposit: "initial"
+            deposit: "initial",
+            depositWallet: "deposit"
         }[actionState];
         if(prevState !== undefined) {
             setActionState(prevState);

@@ -87,13 +87,8 @@ const UI = () => {
               <Typography marginTop='8rem' component='div' textAlign='center'>[CONTENT BELOW THIS IS TEMPORARY]<br/>Public Key: {linkKeypair.publicKey.toBase58()}</Typography>
               <WithdrawForm/>
               <br></br>
-              <AddMoneyPhantom/>
-              <br></br>
               <WithdrawToPhantom/>
               <CreateLinkForm/>
-              <CurrencyInput
-                primaryCurrency='USD'
-                secondaryCurrency='SOL'/>
               <br></br>
           </Grid>
         </main>

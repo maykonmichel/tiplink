@@ -11,7 +11,7 @@ import { useActionState } from "./useActionState";
 
 
 const DepositActions = () => {
-    const { goBack } = useActionState();
+    const { goBack, setActionState } = useActionState();
 
     return(
         <Box width='100%'>
@@ -22,7 +22,9 @@ const DepositActions = () => {
                 <ActionsPanelRow
                 icon={<IconWallet/>}
                 title='Deposit from wallet'
-                subtitle='Deposit Solana from your connected wallet.'/>
+                subtitle='Deposit Solana from your connected wallet.'
+                onClick={() => {setActionState("depositWallet");}}
+                />
                 <Divider/>
                 <ActionsPanelRow
                 icon={<IconQRCode/>}
