@@ -48,7 +48,7 @@ const UI = () => {
   const { linkKeypair, balanceUSD } = useLink();
   return(
     <ThemeProvider theme={theme}>
-      <AppBar position='sticky' className='appbar' elevation={0}>
+      <AppBar color="transparent" position="relative" className='appbar' elevation={0}>
         <Toolbar>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}></Typography>
           <WalletMultiButton/>
