@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import Footer from "../components/footer";
+import Footer from "../components/ui/Footer";
 import  { Keypair } from '@solana/web3.js';
 import Router from "next/router";
 import { encode as b58encode } from 'bs58';

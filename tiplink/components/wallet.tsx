@@ -12,9 +12,7 @@ import {
 import { LinkProvider } from "./LinkContextProvider";
 import { useEndpoint } from "./useEndpoint";
 import { EndpointProvider } from "./EndpointProvider";
-import UI from "./ui/UI";
-
-
+import Main from "./ui/main/Main";
 
 const UIWrapper = (props: {secretKey: Uint8Array}) => {
   const { endpoint } = useEndpoint();
@@ -28,14 +26,13 @@ const UIWrapper = (props: {secretKey: Uint8Array}) => {
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <LinkProvider linkKeypair={linkKeypair} endpointUrl={endpointUrl}>
-            <UI/>
+            <Main/>
           </LinkProvider>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );
 }
-
 
 const Wallet = (props: {secretKey: Uint8Array}) => {
   const [url, setUrl] = useState("");
@@ -50,6 +47,5 @@ const Wallet = (props: {secretKey: Uint8Array}) => {
     </EndpointProvider>
   );
 }
-
 
 export default Wallet;

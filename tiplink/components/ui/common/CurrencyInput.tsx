@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLink } from "../useLink";
+import { useLink } from "../../useLink";
 import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';

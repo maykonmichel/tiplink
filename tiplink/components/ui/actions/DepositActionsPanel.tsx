@@ -1,17 +1,17 @@
 import { useState } from "react";
-import ActionsPanelRow from "../ActionsPanelRow";
-import ActionsPanelTitleBar from "../ActionsPanelTitleBar";
+import ActionsPanelRow from "./ui/ActionsPanelRow";
+import ActionsPanelTitleBar from "./ui/ActionsPanelTitleBar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import QrModal from "../QrModal";
-import { useActionState } from "./useActionState";
+import QrModal from "../common/QrModal";
+import { useActionState } from "./state/useActionState";
 import { useLink } from "../../useLink";
 import {
   AccountBalanceWalletRounded as IconWallet,
   QrCodeRounded as IconQRCode,
 } from "@mui/icons-material";
 
-const DepositActions = () => {
+const DepositActionsPanel = () => {
   const { goBack, setActionState } = useActionState();
   const { linkKeypair } = useLink();
   const [open, setOpen] = useState<boolean>(false);
@@ -48,4 +48,4 @@ const DepositActions = () => {
   );
 };
 
-export default DepositActions;
+export default DepositActionsPanel;

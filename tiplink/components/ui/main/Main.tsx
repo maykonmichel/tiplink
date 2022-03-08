@@ -1,6 +1,6 @@
-import { useLink } from '../useLink';
+import { useLink } from '../../useLink';
 
-import styles from '../../styles/Home.module.css'
+import styles from '../../../styles/Home.module.css'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 
@@ -15,14 +15,14 @@ import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 
-import WithdrawForm  from './WithdrawForm';
-import AddMoneyPhantom from './AddMoneyPhantom';
-import WithdrawToPhantom from './WithdrawToPhantom';
-import CreateLinkForm from './CreateLinkForm';
+import WithdrawForm  from '../WithdrawForm';
+import AddMoneyPhantom from '../AddMoneyPhantom';
+import WithdrawToPhantom from '../WithdrawToPhantom';
+import CreateLinkForm from '../CreateLinkForm';
 
 import LinkExportPanel from './LinkExportPanel';
 import LinkCard from './LinkCard';
-import ActionPanel from "./actions/ActionPanel";
+import ActionsPanel from "../actions/ActionsPanel";
 
 
 const theme = createTheme({
@@ -42,7 +42,7 @@ const theme = createTheme({
   },
 });
 
-const UI = () => {
+const Main = () => {
   // const explorerLink = 'https://explorer.solana.com/address/' + linkKeypair.publicKey.toString() + '?cluster=' + endpoint;
   const { linkKeypair, balanceUSD } = useLink();
   return(
@@ -77,7 +77,7 @@ const UI = () => {
                 marginBottom='1.5rem'>
                 <LinkCard/>
               </Box>
-              <ActionPanel/>
+              <ActionsPanel/>
 
               {/* {endpoint === 'devnet' && 
                 <AirdropForm />
@@ -97,4 +97,4 @@ const UI = () => {
   );
 }
 
-export default UI;
+export default Main;
