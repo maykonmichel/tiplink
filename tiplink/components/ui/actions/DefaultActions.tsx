@@ -1,5 +1,4 @@
 import ActionsPanelRow from '../ActionsPanelRow';
-import ActionsPanelTitleBar from '../ActionsPanelTitleBar';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
@@ -16,9 +15,6 @@ const DefaultActions = () => {
     const { setActionState } = useActionState();
     return(
         <Box width='100%'>
-            <ActionsPanelTitleBar
-                title='Options'
-                backOnClick={() => {}}/>
             <DualCtaRow
                 cta1Label='Send'
                 cta2Label='Deposit'
@@ -27,8 +23,8 @@ const DefaultActions = () => {
                 cta2OnClick={() => {
                     setActionState("deposit");
                 }}/>
-            <Divider/>
-            <List>
+            <Box>
+                <Divider/>
                 <ActionsPanelRow
                 icon={<IconRecreate/>}
                 title='Recreate this TipLink'
@@ -44,7 +40,7 @@ const DefaultActions = () => {
                 title='Deposit from your wallet'
                 subtitle='Deposit Solana from your connected wallet.'/>
                 <Divider/>
-            </List>
+            </Box>
         </Box>
     );
 }

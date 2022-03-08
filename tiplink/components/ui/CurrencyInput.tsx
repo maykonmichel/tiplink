@@ -1,50 +1,70 @@
 import { useState } from 'react';
+import { useLink } from "../useLink";
 import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import { useLink } from "../useLink";
 
 type Props = {
-  primaryCurrency: string,
-  secondaryCurrency: string,
-  amountSOL: number, // amount in SOL
-  setAmountSOL(a: number): void,
-  quickAmounts?: boolean,
+  fiatCurrency: string,
+  cryptoCurrency: string,
+  fiatQuickInputOptions?: QuickInputOption[],
+  cryptoQuickInputOptions?: QuickInputOption[],
+  onValueChange(cryptoValue: number): void,
 }
 
-const CurrencyInput: React.FC<Props> = ({primaryCurrency, secondaryCurrency, amountSOL, setAmountSOL, quickAmounts=false}) => {
-  const [ currency, setCurrency ] = useState(primaryCurrency);
-  const [ amount, setAmount ] = useState("");
-  const { exchangeRate } = useLink();
+type QuickInputOption = {
+  label: string,
+  inputValue: string 
+}
 
-  const getInverseCurrency = (): string => {
-    return currency === primaryCurrency ? secondaryCurrency : primaryCurrency;
-  }
+const CurrencyInput: React.FC<Props> = ({
+    fiatCurrency, 
+    cryptoCurrency, 
+    fiatQuickInputOptions = null, 
+    cryptoQuickInputOptions = null, 
+    onValueChange}) => {
+  const [ currency, setCurrency ] = useState(fiatCurrency);
+  const [ inputValue, setInputValue ] = useState('');
+  const { exchangeRate: cryptoPrice } = useLink();
 
-  const toggleCurrency = () => {
-    setCurrency(getInverseCurrency());
-    // TODO: Update the amount
-  }
+  const isInputInCrytoCurrency = (): boolean => currency === cryptoCurrency;
+  const getInverseCurrency = (): string => isInputInCrytoCurrency() ? fiatCurrency : cryptoCurrency;
+  const toggleInputCurrency = () => setCurrency(getInverseCurrency());
+  const isValidAmount = (amount: number): boolean => !isNaN(amount) && amount > 0;
 
   const getInverseCurrencyDisplay = () => {
-    const invC = getInverseCurrency();
-    const amtF = parseFloat(amount);
-    if(isNaN(amtF)) {
-      return "";
+    const invCurrency = getInverseCurrency();
+    const invCurrencyAmount = Number(inputValue);
+    var invAmount = 0;
+    if (isValidAmount(invCurrencyAmount)) {
+      invAmount = isInputInCrytoCurrency() 
+        ? invCurrencyAmount * cryptoPrice 
+        : invCurrencyAmount / cryptoPrice;
     }
-    const invAmt = invC === 'SOL' ? amtF / exchangeRate : amtF * exchangeRate;
-    const decimals = invC == 'USD' ? 2 : 4;
-    return invAmt.toFixed(decimals) + " " + invC;
+    const decimals = isInputInCrytoCurrency() ? 2 : 4;
+    return invAmount.toFixed(decimals) + ' ' + invCurrency;
   }
 
   const onChange = (v: string) => {
-    setAmount(v);
-    const amtF = parseFloat(v);
-    if(!isNaN(amtF)) {
-      setAmountSOL(currency == 'SOL' ? amtF : amtF / exchangeRate);
+    setInputValue(v);
+    const inputAmount = Number(v);
+    if (isValidAmount(inputAmount)) {
+      onValueChange(isInputInCrytoCurrency() ? inputAmount : inputAmount / cryptoPrice);
+    } else {
+      onValueChange(0);
+    }
+  }
+
+  const quickInputOptionsRows = [];
+  const quickInputOptions = isInputInCrytoCurrency() 
+      ? cryptoQuickInputOptions 
+      : fiatQuickInputOptions;
+  if (quickInputOptions) {
+    for (let option of quickInputOptions) {
+      quickInputOptionsRows.push(renderButton(option.label, () => onChange(option.inputValue)));
     }
   }
 
@@ -52,25 +72,23 @@ const CurrencyInput: React.FC<Props> = ({primaryCurrency, secondaryCurrency, amo
     <Box width='16rem'>
       <OutlinedInput
         fullWidth
-        value={amount}
+        value={inputValue}
         onChange={(e) => {onChange(e.target.value);}}
         startAdornment={
           <InputAdornment position='start'>
-            <Chip label={currency} onClick={toggleCurrency}/>
+            <Chip label={currency} onClick={toggleInputCurrency}/>
           </InputAdornment>}/>
-      {quickAmounts && 
+      {quickInputOptionsRows.length > 0 && 
         <Box sx={{display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem'}}>
-          {renderButton('$1', () => {})}
-          {renderButton('$2', () => {})}
-          {renderButton('$5', () => {})}
-        </Box>
-      }
+          {quickInputOptionsRows}
+        </Box>}
       <Typography 
         width='100%'
         marginTop='0.25rem'
         textAlign='center'
-        variant='subtitle2' 
-        >{getInverseCurrencyDisplay()}</Typography>
+        variant='subtitle2'>
+          {getInverseCurrencyDisplay()}
+      </Typography>
     </Box>
   );
 };

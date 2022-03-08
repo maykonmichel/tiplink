@@ -17,10 +17,10 @@ const LinkCard = () => {
 
     const cdt = getCardDisplayText();
     return(
-        <Card className="linkCard" style={{width: "32rem", height: "20rem", borderRadius: "2rem", justifyContent: "center"}} raised={true}>
+        <Card className="linkCard" style={{width: "32rem", height: "20rem", borderRadius: "0.5rem", justifyContent: "center"}} raised={true}>
             <CardContent sx={{display: "flex", flexDirection: "column", justifyContent: "space-between", textAlign: "center"}}>
                 <Box className="linkCardTop" sx={{display: 'flex', m: 1, justifyContent: 'space-between', alignItems: "center", width: "100%"}} >
-                    <div style={{display: "flex", borderRadius: "100%", backgroundColor: "black", textAlign: "center", width: "5rem", height: "5rem", justifyContent: "center", alignItems: "center"}}>
+                    <div style={{display: "flex", borderRadius: "50%", backgroundColor: "black", textAlign: "center", width: "5rem", height: "5rem", justifyContent: "center", alignItems: "center"}}>
                         <img src="/solanaLogoMark.png" alt="Solana Logo" width="60%" height="60%" style={{top: 0, left: 0}}/>
                     </div>
                     <div style={{display: 'flex', flexDirection: 'column'}}>
