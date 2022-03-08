@@ -3,7 +3,7 @@ import ActionsPanelRow from "../ActionsPanelRow";
 import ActionsPanelTitleBar from "../ActionsPanelTitleBar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import QRModal from "../QRModal";
+import QrModal from "../QrModal";
 import { useActionState } from "./useActionState";
 import { useLink } from "../../useLink";
 import {
@@ -37,13 +37,13 @@ const DepositActions = () => {
           }}/>
         <Divider />
       </Box>
-      <QRModal
+      <QrModal
         message="Scan this QR with a Solana-compatible wallet or copy the public key below."
         open={open}
+        value={linkKeypair.publicKey.toBase58()}
         handleClose={() => {
           setOpen(false);
-        }}
-        value={linkKeypair.publicKey.toBase58()}/>
+        }}/>
     </Box>
   );
 };

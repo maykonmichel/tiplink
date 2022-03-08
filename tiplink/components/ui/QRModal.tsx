@@ -1,59 +1,64 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import Button  from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import { ContentCopy as IconCopy } from '@mui/icons-material';
-const QRCode = require('qrcode.react');
+import Typography from "@mui/material/Typography";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import { ContentCopy as IconCopy } from "@mui/icons-material";
+const QRCode = require("qrcode.react");
 
 const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  cornerRadius: "0.5rem",
+  p: 4,
 };
 
-type QRProps = {
-    message: string;
-    open: boolean;
-    handleClose: () => void;
-    value: string;
-}
+type Props = {
+  message: string;
+  open: boolean;
+  value: string;
+  handleClose: () => void;
+};
 
-const QRModal = (props: QRProps) => {
-    return(
-        <Modal
-        open={props.open}
-        onClose={props.handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        >
-            <Box sx={style} style={{textAlign: "center", flexDirection: "column"}}>
-                <Typography style={{marginBottom: "0.5rem"}}>{props.message}</Typography>
-                <QRCode value={props.value} style={{marginBottom: "0.5rem"}}/>
-                <TextField
-                fullWidth
-                value={props.value}
-                style={{marginBottom: "0.5rem"}}
-                InputProps={{
-                    endAdornment: (
-                        <IconButton edge="end" color="primary" 
-                        onClick={() => {navigator.clipboard.writeText(props.value);}}>
-                            <IconCopy/>
-                        </IconButton>
-                    )
+const QrModal = (props: Props) => {
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.handleClose}
+      aria-labelledby="QR code"
+      aria-describedby="This wallet's public key QR code and text"
+      maxWidth="xs"
+    >
+      <DialogContent sx={{padding: "1.5rem", textAlign: "center"}}>
+        <Typography>{props.message}</Typography>
+        <QRCode value={props.value} style={{ margin: "1.5rem" }} />
+        <TextField
+          fullWidth
+          value={props.value}
+          InputProps={{
+            endAdornment: (
+              <IconButton
+                edge="end"
+                color="primary"
+                onClick={() => {
+                  navigator.clipboard.writeText(props.value);
                 }}
-                />
-                <Button variant="outlined" onClick={props.handleClose}>Done</Button>
-            </Box>
-        </Modal>
-    );
-}
+              >
+                <IconCopy />
+              </IconButton>
+            ),
+          }}
+        />
+        <Button fullWidth sx={{marginTop: "1rem"}} variant="outlined" onClick={props.handleClose}>Done</Button>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
-export default QRModal;
+export default QrModal;
