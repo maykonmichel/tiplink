@@ -24,8 +24,8 @@ const DepositWallet = () => {
   return (
     <Box width='100%'>
       <ActionsPanelTitleBar title='Deposit Crypto' backOnClick={goBack} />
-      <Typography style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-        Enter amount to deposit from your connected wallet.
+      <Typography textAlign='center' style={{marginTop: '1rem', marginBottom: '1rem'}}>
+        How much do you want to deposit here?
       </Typography>
       <Box
         style={{

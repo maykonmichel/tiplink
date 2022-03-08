@@ -1,16 +1,16 @@
-import DefaultActions from "./DefaultActions";
+import MainActions from "./MainActions";
 import DepositActions from "./DepositActions";
 import DepositWallet from "./DepositWallet";
 import { ActionStateProvider } from "./ActionStateProvider";
 import { useActionState } from "./useActionState";
 
-const ActionMenuDisplay = () => {
+const ActionPanelComponent = () => {
   const { actionState } = useActionState();
   return (
-    <div>
+    <div style={{width: '100%'}}>
       {
         {
-          initial: <DefaultActions />,
+          initial: <MainActions />,
           deposit: <DepositActions />,
           depositWallet: <DepositWallet />,
         }[actionState]
@@ -19,12 +19,12 @@ const ActionMenuDisplay = () => {
   );
 };
 
-const ActionMenu = () => {
+const ActionPanel = () => {
   return (
     <ActionStateProvider>
-      <ActionMenuDisplay />
+      <ActionPanelComponent />
     </ActionStateProvider>
   );
 };
 
-export default ActionMenu;
+export default ActionPanel;

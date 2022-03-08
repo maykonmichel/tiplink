@@ -22,8 +22,7 @@ import CreateLinkForm from './CreateLinkForm';
 
 import LinkExportPanel from './LinkExportPanel';
 import LinkCard from './LinkCard';
-import CurrencyInput from './CurrencyInput';
-import ActionMenu from "./actions/ActionMenu";
+import ActionPanel from "./actions/ActionPanel";
 
 
 const theme = createTheme({
@@ -78,13 +77,13 @@ const UI = () => {
                 marginBottom='1.5rem'>
                 <LinkCard/>
               </Box>
-              <ActionMenu/>
+              <ActionPanel/>
 
               {/* {endpoint === 'devnet' && 
                 <AirdropForm />
               } */}
 
-              <Typography marginTop='8rem' component='div' textAlign='center'>[CONTENT BELOW THIS IS TEMPORARY]</Typography>
+              <Typography marginTop='8rem' component='div' textAlign='center'>[BELOW IS PLAYGROUND]</Typography>
               <WithdrawForm/>
               <br></br>
               <WithdrawToPhantom/>
