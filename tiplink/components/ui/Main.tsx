@@ -22,7 +22,7 @@ import CreateLinkForm from './CreateLinkForm';
 
 import LinkExportPanel from './LinkExportPanel';
 import LinkCard from './LinkCard';
-import ActionPanel from "./actions/ActionPanel";
+import ActionsPanel from "./actions/ActionsPanel";
 
 
 const theme = createTheme({
@@ -42,7 +42,7 @@ const theme = createTheme({
   },
 });
 
-const UI = () => {
+const Main = () => {
   // const explorerLink = 'https://explorer.solana.com/address/' + linkKeypair.publicKey.toString() + '?cluster=' + endpoint;
   const { linkKeypair, balanceUSD } = useLink();
   return(
@@ -77,7 +77,7 @@ const UI = () => {
                 marginBottom='1.5rem'>
                 <LinkCard/>
               </Box>
-              <ActionPanel/>
+              <ActionsPanel/>
 
               {/* {endpoint === 'devnet' && 
                 <AirdropForm />
@@ -97,4 +97,4 @@ const UI = () => {
   );
 }
 
-export default UI;
+export default Main;

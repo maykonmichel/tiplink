@@ -1,13 +1,13 @@
-import ActionsPanelTitleBar from '../ActionsPanelTitleBar';
+import ActionsPanelTitleBar from './ui/ActionsPanelTitleBar';
 import Box from '@mui/material/Box';
-import { useActionState } from './useActionState';
+import { useActionState } from './state/useActionState';
 import Typography from '@mui/material/Typography';
 import CurrencyInput from '../CurrencyInput';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { useLink } from '../../useLink';
 
-const DepositWallet = () => {
+const DepositWalletPanel = () => {
   const { goBack } = useActionState();
   const [inputAmountSol, setInputAmountSol] = useState<number>(NaN);
   const { extConnected, deposit } = useLink();
@@ -23,7 +23,7 @@ const DepositWallet = () => {
 
   return (
     <Box width='100%'>
-      <ActionsPanelTitleBar title='Deposit Crypto' backOnClick={goBack} />
+      <ActionsPanelTitleBar title='Deposit' backOnClick={goBack} />
       <Typography textAlign='center' style={{marginTop: '1rem', marginBottom: '1rem'}}>
         How much do you want to deposit here?
       </Typography>
@@ -58,4 +58,4 @@ const DepositWallet = () => {
   );
 };
 
-export default DepositWallet;
+export default DepositWalletPanel;

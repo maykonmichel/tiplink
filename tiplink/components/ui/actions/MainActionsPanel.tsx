@@ -1,15 +1,15 @@
-import ActionsPanelRow from "../ActionsPanelRow";
+import ActionsPanelRow from "./ui/ActionsPanelRow";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import DualCtaRow from "../DualCtaRow";
+import DualCtaRow from "./ui/DualCtaRow";
 import {
   Refresh as IconRecreate,
   MergeRounded as IconCombine,
   AccountBalanceWalletRounded as IconWallet,
 } from "@mui/icons-material";
-import { useActionState } from "./useActionState";
+import { useActionState } from "./state/useActionState";
 
-const MainActions = () => {
+const MainActionsPanel = () => {
   const { setActionState } = useActionState();
   return (
     <Box width="100%">
@@ -46,4 +46,4 @@ const MainActions = () => {
   );
 };
 
-export default MainActions;
+export default MainActionsPanel;
