@@ -7,11 +7,13 @@ export interface ActionStateProviderProps {
 
 export const ActionStateProvider: FC<ActionStateProviderProps> = ({ children }) => {
     const [ actionState, setActionState ] = useState<string>("initial");
+    const [ sendAmount, setSendAmount ] = useState<number>(NaN);
     const goBack = () => {
         const prevState = {
             initial: "initial",
             deposit: "initial",
-            depositWallet: "deposit"
+            depositWallet: "deposit",
+            sendAmt: "initial",
         }[actionState];
         if(prevState !== undefined) {
             setActionState(prevState);
@@ -23,7 +25,9 @@ export const ActionStateProvider: FC<ActionStateProviderProps> = ({ children }) 
             value={{
                 actionState,
                 setActionState,
-                goBack
+                goBack,
+                sendAmount,
+                setSendAmount
             }}
         >
             {children}
