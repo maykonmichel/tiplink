@@ -16,7 +16,9 @@ const MainActionsPanel = () => {
       <DualCtaRow
         cta1Label="Send"
         cta2Label="Deposit"
-        cta1OnClick={() => {}}
+        cta1OnClick={() => {
+          setActionState("sendAmt");
+        }}
         cta2OnClick={() => {
           setActionState("deposit");
         }}
