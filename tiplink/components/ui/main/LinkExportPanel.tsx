@@ -8,15 +8,15 @@ import {
   QrCodeRounded as IconQrCode,
 } from "@mui/icons-material";
 import QrModal from "../common/QrModal";
+import React from "react";
 
-const LinkExportPanel = () => {
-  const [url, setUrl] = useState("");
+type Props = {
+  url: string;
+}
+const LinkExportPanel: React.FC<Props> = ({url}) => {
   const [qrOpen, setQrOpen] = useState(false);
   const [copied, setCopied] = useState<boolean>(false);
 
-  useEffect(() => {
-    setUrl(window.location.href);
-  }, []);
 
   const bookmark = () => {
     const title = document.title;

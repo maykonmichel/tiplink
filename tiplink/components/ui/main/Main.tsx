@@ -15,14 +15,12 @@ import {
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 
-import WithdrawForm  from '../WithdrawForm';
-import AddMoneyPhantom from '../AddMoneyPhantom';
-import WithdrawToPhantom from '../WithdrawToPhantom';
 import CreateLinkForm from '../CreateLinkForm';
 
 import LinkExportPanel from './LinkExportPanel';
 import LinkCard from './LinkCard';
 import ActionsPanel from "../actions/ActionsPanel";
+import { useState, useEffect } from "react";
 
 const theme = createTheme({
   palette: {
@@ -43,7 +41,13 @@ const theme = createTheme({
 
 const Main = () => {
   // const explorerLink = 'https://explorer.solana.com/address/' + linkKeypair.publicKey.toString() + '?cluster=' + endpoint;
-  const { linkKeypair, balanceUSD } = useLink();
+  const { balanceUSD } = useLink();
+  const [ url, setUrl ] = useState<string>("");
+
+  useEffect(() => {
+    setUrl(window.location.href);
+  }, []);
+
   return(
     <ThemeProvider theme={theme}>
       <AppBar color="transparent" position="relative" className='appbar' elevation={0}>
@@ -66,7 +70,7 @@ const Main = () => {
                 textAlign='center'>
                 <Typography component='div' variant='h5'>This is ${balanceUSD.toFixed(2)} in crypto.</Typography>
                 <Typography component='div'>The link to this page contains this value, make sure you don't lose it!</Typography>
-                <LinkExportPanel/>
+                <LinkExportPanel url={url}/>
               </Box>
 
               <Box
@@ -81,10 +85,7 @@ const Main = () => {
                 <AirdropForm />
               } */}
 
-              <Typography marginTop='8rem' component='div' textAlign='center'>[BELOW IS PLAYGROUND]</Typography>
-              <br></br>
-              <CreateLinkForm/>
-              <br></br>
+              {/* <Typography marginTop='8rem' component='div' textAlign='center'>[BELOW IS PLAYGROUND]</Typography> */}
           </Grid>
         </main>
         {/* <Footer/> */}

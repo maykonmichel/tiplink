@@ -25,7 +25,7 @@ const SendActionsPanel = () => {
           title="Send as TipLink"
           subtitle="Create a TipLink with this value that you can share with anyone"
           onClick={() => {
-            // setActionState("createTiplink");
+            setActionState("createTipLink");
           }}/>
         <Divider />
         <ActionsPanelRow
