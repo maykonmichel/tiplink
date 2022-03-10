@@ -1,7 +1,7 @@
 import MainActionsPanel from "./MainActionsPanel";
 import DepositActionsPanel from "./DepositActionsPanel";
 import DepositWalletPanel from "./DepositWalletPanel";
-import SendActions from "./SendActions";
+import SendActionsPanel from "./SendActionsPanel";
 import { ActionStateProvider } from "./state/ActionStateProvider";
 import { useActionState } from "./state/useActionState";
 
@@ -14,7 +14,7 @@ const ActionsPanelComponent = () => {
           initial: <MainActionsPanel />,
           deposit: <DepositActionsPanel />,
           depositWallet: <DepositWalletPanel />,
-          sendAmt: <SendActions/>
+          send: <SendActionsPanel/>
         }[actionState]
       }
     </div>

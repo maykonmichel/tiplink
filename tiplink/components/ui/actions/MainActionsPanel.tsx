@@ -16,7 +16,7 @@ const MainActionsPanel = () => {
         cta1Label="Send"
         cta2Label="Deposit"
         cta1OnClick={() => {
-          setActionState("sendAmt");
+          setActionState("send");
         }}
         cta2OnClick={() => {
           setActionState("deposit");
