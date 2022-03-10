@@ -2,6 +2,7 @@ import MainActionsPanel from "./MainActionsPanel";
 import DepositActionsPanel from "./DepositActionsPanel";
 import DepositWalletPanel from "./DepositWalletPanel";
 import SendActionsPanel from "./SendActionsPanel";
+import SendPublicKey from "./SendPublicKey";
 import { ActionStateProvider } from "./state/ActionStateProvider";
 import { useActionState } from "./state/useActionState";
 
@@ -14,7 +15,8 @@ const ActionsPanelComponent = () => {
           initial: <MainActionsPanel />,
           deposit: <DepositActionsPanel />,
           depositWallet: <DepositWalletPanel />,
-          send: <SendActionsPanel/>
+          send: <SendActionsPanel/>,
+          sendPubKey: <SendPublicKey/>
         }[actionState]
       }
     </div>

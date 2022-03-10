@@ -13,6 +13,7 @@ export const ActionStateProvider: FC<ActionStateProviderProps> = ({ children }) 
             deposit: "initial",
             depositWallet: "deposit",
             send: "initial",
+            sendPubKey: "send"
         }[actionState];
         if(prevState !== undefined) {
             setActionState(prevState);

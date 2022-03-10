@@ -32,7 +32,7 @@ const SendActionsPanel = () => {
           icon={<IconKey/>}
           title="Send to Public Key"
           subtitle="Send to a Solana wallet address"
-          onClick={() => {}}/>
+          onClick={() => {setActionState("sendPubKey");}}/>
         <Divider />
         <ActionsPanelRow
           icon={connected ? <WalletIcon wallet={wallet}/> : <IconWallet/>}
