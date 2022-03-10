@@ -10,7 +10,6 @@ import {
 // Default styles that can be overridden by your app
 
 import { LinkProvider } from "./LinkContextProvider";
-import { useEndpoint } from "./useEndpoint";
 import { EndpointProvider } from "./EndpointProvider";
 import Main from "./ui/main/Main";
 

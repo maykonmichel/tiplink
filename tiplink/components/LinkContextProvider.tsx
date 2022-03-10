@@ -94,7 +94,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
             connection,
             transaction,
             [linkKeypair],
-            {commitment: 'processed'},
+            {maxRetries: 5, commitment: 'processed'},
         );
     };
 
