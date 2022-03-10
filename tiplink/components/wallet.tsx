@@ -1,4 +1,4 @@
-import  { Keypair, clusterApiUrl } from '@solana/web3.js';
+import  { Keypair } from '@solana/web3.js';
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { useEffect, useState, useMemo } from "react";
@@ -15,8 +15,7 @@ import { EndpointProvider } from "./EndpointProvider";
 import Main from "./ui/main/Main";
 
 const UIWrapper = (props: {secretKey: Uint8Array}) => {
-  const { endpoint } = useEndpoint();
-  const endpointUrl = clusterApiUrl(endpoint);
+  const endpointUrl = "https://ssc-dao.genesysgo.net/";
   const linkKeypair = Keypair.fromSecretKey(props.secretKey);
   const wallets = useMemo(
     () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], [endpointUrl]
