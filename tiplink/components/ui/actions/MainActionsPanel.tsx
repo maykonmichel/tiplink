@@ -7,9 +7,33 @@ import {
   AccountBalanceWalletRounded as IconWallet,
 } from "@mui/icons-material";
 import { useActionState } from "./state/useActionState";
+import { useLink } from "../../useLink";
 
 const MainActionsPanel = () => {
   const { setActionState } = useActionState();
+  const { sendSOL, getFees, balanceSOL, extPublicKey, extConnected } = useLink();
+
+  const withdrawAll = ()=> {
+    if(!extConnected) { 
+        alert("Please connect Phantom to withdraw money");
+        return;
+    } 
+
+    if((extPublicKey === null) || (extPublicKey === undefined)){
+        alert("Please connect Phantom to withdraw money");
+        return;
+    }
+    let fees: number;
+
+    const onFees = (f: number) =>  {
+      fees = f;
+      sendSOL(extPublicKey, balanceSOL - fees).catch(e => alert(e.message));
+    }
+
+    getFees().then(onFees).catch(e => alert(e.message));
+  }
+
+
   return (
     <Box width="100%">
       <DualCtaRow
@@ -34,6 +58,7 @@ const MainActionsPanel = () => {
           icon={<IconWallet />}
           title="Withdraw to your wallet"
           subtitle="Withdraw the entire value of this TipLink."
+          onClick={withdrawAll}
         />
         <Divider />
       </Box>

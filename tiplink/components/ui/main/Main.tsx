@@ -83,7 +83,6 @@ const Main = () => {
 
               <Typography marginTop='8rem' component='div' textAlign='center'>[BELOW IS PLAYGROUND]</Typography>
               <br></br>
-              <WithdrawToPhantom/>
               <CreateLinkForm/>
               <br></br>
           </Grid>
