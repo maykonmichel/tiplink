@@ -4,7 +4,6 @@ import Divider from "@mui/material/Divider";
 import DualCtaRow from "./ui/DualCtaRow";
 import {
   Refresh as IconRecreate,
-  MergeRounded as IconCombine,
   AccountBalanceWalletRounded as IconWallet,
 } from "@mui/icons-material";
 import { useActionState } from "./state/useActionState";
@@ -29,12 +28,6 @@ const MainActionsPanel = () => {
           icon={<IconRecreate />}
           title="Recreate this TipLink"
           subtitle="Move the entire value to a new TipLink so only you have the link."
-        />
-        <Divider />
-        <ActionsPanelRow
-          icon={<IconCombine />}
-          title="Combine with another TipLink"
-          subtitle="You can combine some or all of another TipLink's value into this TipLink."
         />
         <Divider />
         <ActionsPanelRow

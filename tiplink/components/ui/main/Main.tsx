@@ -58,7 +58,6 @@ const Main = () => {
         <main className={styles.main}>
           <Grid
             container
-            maxWidth='32rem'
             direction='column'
             alignItems='center'>
               <Box 
