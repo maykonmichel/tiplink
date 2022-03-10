@@ -94,8 +94,10 @@ const CurrencyInput: React.FC<Props> = ({
 };
 
 function renderButton(label: string, onClick: () => void): React.ReactNode {
+  // these can live in a list so I think they need keys
   return (
     <Button
+      key={label}
       style={{
         display: 'flex', 
         flexDirection: 'column', 
