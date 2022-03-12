@@ -1,28 +1,24 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import Footer from "../components/ui/Footer";
-import  { Keypair } from '@solana/web3.js';
 import Router from "next/router";
-import { encode as b58encode } from 'bs58';
-import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Typography } from '@mui/material';
 import { useState, MouseEvent } from "react";
 import { createLink } from "../lib/link";
+import WalletAppBar from '../components/WalletAppBar';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import CurrencyInput, {fiatQuickInputDefault, cryptoQuickInputDefault} from '../components/ui/common/CurrencyInput';
 
 const createWalletShort = async () => { 
   const {slug, anchor} = await createLink();
   Router.push("/" + slug + "#" + anchor);
 }
 
-const createWallet = (e: MouseEvent<HTMLButtonElement>) => {
-  e.preventDefault();
-  const pk = b58encode(Keypair.generate().secretKey);
-  // console.log(pk);
-  Router.push("/wallet#" + pk);
-}
-
 export default function Home() {
   const [ loading, setLoading ] = useState(false);
+  const [inputAmountSOL, setInputAmountSOL ] = useState<number>(NaN);
+
   const onClickShort = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -30,31 +26,43 @@ export default function Home() {
   }
 
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Tip Link</title>
         <meta name="description" content="Send tip links with crypto" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <WalletAppBar/>
+      <div className={styles.container}>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Tip Link
-        </h1>
 
-        <div className={styles.grid}>
-          <a className={styles.card} onClick={onClickShort} style={{display: "flex", justifyContent:"space-around"}}>
-            <div>
-              <h2>Create a Wallet</h2>
-              <p>Send tip links with crypto!</p>
-            </div>
+        <main className={styles.main}>
+          <Typography variant="h3">Links are the new money</Typography>
+          <Typography>Send crypto to anyone, even if they don't have a wallet - no app needed!</Typography>
+
+          <Box sx={{
+            m: 2,
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "center",
+            alignItems: "center"
+          }}>
+            <Typography sx={{m: 2}}>Try it now! How much do you want to send?</Typography>
+            <CurrencyInput 
+              fiatCurrency='USD' cryptoCurrency='SOL' onValueChange={setInputAmountSOL} 
+              fiatQuickInputOptions={fiatQuickInputDefault}
+              cryptoQuickInputOptions={cryptoQuickInputDefault}
+            />
+            <Button sx={{m: 2}} variant="contained">Create TipLink</Button>
+            <Typography>
+              Want to deposit value later? <a onClick={onClickShort}>Create an empty TipLink.</a>
+            </Typography>
             <CircularProgress style={{display: loading ? "block": "none"}}/>
-          </a>
-          <Button onClick={createWallet} variant="outlined">Create Wallet Serverless</Button>
-        </div>
-      </main>
-      {/* <Footer/> */}
+          </Box>
+        </main>
+        {/* <Footer/> */}
 
+      </div>
     </div>
   )
 }

@@ -33,7 +33,6 @@ const MainActionsPanel = () => {
     getFees().then(onFees).catch(e => alert(e.message));
   }
 
-
   return (
     <Box width="100%">
       <DualCtaRow

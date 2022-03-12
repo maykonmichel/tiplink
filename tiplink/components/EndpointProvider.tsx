@@ -25,7 +25,7 @@ export const EndpointProvider  : FC<EndpointProviderProps> = ({ children }) => {
     // const [endpoint, setEndpoint] = useState<Cluster>(localEndpoint === null ? endpointDefault : localEndpoint);
 
     const [endpoint, setEndpoint] = useState<Cluster>(endpointDefault);
-    localStorage.setItem(endpointKey, endpointDefault);
+    const [endpointUrl, setEndpointUrl] = useState<string>("https://ssc-dao.genesysgo.net/")
     
 
     const setEndpointStr = (endpoint: string | null) => {
@@ -57,7 +57,8 @@ export const EndpointProvider  : FC<EndpointProviderProps> = ({ children }) => {
         <EndpointContext.Provider
             value={{
                 endpoint,
-                setEndpointStr
+                setEndpointStr,
+                endpointUrl
             }}
         >
             {children}

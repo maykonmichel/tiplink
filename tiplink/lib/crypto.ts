@@ -34,6 +34,11 @@ export const randBuf = async (l: number) => {
 }
 
 export const getSalt = async () => {
-  if(!sodium) sodium = await SodiumPlus.auto();
   return randBuf(sodium.CRYPTO_PWHASH_SALTBYTES);
+}
+
+export const kdfz = async (fullLength: number, pwShort: Buffer) => {
+  if(!sodium) sodium = await SodiumPlus.auto();
+  const salt = Buffer.alloc(sodium.CRYPTO_PWHASH_SALTBYTES);
+  return await kdf(fullLength, pwShort, salt);
 }

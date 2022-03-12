@@ -1,9 +1,13 @@
 import '../styles/globals.css'
 import { AppProps } from 'next/app';
+import GlobalContextWrapper from '../components/GlobalContextWrapper';
+// Default styles that can be overridden by your app
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return(
-    <Component {...pageProps} />
+    <GlobalContextWrapper>
+      <Component {...pageProps}/>
+    </GlobalContextWrapper>
   );
 }
 

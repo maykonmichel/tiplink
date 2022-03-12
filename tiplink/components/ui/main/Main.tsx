@@ -1,43 +1,16 @@
 import { useLink } from '../../useLink';
 
 import styles from '../../../styles/Home.module.css'
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-require('@solana/wallet-adapter-react-ui/styles.css');
-import {
-  WalletDisconnectButton,
-  WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
-
-import CreateLinkForm from '../CreateLinkForm';
 
 import LinkExportPanel from './LinkExportPanel';
 import LinkCard from './LinkCard';
 import ActionsPanel from "../actions/ActionsPanel";
 import { useState, useEffect } from "react";
+import WalletAppBar from '../../WalletAppBar';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      light: '#757ce8',
-      main: '#3f50b5',
-      dark: '#002884',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#000000',
-      main: '#ffffff',
-      dark: '#ba000d',
-      contrastText: '#000',
-    },
-  },
-});
 
 const Main = () => {
   // const explorerLink = 'https://explorer.solana.com/address/' + linkKeypair.publicKey.toString() + '?cluster=' + endpoint;
@@ -49,15 +22,8 @@ const Main = () => {
   }, []);
 
   return(
-    <ThemeProvider theme={theme}>
-      <AppBar color="transparent" position="relative" className='appbar' elevation={0}>
-        <Toolbar>
-          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}></Typography>
-          <WalletMultiButton/>
-          <WalletDisconnectButton/>
-        </Toolbar>
-      </AppBar>
-      
+    <div>
+      <WalletAppBar/>
       <div className={styles.container}>
         <main className={styles.main}>
           <Grid
@@ -90,7 +56,7 @@ const Main = () => {
         </main>
         {/* <Footer/> */}
       </div>
-    </ThemeProvider>
+    </div>
   );
 }
 

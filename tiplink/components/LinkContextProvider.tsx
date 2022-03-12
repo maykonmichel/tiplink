@@ -4,34 +4,23 @@ import { Keypair, PublicKey, AccountInfo, Context,
     Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL, 
 } from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import useExchangeRate from './useExchangeRate';
 
 const FEE_MULT = 3;
 
 export interface LinkProviderProps {
     children: ReactNode;
     linkKeypair: Keypair; 
-    endpointUrl: string;
 }
 
-const getPrice = async () => {
-  const endpoint = "https://serum-api.bonfida.com/orderbooks/SOLUSDC";
-  const resp = await fetch(endpoint);
-  const content = await resp.json();
-  const book = content.data;
-  const bid = book.bids[0].price;
-  const ask = book.asks[0].price;
-  return (bid + ask) / 2;
-}
-
-
-export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, endpointUrl }) => {
+export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) => {
     const { connection } = useConnection();
     const { connected: extConnected, publicKey: extPublicKey, sendTransaction: extSendTransaction} = useWallet();
     // in Lamportsj
     const [ balance, setBalance ] = useState(NaN);
     // in USD / SOL
-    const [ exchangeRate, setExchangeRate ] = useState(NaN);
     const [ subscriptionId, setSubscriptionId ] = useState(0);
+    const { exchangeRate } = useExchangeRate();
 
     const getBalanceSOLAsync = async () => {
         return await connection.getBalance(linkKeypair.publicKey, "processed");
@@ -60,10 +49,6 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
         // console.log("updateBalance");
         fetchBalance((b) => {setBalance(b);});
     }
-
-    useEffect(() => {
-        getPrice().then((apiPrice) => setExchangeRate(apiPrice));
-    }, []);
 
     useEffect(() => {
         updateBalance();
@@ -168,7 +153,6 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair, end
                 getFees,
                 balanceSOL,
                 balanceUSD,
-                exchangeRate,
                 airdrop,
                 deposit,
                 extConnected,

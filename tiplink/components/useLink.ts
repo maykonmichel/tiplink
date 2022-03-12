@@ -12,7 +12,6 @@ type LinkContent = {
     getFees(): Promise<number>;
     balanceSOL: number;
     balanceUSD: number;
-    exchangeRate: number;
     airdrop(amt: number): Promise<RpcResponseAndContext<SignatureResult>>;
     deposit(amt: number): Promise<void>;
     extConnected: boolean;

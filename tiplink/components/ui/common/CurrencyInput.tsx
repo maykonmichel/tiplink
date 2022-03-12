@@ -6,6 +6,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
+import  useExchangeRate  from "../../useExchangeRate";
 
 type Props = {
   fiatCurrency: string,
@@ -20,6 +21,19 @@ type QuickInputOption = {
   inputValue: string 
 }
 
+
+export const fiatQuickInputDefault=[
+  {label: '$1', inputValue: '1.00'},
+  {label: '$2', inputValue: '2.00'},
+  {label: '$5', inputValue: '5.00'},
+];
+
+export const cryptoQuickInputDefault = [
+  {label: '0.1', inputValue: '0.1'},
+  {label: '0.2', inputValue: '0.2'},
+  {label: '0.5', inputValue: '0.5'},
+];
+
 const CurrencyInput: React.FC<Props> = ({
     fiatCurrency, 
     cryptoCurrency, 
@@ -28,7 +42,7 @@ const CurrencyInput: React.FC<Props> = ({
     onValueChange}) => {
   const [ currency, setCurrency ] = useState(fiatCurrency);
   const [ inputValue, setInputValue ] = useState('');
-  const { exchangeRate: cryptoPrice } = useLink();
+  const { exchangeRate: cryptoPrice } = useExchangeRate();
 
   const isInputInCrytoCurrency = (): boolean => currency === cryptoCurrency;
   const getInverseCurrency = (): string => isInputInCrytoCurrency() ? fiatCurrency : cryptoCurrency;
