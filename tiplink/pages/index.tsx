@@ -35,9 +35,10 @@ export default function Home() {
       </Head>
       <WalletAppBar/>
       <div className={styles.container}>
-        <Typography variant="h3">Links are the new money</Typography>
-        <Typography>Send crypto to anyone, even if they don't have a wallet - no app needed!</Typography>
         <main className={styles.main}>
+        <Typography variant="h4">Links are the new money</Typography>
+        <Typography>Send crypto to anyone, even if they don't have a wallet.</Typography>
+        <Typography>No app needed!</Typography>
 
           <Box sx={{
             m: 2,
