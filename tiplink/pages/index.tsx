@@ -81,7 +81,7 @@ export default function Home() {
       <WalletAppBar/>
       <div className={styles.container}>
         <main className={styles.main}>
-        <Typography variant="h4">Links are the new money</Typography>
+        <Typography variant="h4">Links are now money</Typography>
         <Typography>Send crypto to anyone, even if they don't have a wallet.</Typography>
         <Typography>No app needed!</Typography>
 
