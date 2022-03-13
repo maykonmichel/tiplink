@@ -1,4 +1,5 @@
 import Typography from "@mui/material/Typography";
+import styles from '../../../styles/Home.module.css'
 import { useLink } from "../../useLink";
 
 const LinkCard = () => {
@@ -14,13 +15,13 @@ const LinkCard = () => {
   const cdt = getCardDisplayText();
 
   return(
-    <div className="linkCard">
+    <div className={styles.linkCard}>
       <img src="/tiplink-card.png"/>
-      <div className="cardBalance">
+      <div className={styles.cardBalance}>
         <Typography color="magenta">{balanceSOL.toFixed(4)} SOL</Typography>
-        <Typography className="balanceUSD" variant="h3">${balanceUSD.toFixed(2)}</Typography>
+        <Typography className={styles.balanceUSD} variant="h3">${balanceUSD.toFixed(2)}</Typography>
       </div>
-      <div className="cardIdentifier">
+      <div className={styles.cardIdentifier}>
         <Typography style={{fontSize: "0.7rem"}}>{cdt}</Typography>
       </div>
     </div>

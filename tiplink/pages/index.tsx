@@ -80,17 +80,13 @@ export default function Home() {
       <WalletAppBar/>
       <div className={styles.container}>
         <main className={styles.main}>
-        <Typography variant="h4">Links are now money</Typography>
-        <Typography>Send crypto to anyone, even if they don't have a wallet.</Typography>
-        <Typography>No app needed!</Typography>
+          <Box className={styles.tagLine}>
+            <Typography variant="h4">Links are now money</Typography>
+            <Typography>Send crypto to anyone, even if they don't have a wallet.</Typography>
+            <Typography>No app needed!</Typography>
+          </Box>
 
-          <Box sx={{
-            m: 2,
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "center",
-            alignItems: "center"
-          }}>
+          <Box className={styles.frontBox} sx={{ m: 2, }}>
             <Typography sx={{m: 2}}>Try it now! How much do you want to send?</Typography>
             <CurrencyInput 
               fiatCurrency='USD' cryptoCurrency='SOL' 
@@ -102,6 +98,19 @@ export default function Home() {
             <Typography>
               Want to deposit value later? <a onClick={onClickEmptyTipLink}>Create an empty TipLink.</a>
             </Typography>
+          </Box>
+
+          <Box className={styles.frontDesc}>
+            <Typography variant='h5' className={styles.howTitle}><u>How it works</u></Typography>
+            <dl>
+              <dt>Create a Tiplink.</dt>
+              <dd>It’s like buying a gift card, create a TipLink by depositing how much you want to send.</dd>
+              <dt>Share a Tiplink.</dt>
+              <dd>Copy the TipLink URL and send it to anyone, or show them the QR code.</dd>
+              <dt>That's it.</dt>
+              <dd>You just sent someone crypto and they can send or use it even if they don’t have a wallet.*</dd>
+            </dl>
+            <Typography className={styles.ps}>*Psst, the TipLink is the wallet!</Typography>
           </Box>
         </main>
         {/* <Footer/> */}
