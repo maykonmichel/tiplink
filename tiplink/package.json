@@ -9,10 +9,11 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@emotion/react": "^11.7.1",
-    "@emotion/styled": "^11.6.0",
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
     "@fontsource/poppins": "^4.5.3",
     "@mui/icons-material": "^5.2.5",
+    "@mui/lab": "^5.0.0-alpha.72",
     "@mui/material": "^5.2.6",
     "@prisma/client": "^3.8.1",
     "@solana/spl-token": "^0.1.6",
