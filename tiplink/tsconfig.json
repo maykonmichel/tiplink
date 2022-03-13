@@ -31,7 +31,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "lib/crypto.tss"  ],
+, "lib/crypto.tss", "components/ui"  ],
   "exclude": [
     "node_modules"
   ]

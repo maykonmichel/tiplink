@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Router from "next/router";
-import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 import { useState, MouseEvent } from "react";
 import { createLink } from "../lib/link";

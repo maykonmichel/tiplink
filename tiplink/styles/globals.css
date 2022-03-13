@@ -17,20 +17,34 @@ a {
 }
 
 .linkCard {
-  max-width: 100%;
-  max-height: 100%;
-  width: "32rem";
-  height: "21rem";
+  max-width: "32rem";
+  position: relative;
 }
 
-.linkCardTop {
-  height: 10rem;
-  display: 'flex';
-  justify-content: 'space-between';
-  align-items: "center";
-  width: "100%";
+.linkCard img {
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+  position: relative;
+  text-align: center;
 }
 
-.solLogoCard {
-  height: 2rem;
+.cardBalance {
+  position: absolute;
+  top: 35%;
+  right: 10%;
+  text-align: center;
 }
+
+.balanceUSD {
+  font-weight: bold;
+}
+
+.cardIdentifier {
+  position: absolute;
+  bottom: 13%;
+  left: 8%;
+}
+ .cardIdText {
+  font-size: 0.7rem;
+ }
