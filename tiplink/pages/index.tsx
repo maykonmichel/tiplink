@@ -9,6 +9,7 @@ import WalletAppBar from '../components/WalletAppBar';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CurrencyInput, {fiatQuickInputDefault, cryptoQuickInputDefault} from '../components/ui/common/CurrencyInput';
+import "@fontsource/poppins";
 
 const createWalletShort = async () => { 
   const {slug, anchor} = await createLink();
@@ -34,11 +35,9 @@ export default function Home() {
       </Head>
       <WalletAppBar/>
       <div className={styles.container}>
-
-
+        <Typography variant="h3">Links are the new money</Typography>
+        <Typography>Send crypto to anyone, even if they don't have a wallet - no app needed!</Typography>
         <main className={styles.main}>
-          <Typography variant="h3">Links are the new money</Typography>
-          <Typography>Send crypto to anyone, even if they don't have a wallet - no app needed!</Typography>
 
           <Box sx={{
             m: 2,

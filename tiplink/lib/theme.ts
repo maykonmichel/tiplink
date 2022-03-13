@@ -15,6 +15,13 @@ const theme = createTheme({
       contrastText: '#000',
     },
   },
+  typography: {
+    "fontFamily": `"Poppins", "Helvetica", "Arial", sans-serif`,
+    "fontSize": 14,
+    "fontWeightLight": 300,
+    "fontWeightRegular": 400,
+    "fontWeightMedium": 500
+   }
 });
 
 export default theme;
