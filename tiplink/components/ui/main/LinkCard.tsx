@@ -21,7 +21,7 @@ const LinkCard = () => {
         <Typography className="balanceUSD" variant="h3">${balanceUSD.toFixed(2)}</Typography>
       </div>
       <div className="cardIdentifier">
-        <Typography className="cardIdText">{cdt}</Typography>
+        <Typography style={{fontSize: "0.7rem"}}>{cdt}</Typography>
       </div>
     </div>
   );
