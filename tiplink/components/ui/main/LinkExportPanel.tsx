@@ -53,8 +53,7 @@ const LinkExportPanel: React.FC<Props> = ({url}) => {
         width="100%"
         style={{
           padding: "1rem 2rem 1rem 2rem",
-          backgroundColor: "#e8f5e9",
-          borderRadius: "4rem",
+          backgroundColor: "#f3f0f3",
           marginTop: "1rem",
         }}>
         <span
