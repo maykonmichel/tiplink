@@ -2,15 +2,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import CircularProgress from "@mui/material/CircularProgress";
 
 type Props = {
   icon: React.ReactNode,
   title: string,
   subtitle: string,
+  loading?: boolean,
   onClick? (): void
 }
 
-const ActionsPanelRow: React.FC<Props> = ({icon, title, subtitle, onClick = () => {}}) => {
+const ActionsPanelRow: React.FC<Props> = ({icon, title, subtitle, loading = false, onClick = () => {}}) => {
   return(
     <ListItem component='div' disablePadding>
       <ListItemButton sx={{padding: '1rem'}} onClick={onClick}>
@@ -22,6 +24,7 @@ const ActionsPanelRow: React.FC<Props> = ({icon, title, subtitle, onClick = () =
             <Typography variant='body1' component='span'>{title}</Typography>
             <Typography variant='body2' component='span'>{subtitle}</Typography>
           </Box>
+          {loading && <CircularProgress/>}
         </Box>
       </ListItemButton>
     </ListItem>
