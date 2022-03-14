@@ -30,7 +30,7 @@ const SLWallet = () => {
         <meta name="description" content="Send tip links with crypto" />
         <meta property="og:title" content="You received some crypto!" />
         <meta property="og:url" content="https://www.tiplink.io" />
-        <meta property="og:image" content="/tiplink-card-preview.png" />
+        <meta property="og:image" content="https://tiplink.io/tiplink-card-preview.png" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {(secretKey !== undefined) ? <Wallet secretKey={secretKey}/> : <Progress/>}

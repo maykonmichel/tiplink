@@ -76,6 +76,9 @@ export default function FrontPage() {
       <Head>
         <title>Tip Link</title>
         <meta name="description" content="Send tip links with crypto" />
+        <meta property="og:title" content="You received some crypto!" />
+        <meta property="og:url" content="https://www.tiplink.io" />
+        <meta property="og:image" content="https://tiplink.io/tiplink-card-preview.png" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <WalletAppBar/>
