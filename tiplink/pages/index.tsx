@@ -28,7 +28,6 @@ export default function Home() {
         <meta property="og:url" content="https://www.tiplink.io" />
         <meta property="og:image" content="http://tiplink.io/tiplink-card-preview.png" />
         <meta property="og:image:width" content="400" />
-        <meta property="og:image:secure_url" content="https://tiplink.io/tiplink-card-preview.png" />
         <meta property="og:image:type" content="image/png" />
         <meta name="twitter:card" content="summary_large_image"/>
         <meta name="twitter:site" content="@TipLinkOfficial"/>
