@@ -1,5 +1,8 @@
 import { SodiumPlus } from "sodium-plus";
 
+export const DEFAULT_TIPLINK_KEYLENGTH = 12;
+export const SEED_LENGTH = 32;
+
 export const xor = (a: Uint8Array, b: Uint8Array) =>  {
   if (a.length !== b.length) {
     throw new Error('Inputs should have the same length')

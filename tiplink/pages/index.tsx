@@ -1,121 +1,29 @@
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
-import Router from "next/router";
-import { Typography } from '@mui/material';
-import { useState, MouseEvent } from "react";
-import { createLink } from "../lib/link";
-import WalletAppBar from '../components/WalletAppBar';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Box from '@mui/material/Box';
-import CurrencyInput, {fiatQuickInputDefault, cryptoQuickInputDefault} from '../components/ui/common/CurrencyInput';
 import "@fontsource/poppins";
-import { useWallet } from '@solana/wallet-adapter-react';
-import { SystemProgram, Transaction, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
-import { useConnection } from '@solana/wallet-adapter-react';
-
-const createWalletShort = async () => { 
-  const {slug, anchor} = await createLink();
-  Router.push("/" + slug + "#" + anchor);
-}
+import FrontPage from "../components/FrontPage";
+import SLWallet from "../components/SLWallet";
+import Progress from "../components/ui/common/Progress";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [ loading, setLoading ] = useState(false);
-  const [inputAmountSOL, setInputAmountSOL ] = useState<number>(NaN);
-  const { connected,  publicKey, sendTransaction  } = useWallet();
-  const { connection } = useConnection();
+  const [ mounted, setMounted ] = useState<boolean>(false);
+  const [ fragment, setFragment ] = useState<string>("");
+  const { asPath } = useRouter();
 
-  const onClickEmptyTipLink = (e: MouseEvent<HTMLElement>) => {
-    if(loading) {
-      return;
+  useEffect(()=>{
+    setMounted(true);
+    const frag = asPath.split('#')[1];
+    if((frag !== undefined) && (frag !== null)) {
+      setFragment(frag);
     }
-    e.preventDefault();
-    setLoading(true);
-    createWalletShort();
-  }
-
-  const onClickCreateTipLink = (e: MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-
-    if(!connected) {
-      alert("Please connect a solana wallet to load value onto a TipLink. Alternatively, create an empty link first.");
-      return;
-    }
-
-    setLoading(true);
-
-    createLink().then(({slug, anchor, keypair}) => {
-      if(keypair.publicKey === null) {
-        alert("Error creating link.");
-        return;
-      }
-
-      if(publicKey === null) {
-        alert("Wallet appears connected, but couldn't get publicKey.");
-        return;
-      }
-
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: keypair.publicKey,
-          lamports: inputAmountSOL * LAMPORTS_PER_SOL
-        })
-      );
-
-      sendTransaction(transaction, connection).then((signature) => {
-        connection.confirmTransaction(signature, 'processed').then((succeeded) => {
-          Router.push("/" + slug + "#" + anchor);
-        }).catch(e => alert("Error confirming transaction: " + e.message));
-      }).catch(e => alert("Error sending transaction: " + e.message));
-    }).catch(e => alert("Error creating link" + e.message));
-  }
+  }, [ asPath ]);
 
   return (
     <div>
-      <Head>
-        <title>Tip Link</title>
-        <meta name="description" content="Send tip links with crypto" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <WalletAppBar/>
-      <div className={styles.container}>
-        <main className={styles.main}>
-          <Box className={styles.tagLine}>
-            <Typography variant="h4">Links are now money</Typography>
-            <Typography>Send crypto to anyone, even if they don't have a wallet.</Typography>
-            <Typography>No app needed!</Typography>
-          </Box>
-
-          <Box className={styles.frontBox} sx={{ m: 2, }}>
-            <Typography sx={{m: 2}}>Try it now! How much do you want to send?</Typography>
-            <CurrencyInput 
-              fiatCurrency='USD' cryptoCurrency='SOL' 
-              fiatQuickInputOptions={fiatQuickInputDefault}
-              cryptoQuickInputOptions={cryptoQuickInputDefault}
-              onValueChange={setInputAmountSOL} 
-            />
-            <LoadingButton sx={{m: 2}} variant="contained" onClick={onClickCreateTipLink} loading={loading}>Create TipLink</LoadingButton>
-            <Typography>
-              Want to deposit value later? <a onClick={onClickEmptyTipLink}>Create an empty TipLink.</a>
-            </Typography>
-          </Box>
-
-          <Box className={styles.frontDesc}>
-            <Typography variant='h5' className={styles.howTitle}><u>How it works</u></Typography>
-            <dl>
-              <dt>Create a Tiplink.</dt>
-              <dd>It’s like buying a gift card, create a TipLink by depositing how much you want to send.</dd>
-              <dt>Share a Tiplink.</dt>
-              <dd>Copy the TipLink URL and send it to anyone, or show them the QR code.</dd>
-              <dt>That's it.</dt>
-              <dd>You just sent someone crypto and they can send or use it even if they don’t have a wallet.*</dd>
-            </dl>
-            <Typography className={styles.ps}>*Psst, the TipLink is the wallet!</Typography>
-          </Box>
-        </main>
-        {/* <Footer/> */}
-
-      </div>
+      {mounted 
+        ? ((fragment === "") ? <FrontPage/> : <SLWallet/>)
+        : <Progress/>
+      }
     </div>
-  )
+  );
 }

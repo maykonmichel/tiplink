@@ -1,26 +1,13 @@
-import Wallet from "../components/wallet";
-import Router from "next/router";
+import Wallet from "./wallet";
 import { useState, useEffect } from "react";
 // @ts-ignore
-import { decode as b58decode, encode as b58encode } from 'bs58';
+import { decode as b58decode } from 'bs58';
 import { Keypair } from "@solana/web3.js";
-import { kdfz, randBuf } from "../lib/crypto";
+import { kdfz } from "../lib/crypto";
+import Progress from "./ui/common/Progress";
 
-const WalletWrapperLong = () => {
+const SLWallet = () => {
   const [secretKey, setSecretKey] = useState<Uint8Array>();
-  const createWallet = () => {
-      const pwLength = 8;
-      randBuf(pwLength).then((b) => Router.push("/wallet#" + b58encode(b)));
-  }
-
-  useEffect(() => {
-    const hash = window.location.hash.substr(1);
-    if(hash === "") {
-      createWallet();
-      return;
-    }
-  }, []);
-
   useEffect(() => {
     try{
       const pw = b58decode(window.location.hash.substr(1));
@@ -37,8 +24,8 @@ const WalletWrapperLong = () => {
   if (secretKey !== undefined){
     return(<Wallet secretKey={secretKey}/>);
   } else {
-    return(<p>Generating wallet...</p>);
+    return(<Progress/>)
   }
 };
 
-export default WalletWrapperLong;
+export default SLWallet;

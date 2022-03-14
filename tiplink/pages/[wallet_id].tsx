@@ -2,8 +2,7 @@ import Wallet from "../components/wallet";
 import { useEffect, useState } from "react";
 import { decode as b58decode } from 'bs58';
 import {kdf} from "../lib/crypto";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import Progress from "../components/ui/common/Progress";
 import { Keypair } from "@solana/web3.js";
 
 const getPrivateKey = async (slug: string) => {
@@ -45,9 +44,7 @@ const WalletWrapper = () => {
     );
   } else {
     return( 
-      <Box style={{display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center"}}>
-        <CircularProgress size={"7rem"} style={{marginTop: "5rem"}}/>
-      </Box>
+      <Progress/>
     );
   }
 };

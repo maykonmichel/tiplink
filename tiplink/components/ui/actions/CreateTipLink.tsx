@@ -6,10 +6,10 @@ import CurrencyInput from '../common/CurrencyInput';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { useLink } from '../../useLink';
-import { PublicKey } from '@solana/web3.js';
-import TextField from '@mui/material/TextField';
-import { createLink } from '../../../lib/link';
 import LinkExportPanel from '../main/LinkExportPanel';
+import { randBuf, DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, kdfz } from '../../../lib/crypto';
+import { Keypair } from '@solana/web3.js';
+import { encode as b58encode} from 'bs58';
 
 const CreateTipLink = () => {
   const { goBack } = useActionState();
@@ -17,6 +17,7 @@ const CreateTipLink = () => {
   const { getFees, sendSOL, balanceSOL } = useLink();
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ newLink, setNewLink ] = useState<string>("");
+
 
   const splitTipLink = async () => {
     // TODO validate PublicKey and amount
@@ -30,23 +31,22 @@ const CreateTipLink = () => {
         return;
     }
 
-    const { slug, anchor, keypair } = await createLink();
-    const nl = window.location.origin + "/" + slug + "#" + anchor;
-
-    try {
-      await sendSOL(keypair.publicKey, amt);
-    } catch(err) {
-        if(err instanceof Error) {
-            alert(err.message);
-            setLoading(false);
-            return;
-        }
-    }
-    setLoading(false);
-    setNewLink(nl);
+    randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => {
+      kdfz(SEED_LENGTH, b).then((seed: Buffer) => {
+        const kp = Keypair.fromSeed(seed);
+        sendSOL(kp.publicKey, amt).then(() => {
+          setLoading(false);
+          setNewLink(window.location.origin + "#" + b58encode(b));
+        }).catch((err) => {
+          if(err instanceof Error) {
+              alert(err.message);
+              setLoading(false);
+              return;
+          }
+        });
+      })
+    });
   };
-
-  // TODO loading state
 
   return (
     <Box width='100%'>
