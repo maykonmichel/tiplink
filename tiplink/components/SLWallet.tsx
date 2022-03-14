@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Wallet from "./wallet";
 import { useState, useEffect } from "react";
 // @ts-ignore
@@ -21,11 +22,20 @@ const SLWallet = () => {
     }
   }, []);
 
-  if (secretKey !== undefined){
-    return(<Wallet secretKey={secretKey}/>);
-  } else {
-    return(<Progress/>)
-  }
+
+  return(
+    <div>
+      <Head>
+        <title>Tip Link</title>
+        <meta name="description" content="Send tip links with crypto" />
+        <meta property="og:title" content="You received some crypto!" />
+        <meta property="og:url" content="https://www.tiplink.io" />
+        <meta property="og:image" content="/tiplink-card-preview.png" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      {(secretKey !== undefined) ? <Wallet secretKey={secretKey}/> : <Progress/>}
+    </div>
+  );
 };
 
 export default SLWallet;
