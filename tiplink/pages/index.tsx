@@ -29,6 +29,9 @@ export default function Home() {
         <meta property="og:image" content="http://tiplink.io/tiplink-card-preview.png" />
         <meta property="og:image:secure_url" content="https://tiplink.io/tiplink-card-preview.png" />
         <meta property="og:image:type" content="image/png" />
+        <meta name="twitter:card" content="summary_large_image"/>
+        <meta name="twitter:title" content="You received some crypto!"/>
+        <meta name="twitter:image" content="https://tiplink.io/tiplink-card-preview.png"/>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {mounted 
