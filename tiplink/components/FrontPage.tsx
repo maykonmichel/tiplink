@@ -14,7 +14,7 @@ import { randBuf, DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, kdfz } from '../lib/cr
 import { encode as b58encode, decode as b58decode } from 'bs58';
 
 const createWalletShort = async () => { 
-  randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => Router.push("/wallet#" + b58encode(b)));
+  randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => Router.push("#" + b58encode(b)));
 }
 
 export default function FrontPage() {
