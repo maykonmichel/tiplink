@@ -1,4 +1,5 @@
 import "@fontsource/poppins";
+import Head from "next/head";
 import FrontPage from "../components/FrontPage";
 import SLWallet from "../components/SLWallet";
 import Progress from "../components/ui/common/Progress";
@@ -20,6 +21,16 @@ export default function Home() {
 
   return (
     <div>
+      <Head>
+        <title>Tip Link</title>
+        <meta name="description" content="Send tip links with crypto" />
+        <meta property="og:title" content="You received some crypto!" />
+        <meta property="og:url" content="https://www.tiplink.io" />
+        <meta property="og:image" content="http://tiplink.io/tiplink-card-preview.png" />
+        <meta property="og:image:secure_url" content="https://tiplink.io/tiplink-card-preview.png" />
+        <meta property="og:image:type" content="image/png" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       {mounted 
         ? ((fragment === "") ? <FrontPage/> : <SLWallet/>)
         : <Progress/>
