@@ -27,7 +27,7 @@ const WithEndpoint  : FC<GlobalContextWrapperProps> = ({ children }) => {
     );
     return (
         <ConnectionProvider endpoint={endpointUrl}>
-            <WalletProvider wallets={wallets}>
+            <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
                     {children}
                 </WalletModalProvider>
