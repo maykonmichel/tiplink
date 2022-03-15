@@ -15,7 +15,7 @@ const Wallet = (props: {secretKey: Uint8Array}) => {
       localStorage.setItem(key, "true");
     } else {
       localStorage.setItem(key, "false")
-      console.error("failed to insert publicKey ", linkKeypair.publicKey.toBase58());
+      // console.error("failed to insert publicKey ", linkKeypair.publicKey.toBase58());
     }
   }
   useEffect(() => {

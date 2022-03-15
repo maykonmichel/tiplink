@@ -52,8 +52,8 @@ export const insertPublicKey = (k: PublicKey, onInsert: (success: boolean) => vo
   const msg = createMsg({publicKey: k.toBase58()});
   const endpoint = window.location.origin + "/api/insert_public_key";
   fetch(endpoint, msg).then((rr) => {
-    rr.json().then((content) => {
-      onInsert(content.success);
-    }).catch((err) => console.error("Error converting insertPublicKey resp to json", err)).finally(() => onInsert(false))
-  }).catch((err) => console.error("Error inserting publicKey", err)).finally(() => onInsert(false));
+    onInsert(rr.status == 200);
+  }).catch( () => {
+    onInsert(false);
+  });
 }

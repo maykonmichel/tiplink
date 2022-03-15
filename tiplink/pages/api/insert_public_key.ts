@@ -8,7 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const public_key: Array<string> = await prisma.$queryRaw`insert into address (public_key) values (${req.body.publicKey}) RETURNING public_key`
       res.status(200).json({success: (public_key !== null)});
     } catch(err) {
-      res.status(500).json({success: false, messages: [err]});
+      res.status(303).json({success: false, messages: [err]});
     } finally {
       prisma.$disconnect();
     }
