@@ -8,8 +8,14 @@ datasource db {
 }
 
 model wallet {
-  id     String  @id @default(dbgenerated("generate_uid((nextval('id_serial'::regclass))::integer, 6, 'tiplink_salt'::text)"))
+  id     String    @id @default(dbgenerated("generate_uid((nextval('id_serial'::regclass))::integer, 6, 'tiplink_salt'::text)"))
   pubkey String?
   cipher String?
   salt   String?
+  ts     DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model address {
+  public_key String    @id
+  created    DateTime? @default(now()) @db.Timestamp(6)
 }

@@ -1,11 +1,22 @@
 import { encode as b58encode } from 'bs58';
-import  { Keypair } from '@solana/web3.js';
+import  { Keypair, PublicKey } from '@solana/web3.js';
 import { getSalt, randBuf, kdf } from "./crypto";
 
 export type LinkMeta  = {
     slug: string;
     anchor: string;
 };
+
+const createMsg = (o: Object) => {
+  return {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(o)
+  };
+}
 
 export const createLink = async () => { 
   // generate short pw that lives in anchor
@@ -29,19 +40,20 @@ export const createLink = async () => {
   // console.log("derived pk: ", xor(serverKey, pw));
 
   const endpoint = window.location.origin + "/api/create_wallet";
-  const msg = {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      pubkey: kp.publicKey.toBase58(),
-      salt: b58encode(salt)
-    })
-  };
+  const msg = createMsg({pubkey: kp.publicKey.toBase58(), salt: b58encode(salt)});
   const rawResponse = await fetch(endpoint, msg);
   const content = await rawResponse.json();
   const slug = content.slug;
   return {slug: slug, anchor: anchor, keypair: kp};
+}
+
+
+export const insertPublicKey = (k: PublicKey, onInsert: (success: boolean) => void = () => {}) => {
+  const msg = createMsg({publicKey: k.toBase58()});
+  const endpoint = window.location.origin + "/api/insert_public_key";
+  fetch(endpoint, msg).then((rr) => {
+    rr.json().then((content) => {
+      onInsert(content.success);
+    }).catch((err) => console.error("Error converting insertPublicKey resp to json", err)).finally(() => onInsert(false))
+  }).catch((err) => console.error("Error inserting publicKey", err)).finally(() => onInsert(false));
 }
