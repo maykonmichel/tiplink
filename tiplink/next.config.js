@@ -1,13 +1,14 @@
 // next.config.js
 
 // https://nextjs.org/docs/advanced-features/security-headers
-const ContentSecurityPolicy = `
-  default-src 'self';
-  script-src 'self';
-  child-src 'self';
-  style-src 'self';
-  font-src 'self';  
-`
+// const ContentSecurityPolicy = `
+//   default-src 'self';
+//   script-src 'self';
+//   child-src 'self';
+//   style-src 'self';
+//   font-src 'self';  
+// `
+
 const securityHeaders = [
   // just for perf
   {key: 'X-DNS-Prefetch-Control', value: 'on'},
@@ -20,7 +21,7 @@ const securityHeaders = [
   // strip referrer always
   {key: 'Referrer-Policy', value: 'no-referrer'},
   // the bulk of xss protection is this guy
-  {key: 'Content-Security-Policy', value: ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim()}
+  // {key: 'Content-Security-Policy', value: ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim()}
 ]
 
 module.exports = {
