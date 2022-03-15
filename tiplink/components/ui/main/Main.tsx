@@ -23,6 +23,8 @@ const Main = () => {
     setUrl(window.location.href);
   }, []);
 
+  const topText = isNaN(balanceUSD) ? 'Loading balance...' : 'This is ' + balanceUSD.toFixed(2) + ' in crypto.';
+
   return(
     <div>
       <WalletAppBar/>
@@ -36,7 +38,7 @@ const Main = () => {
                 width='100%'
                 marginTop='4rem'
                 textAlign='center'>
-                <Typography component='div' variant='h5'>This is ${balanceUSD.toFixed(2)} in crypto.</Typography>
+                <Typography component='div' variant='h5'>{topText}</Typography>
                 <Typography component='div'>The link to this page contains this value, make sure you don't lose it!</Typography>
                 <LinkExportPanel url={url}/>
               </Box>

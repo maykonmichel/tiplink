@@ -18,8 +18,8 @@ const LinkCard = () => {
     <div className={styles.linkCard}>
       <img src="/tiplink-card.png"/>
       <div className={styles.cardBalance}>
-        <Typography color="magenta">{balanceSOL.toFixed(4)} SOL</Typography>
-        <Typography className={styles.balanceUSD} variant="h3">${balanceUSD.toFixed(2)}</Typography>
+        {!isNaN(balanceSOL) && <Typography color="magenta">{balanceSOL.toFixed(4)} SOL</Typography>}
+        {!isNaN(balanceUSD) && <Typography className={styles.balanceUSD} variant="h3">${balanceUSD.toFixed(2)}</Typography>}
       </div>
       <div className={styles.cardIdentifier}>
         <Typography style={{fontSize: "0.7rem"}}>{cdt}</Typography>
