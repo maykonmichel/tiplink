@@ -24,7 +24,8 @@ export default function Home() {
       <Head>
         <title>Tip Link</title>
         <meta name="description" content="Send tip links with crypto" />
-        <meta property="og:title" content="You received some crypto!" />
+        {/* <meta property="og:title" content="You received some crypto!" /> */}
+        <meta property="og:title" content="Create a TipLink" />
         <meta property="og:url" content="https://www.tiplink.io" />
         <meta property="og:image" content="https://tiplink.io/tiplink-card-preview.png" />
         <meta property="og:image:width" content="400" />
