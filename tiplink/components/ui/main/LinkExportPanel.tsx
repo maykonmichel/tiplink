@@ -5,15 +5,17 @@ import Typography from "@mui/material/Typography";
 import {
   ContentCopy as IconCopy,
   BookmarkBorder as IconBookmark,
-  QrCodeRounded as IconQrCode,
+  QrCodeRounded as IconQrCode
 } from "@mui/icons-material";
+import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import QrModal from "../common/QrModal";
 import React from "react";
 
 type Props = {
   url: string;
+  newTab?: boolean;
 }
-const LinkExportPanel: React.FC<Props> = ({url}) => {
+const LinkExportPanel: React.FC<Props> = ({url, newTab=false}) => {
   const [qrOpen, setQrOpen] = useState(false);
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -47,6 +49,12 @@ const LinkExportPanel: React.FC<Props> = ({url}) => {
     setQrOpen(false);
   };
 
+  const openInNewTab = () => {
+    if((window !== undefined) && (window !== null)) {
+      window?.open(url, '_blank')?.focus();
+    }
+  }
+
   return (
     <Box>
       <Box
@@ -67,7 +75,10 @@ const LinkExportPanel: React.FC<Props> = ({url}) => {
       </Box>
       <Box sx={{ display: "flex", gap: "1rem", width: "100%", marginTop: "1rem" }}>
         {renderButton(copied ? "Copied" : "Copy", <IconCopy />, copy)}
-        {renderButton("Bookmark", <IconBookmark />, bookmark)}
+        { newTab ? 
+        renderButton("Open", <OpenInNewRoundedIcon/>, openInNewTab) : 
+        renderButton("Bookmark", <IconBookmark />, bookmark)  
+        }
         {renderButton("QR Code", <IconQrCode />, () => {
           setQrOpen(true);
         })}
