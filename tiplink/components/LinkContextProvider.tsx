@@ -5,6 +5,7 @@ import { Keypair, PublicKey, AccountInfo, Context,
 } from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import useExchangeRate from './useExchangeRate';
+import { sendAndConfirmWithRetry } from '../lib/transaction';
 
 const FEE_MULT = 3;
 
@@ -68,19 +69,25 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
 
 
     const sendSOL = async (destination: PublicKey, amt: number) => {
-        const transaction = new Transaction().add(
+        const transaction = new Transaction({
+            feePayer: linkKeypair.publicKey,
+            recentBlockhash: (await connection.getRecentBlockhash()).blockhash
+        }).add(
             SystemProgram.transfer({
                 fromPubkey: linkKeypair.publicKey,
                 toPubkey: destination,
                 lamports: amt * LAMPORTS_PER_SOL,
             }),
         );
-        return await sendAndConfirmTransaction(
+        transaction.sign(linkKeypair);
+        const rawTransaction = transaction.serialize({requireAllSignatures: false});
+        const res = await sendAndConfirmWithRetry(
             connection,
-            transaction,
-            [linkKeypair],
-            {maxRetries: 5, commitment: 'processed'},
+            rawTransaction,
+            {maxRetries: 5},
+            'processed'
         );
+        return res.txid;
     };
 
     const airdrop = async (amt: number) => {
