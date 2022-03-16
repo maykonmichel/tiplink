@@ -1,11 +1,13 @@
 import "@fontsource/poppins";
 import Head from "next/head";
 import FrontPage from "../components/FrontPage";
+import Header from "../components/ui/common/Header";
 import SLWallet from "../components/SLWallet";
 import Progress from "../components/ui/common/Progress";
 import Footer from "../components/ui/common/Footer";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import styles from "../styles/Home.module.css";
 
 export default function Home() {
   const [ mounted, setMounted ] = useState<boolean>(false);
@@ -39,11 +41,14 @@ export default function Home() {
         <meta name="twitter:image" content="http://tiplink.io/tiplink-card-preview.png"/>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {mounted 
-        ? ((fragment === "") ? <FrontPage/> : <SLWallet/>)
-        : <Progress/>
-      }
-      <Footer/>
+      <div className={styles.wrap}>
+        <Header/>
+        {mounted 
+          ? ((fragment === "") ? <FrontPage/> : <SLWallet/>)
+          : <Progress/>
+        }
+        <Footer/>
+      </div>
     </div>
   );
 }

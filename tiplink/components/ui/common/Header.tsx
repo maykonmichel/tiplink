@@ -1,15 +1,17 @@
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-import styles from '../styles/Home.module.css';
+import styles from '../../../styles/Home.module.css';
 import Typography from '@mui/material/Typography';
 require('@solana/wallet-adapter-react-ui/styles.css');
 import {
-  WalletDisconnectButton,
   WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 
-const WalletAppBar = () => {
+type HeaderProps = {
+    showWalletButton?: boolean;
+}
+const Header = ({showWalletButton=true}: HeaderProps) => {
   return(
       <AppBar color='transparent' position='relative' className='appbar' elevation={0} sx={{padding: '1rem'}}>
         <Toolbar>
@@ -18,11 +20,11 @@ const WalletAppBar = () => {
             <Typography className={styles.tiplinkBeta}>BETA</Typography>
           </Box>
           <Box sx={{display: 'flex', gap: '1rem'}}>
-            <WalletMultiButton/>
+            {showWalletButton && <WalletMultiButton/>}
           </Box>
         </Toolbar>
       </AppBar>
   );
 }
 
-export default WalletAppBar;
+export default Header;

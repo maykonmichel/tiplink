@@ -1,9 +1,7 @@
-import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import Router from "next/router";
 import { Typography } from '@mui/material';
 import { useState, MouseEvent } from "react";
-import WalletAppBar from './WalletAppBar';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import CurrencyInput, {fiatQuickInputDefault, cryptoQuickInputDefault} from './ui/common/CurrencyInput';
@@ -73,7 +71,6 @@ export default function FrontPage() {
 
   return (
     <div>
-      <WalletAppBar/>
       <div className={styles.container}>
         <main className={styles.main}>
           <Box className={styles.tagLine}>

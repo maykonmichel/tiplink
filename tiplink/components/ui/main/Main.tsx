@@ -9,9 +9,6 @@ import LinkExportPanel from './LinkExportPanel';
 import LinkCard from './LinkCard';
 import ActionsPanel from "../actions/ActionsPanel";
 import { useState, useEffect } from "react";
-import WalletAppBar from '../../WalletAppBar';
-import Paper from '@mui/material/Paper';
-import CardBackground from '../../../public/tiplink-card.png';
 
 
 const Main = () => {
@@ -27,7 +24,6 @@ const Main = () => {
 
   return(
     <div>
-      <WalletAppBar/>
       <div className={styles.container}>
         <main className={styles.main}>
           <Grid
