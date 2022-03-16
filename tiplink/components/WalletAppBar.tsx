@@ -1,5 +1,6 @@
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 require('@solana/wallet-adapter-react-ui/styles.css');
 import {
@@ -9,11 +10,14 @@ import {
 
 const WalletAppBar = () => {
   return(
-      <AppBar color="transparent" position="relative" className='appbar' elevation={0}>
+      <AppBar color='transparent' position='relative' className='appbar' elevation={0} sx={{padding: '1rem'}}>
         <Toolbar>
-          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}></Typography>
-          <WalletMultiButton/>
-          <WalletDisconnectButton/>
+          <Box component='div' sx={{ flexGrow: 1 }}> 
+            <img src='/tiplink-logo.png' width='200px'/>
+          </Box>
+          <Box sx={{display: 'flex', gap: '1rem'}}>
+            <WalletMultiButton/>
+          </Box>
         </Toolbar>
       </AppBar>
   );
