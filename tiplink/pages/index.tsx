@@ -3,7 +3,7 @@ import Head from "next/head";
 import FrontPage from "../components/FrontPage";
 import SLWallet from "../components/SLWallet";
 import Progress from "../components/ui/common/Progress";
-import Footer from "../components/ui/Footer";
+import Footer from "../components/ui/common/Footer";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
