@@ -12,8 +12,9 @@ const WalletAppBar = () => {
   return(
       <AppBar color='transparent' position='relative' className='appbar' elevation={0} sx={{padding: '1rem'}}>
         <Toolbar>
-          <Box component='div' sx={{ flexGrow: 1 }}> 
+          <Box component='div' sx={{ display: "flex", flexGrow: 1, flexDirection: "row" }}> 
             <img src='/tiplink-logo.png' width='200px'/>
+            <Typography variant="h6" style={{marginLeft: '0.5rem'}}>BETA</Typography>
           </Box>
           <Box sx={{display: 'flex', gap: '1rem'}}>
             <WalletMultiButton/>
