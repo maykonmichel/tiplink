@@ -77,7 +77,7 @@ const CreateTipLink = () => {
           </Box>
         </div>
         : 
-        <LinkExportPanel url={newLink}/>
+        <LinkExportPanel url={newLink} newTab={true}/>
       }
     </Box>
   );
