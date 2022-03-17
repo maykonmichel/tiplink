@@ -32,7 +32,6 @@ const Main = () => {
             alignItems='center'>
               <Box 
                 width='100%'
-                marginTop='4rem'
                 textAlign='center'>
                 <Typography component='div' variant='h5'>{topText}</Typography>
                 <Typography component='div'>The link to this page contains this value, make sure you don't lose it!</Typography>

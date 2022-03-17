@@ -203,20 +203,39 @@
   text-align: center;
 }
 
-.tiplinkLogo {
+.toolbar, .poweredBy  {
+  display: none;
+}
+.poweredBy a {
+  text-decoration: none;
+}
+
+@media (min-width:38rem)  { 
+   .toolbar{
+    display: flex;
+  }
+  .poweredBy{
+    display: inline;
+  }
+}
+
+.mobileLogoBar{
   display: none;
 }
 
-.tiplinkBeta {
-  display: none;
+@media (max-width:38rem)  { 
+  .mobileLogoBar{
+    display: block;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
 }
-@media (min-width:38rem)  { 
-  .tiplinkLogo {
-    display: inline;
-  }
-  .tiplinkBeta {
-    display: inline;
-  }
+.mobileLogoContainer {
+  display: flex;
+  flex-direction: row;
+  align-self: center;
+  justify-content: space-around;
 }
 
 .faqItem {
@@ -248,9 +267,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 1rem;
 }
+
 
 .footer a {
   display: flex;
