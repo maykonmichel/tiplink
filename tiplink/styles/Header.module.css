@@ -1,15 +1,16 @@
-.mobileLogoContainer {
+.logoContainer {
   display: flex;
   flex-direction: row;
   align-self: center;
   justify-content: space-around;
 }
 
-.toolbar {
-  display: none;
+.walletContainer {
+    display: flex;
+    justify-content: space-around;
 }
 
-.mobileLogoBar{
+.toolbar{
     display: block;
     align-items: center;
     text-align: center;
@@ -19,9 +20,7 @@
 @media (min-width:38rem)  { 
   .toolbar {
     display: flex;
+    justify-content: space-between;
   }
-  .mobileLogoBar {
-    display: none;
- }
 }
 

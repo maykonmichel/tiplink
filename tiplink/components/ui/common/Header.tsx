@@ -11,32 +11,34 @@ import {
 type HeaderProps = {
     showWalletButton?: boolean;
 }
+
+const Logo = () => {
+  return(
+    <div  className={styles.logoContainer}> 
+      <div style={{display: "flex", flexDirection: "row"}}>
+        <a href='/' rel="noopener noreferrer">
+          <img  src='/tiplink-logo.png' width='200px'/>
+        </a>
+      <Typography>BETA</Typography>
+      </div>
+    </div>
+  );
+}
+
+const WalletButton = ({showWalletButton}: HeaderProps) => {
+  return(
+    <Box className={styles.walletContainer}>
+        {showWalletButton && <WalletMultiButton/>}
+    </Box>
+  );
+}
+
 const Header = ({showWalletButton=true}: HeaderProps) => {
   return(
       <AppBar color='transparent' position='relative' className='appbar' elevation={0} sx={{padding: '1rem'}}>
-        <div className={styles.mobileLogoBar}>
-            <div  className={styles.mobileLogoContainer}> 
-                <div style={{display: "flex", flexDirection: "row"}}>
-                    <a href='/' rel="noopener noreferrer">
-                        <img  src='/tiplink-logo.png' width='200px'/>
-                    </a>
-                    <Typography>BETA</Typography>
-                </div>
-            </div>
-            <Box sx={{display: 'flex', gap: '1rem', justifyContent: 'space-around'}}>
-                {showWalletButton && <WalletMultiButton/>}
-            </Box>
-        </div>
         <Toolbar className={styles.toolbar}>
-            <Box component='div' sx={{ display: "flex", flexGrow: 1, flexDirection: "row" }}> 
-                <a href='/' rel="noopener noreferrer">
-                    <img  src='/tiplink-logo.png' width='200px'/>
-                </a>
-                <Typography>BETA</Typography>
-            </Box>
-            <Box sx={{display: 'flex', gap: '1rem'}}>
-                {showWalletButton && <WalletMultiButton/>}
-            </Box>
+            <Logo/>
+            <WalletButton showWalletButton={showWalletButton}/>
         </Toolbar>
       </AppBar>
   );
