@@ -15,13 +15,15 @@ const Header = ({showWalletButton=true}: HeaderProps) => {
   return(
       <AppBar color='transparent' position='relative' className='appbar' elevation={0} sx={{padding: '1rem'}}>
         <Toolbar>
-          <Box component='div' sx={{ display: "flex", flexGrow: 1, flexDirection: "row" }}> 
-            <img className={styles.tiplinkLogo} src='/tiplink-logo.png' width='200px'/>
-            <Typography className={styles.tiplinkBeta}>BETA</Typography>
-          </Box>
-          <Box sx={{display: 'flex', gap: '1rem'}}>
-            {showWalletButton && <WalletMultiButton/>}
-          </Box>
+            <Box component='div' sx={{ display: "flex", flexGrow: 1, flexDirection: "row" }}> 
+                <a href='/' rel="noopener noreferrer">
+                    <img className={styles.tiplinkLogo} src='/tiplink-logo.png' width='200px'/>
+                </a>
+                <Typography className={styles.tiplinkBeta}>BETA</Typography>
+            </Box>
+            <Box sx={{display: 'flex', gap: '1rem'}}>
+                {showWalletButton && <WalletMultiButton/>}
+            </Box>
         </Toolbar>
       </AppBar>
   );
