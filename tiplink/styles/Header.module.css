@@ -11,15 +11,14 @@
 }
 
 .toolbar{
-    display: block;
-    align-items: center;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
 }
 
-@media (min-width:650px)  { 
+@media (min-width:38rem)  { 
   .toolbar {
-    display: flex;
+    flex-direction: row;
     justify-content: space-between;
   }
 }
