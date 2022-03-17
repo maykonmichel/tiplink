@@ -258,3 +258,21 @@
   align-items: center;
   flex-grow: 1;
 }
+
+.footerLinks {
+  display: flex;
+  flex-direction: row;
+}
+.footerLinks *{
+  margin: 0.25rem;
+}
+
+.footerSocial {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.footerSocial a {
+  text-decoration: none;
+}
