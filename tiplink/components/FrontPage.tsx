@@ -1,4 +1,4 @@
-import styles from '../styles/Home.module.css';
+import styles from '../styles/FrontPage.module.css';
 import Router from "next/router";
 import { Typography } from '@mui/material';
 import { useState, MouseEvent } from "react";
@@ -71,8 +71,8 @@ export default function FrontPage() {
 
   return (
     <div>
-      <div className={styles.container}>
-        <main className={styles.main}>
+      <div className='container'>
+        <main className='main'>
           <Box className={styles.tagLine}>
             <Typography variant="h4">Links are now money</Typography>
             <Typography>Send crypto to anyone, even if they don't have a wallet.</Typography>

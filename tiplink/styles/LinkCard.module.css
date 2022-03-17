@@ -1,0 +1,29 @@
+.linkCard {
+  max-width: "32rem";
+  position: relative;
+}
+
+.linkCard img {
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+  position: relative;
+  text-align: center;
+}
+
+.cardBalance {
+  position: absolute;
+  top: 35%;
+  right: 10%;
+  text-align: center;
+}
+
+.balanceUSD {
+  font-weight: bold;
+}
+
+.cardIdentifier {
+  position: absolute;
+  bottom: 13%;
+  left: 8%;
+}

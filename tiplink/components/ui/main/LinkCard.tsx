@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography";
-import styles from '../../../styles/Home.module.css'
+import styles from '../../../styles/LinkCard.module.css'
 import { useLink } from "../../useLink";
 
 const LinkCard = () => {

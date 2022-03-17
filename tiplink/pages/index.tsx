@@ -7,7 +7,6 @@ import Progress from "../components/ui/common/Progress";
 import Footer from "../components/ui/common/Footer";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import styles from "../styles/Home.module.css";
 
 export default function Home() {
   const [ mounted, setMounted ] = useState<boolean>(false);
@@ -41,7 +40,7 @@ export default function Home() {
         <meta name="twitter:image" content="http://tiplink.io/tiplink-card-preview.png"/>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className={styles.wrap}>
+      <div className='wrap'>
         <Header/>
         {mounted 
           ? ((fragment === "") ? <FrontPage/> : <SLWallet/>)

@@ -1,0 +1,25 @@
+.logoContainer {
+  display: flex;
+  flex-direction: row;
+  align-self: center;
+  justify-content: space-around;
+}
+
+.walletContainer {
+    display: flex;
+    justify-content: space-around;
+}
+
+.toolbar{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (min-width:38rem)  { 
+  .toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+

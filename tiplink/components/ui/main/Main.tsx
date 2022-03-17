@@ -1,6 +1,4 @@
 import { useLink } from '../../useLink';
-
-import styles from '../../../styles/Home.module.css'
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -24,15 +22,14 @@ const Main = () => {
 
   return(
     <div>
-      <div className={styles.container}>
-        <main className={styles.main}>
+      <div className='container'>
+        <main className='main'>
           <Grid
             container
             direction='column'
             alignItems='center'>
               <Box 
                 width='100%'
-                marginTop='4rem'
                 textAlign='center'>
                 <Typography component='div' variant='h5'>{topText}</Typography>
                 <Typography component='div'>The link to this page contains this value, make sure you don't lose it!</Typography>
