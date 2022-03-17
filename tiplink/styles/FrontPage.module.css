@@ -1,0 +1,59 @@
+.frontDesc {
+  align-items: center;
+  vertical-align: center;
+  justify-content: center;
+}
+
+.tagLine {
+  text-align: center;
+}
+
+.frontBox {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #EAEDF3;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0px 1px 3px #0000000A;
+}
+
+.frontDesc {
+  margin-top: 2rem;
+}
+.frontDesc dt {
+  display: list-item;
+  list-style-type: decimal;
+  list-style-position: inside;
+  font: normal normal medium Poppins;
+  letter-spacing: 0px;
+  color: #222222;
+  opacity: 1;
+  margin-top: 1rem;
+}
+.frontDesc  dd {
+  margin-inline-start: 0rem;
+  text-align: left;
+  font: normal normal normal  Poppins;
+  letter-spacing: 0px;
+  color: #787878;
+  opacity: 1;
+}
+
+.howTitle {
+  text-align: center;
+  font: normal normal normal Poppins;
+  letter-spacing: 0px;
+  color: #000000;
+  opacity: 1;
+}
+
+.ps {
+  text-align: left;
+  font: normal normal normal  Poppins;
+  letter-spacing: 0px;
+  color: #787878;
+  opacity: 1;
+}

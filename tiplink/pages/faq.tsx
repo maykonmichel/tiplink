@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Footer from "../components/ui/common/Footer";
 import { Typography } from "@mui/material";
-import styles from '../styles/Home.module.css';
+import styles from '../styles/FAQ.module.css';
 import "@fontsource/poppins";
 import Header from "../components/ui/common/Header";
 
@@ -18,7 +18,7 @@ const FAQTitle = ({title}: TitleProps) => {
 
 const FAQContent = () => {
     return(
-        <div className={styles.container}>
+        <div className='container'>
             <header>
                 <Typography variant='h2'>FAQ</Typography>
             </header>
@@ -67,11 +67,9 @@ export default function FAQ() {
             <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <div className={styles.wrap}>
+        <div className='wrap'>
             <Header showWalletButton={false}/>
-            <div className={styles.content}>
-                <FAQContent/>
-            </div>
+            <FAQContent/>
             <Footer/>
         </div>
     </div>

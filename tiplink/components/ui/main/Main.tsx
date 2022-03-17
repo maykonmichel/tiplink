@@ -1,6 +1,4 @@
 import { useLink } from '../../useLink';
-
-import styles from '../../../styles/Home.module.css'
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -24,8 +22,8 @@ const Main = () => {
 
   return(
     <div>
-      <div className={styles.container}>
-        <main className={styles.main}>
+      <div className='container'>
+        <main className='main'>
           <Grid
             container
             direction='column'

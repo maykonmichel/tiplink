@@ -1,7 +1,7 @@
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-import styles from '../../../styles/Home.module.css';
+import styles from '../../../styles/Header.module.css';
 import Typography from '@mui/material/Typography';
 require('@solana/wallet-adapter-react-ui/styles.css');
 import {

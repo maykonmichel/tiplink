@@ -1,4 +1,4 @@
-import styles from '../../../styles/Home.module.css';
+import styles from '../../../styles/Footer.module.css';
 import { Twitter } from '@mui/icons-material';
 import { Copyright } from '@mui/icons-material';
 import 'material-icons/iconfont/material-icons.css';

@@ -1,0 +1,28 @@
+.toolbar {
+  display: none;
+}
+
+@media (min-width:38rem)  { 
+   .toolbar{
+    display: flex;
+  }
+}
+
+.mobileLogoBar{
+  display: none;
+}
+
+@media (max-width:38rem)  { 
+  .mobileLogoBar{
+    display: block;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+}
+.mobileLogoContainer {
+  display: flex;
+  flex-direction: row;
+  align-self: center;
+  justify-content: space-around;
+}
