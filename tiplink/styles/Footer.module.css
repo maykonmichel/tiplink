@@ -48,7 +48,7 @@
   text-decoration: none;
 }
 
-@media (min-width:43em)  { 
+@media (min-width:650px)  { 
   .poweredBy{
     display: inline;
   }
