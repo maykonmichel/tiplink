@@ -29,7 +29,8 @@ export default function Footer() {
           target="_blank" rel="noopener noreferrer">
             <Twitter />
           </a>
-          <a href="#" onClick={(e) => {e.preventDefault(); return false;}}>
+          <a href="https://discord.gg/4bXYT7dxR3" 
+          target="_blank" rel="noopener noreferrer">
             <span className='material-icons'>discord</span>
           </a>
         </div>
