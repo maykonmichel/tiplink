@@ -29,9 +29,9 @@ export const fiatQuickInputDefault=[
 ];
 
 export const cryptoQuickInputDefault = [
-  {label: '0.1', inputValue: '0.1'},
-  {label: '0.2', inputValue: '0.2'},
-  {label: '0.5', inputValue: '0.5'},
+  {label: '0.01', inputValue: '0.01'},
+  {label: '0.02', inputValue: '0.02'},
+  {label: '0.05', inputValue: '0.05'},
 ];
 
 const CurrencyInput: React.FC<Props> = ({
