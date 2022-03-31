@@ -13,7 +13,7 @@ type LinkContent = {
     balanceSOL: number;
     balanceUSD: number;
     airdrop(amt: number): Promise<RpcResponseAndContext<SignatureResult>>;
-    deposit(amt: number): Promise<void>;
+    deposit(amt: number): Promise<TransactionSignature | undefined>;
     extConnected: boolean;
     extPublicKey: PublicKey | null;
     scheduleBalanceUpdate(t: number): void;

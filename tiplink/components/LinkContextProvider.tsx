@@ -3,7 +3,7 @@ import { LinkContext, BalanceCallback } from './useLink';
 import { Keypair, PublicKey, AccountInfo, Context, 
     Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL, 
 } from '@solana/web3.js';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet, WalletContextState } from '@solana/wallet-adapter-react';
 import useExchangeRate from './useExchangeRate';
 import { sendAndConfirmWithRetry } from '../lib/transaction';
 
@@ -16,7 +16,7 @@ export interface LinkProviderProps {
 
 export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) => {
     const { connection } = useConnection();
-    const { connected: extConnected, publicKey: extPublicKey, sendTransaction: extSendTransaction} = useWallet();
+    const { connected: extConnected, publicKey: extPublicKey, sendTransaction: extSendTransaction, signTransaction: extSignTransaction} = useWallet();
     // in Lamportsj
     const [ balance, setBalance ] = useState(NaN);
     // in USD / SOL
@@ -67,6 +67,32 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         );
     }, []);
 
+    const transactSOL = async (wallet: WalletContextState, dest: PublicKey, amt: number) => {
+        if((wallet.publicKey === null) || (wallet.signTransaction === undefined)) {
+            return(null);
+        }
+
+        const transaction = new Transaction({
+            feePayer: wallet.publicKey,
+            recentBlockhash: (await connection.getRecentBlockhash()).blockhash
+        }).add(
+            SystemProgram.transfer({
+                fromPubkey: wallet.publicKey,
+                toPubkey: dest,
+                lamports: amt * LAMPORTS_PER_SOL,
+            }),
+        );
+        const signed = await wallet.signTransaction(transaction);
+        const rawTransaction = signed.serialize({requireAllSignatures: false});
+        const res = await sendAndConfirmWithRetry(
+            connection,
+            rawTransaction,
+            {maxRetries: 5},
+            'processed'
+        );
+        return res.txid;
+    }
+
 
     const sendSOL = async (destination: PublicKey, amt: number) => {
         const transaction = new Transaction({
@@ -103,9 +129,10 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         setTimeout(() => {updateBalance();}, t);
     }
 
+    // TODO refactor
     const deposit = async (amt: number) => {
         // console.log("sendMoney ", amount, " SOL from ", provider.publicKey.toBase58(), " to ", wallet.publicKey.toBase58());
-        if((extPublicKey === undefined) || (extPublicKey === null)) {
+        if((extPublicKey === undefined) || (extPublicKey === null) || (extSignTransaction === undefined)) {
             // TODO hmm
             alert("Please connect phantom to add money");
             return;
@@ -113,17 +140,26 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
 
         const amtLamports = amt * LAMPORTS_PER_SOL
 
-        const transaction = new Transaction().add(
+        const transaction = new Transaction({
+            feePayer: extPublicKey,
+            recentBlockhash: (await connection.getRecentBlockhash()).blockhash
+        }).add(
             SystemProgram.transfer({
                 fromPubkey: extPublicKey,
                 toPubkey: linkKeypair.publicKey,
-                lamports: amtLamports
+                lamports: amtLamports,
             }),
         );
-        const signature = await extSendTransaction(transaction, connection);
-        // console.log("fromPubkey: ", extPublicKey.toBase58(), ", toPubKey: ", linkKeypair.publicKey, ", lamports: ", amtLamports, ", signature: ", signature);
-        await connection.confirmTransaction(signature, 'processed');
+        const signed = await extSignTransaction(transaction);
+        const rawTransaction = signed.serialize({requireAllSignatures: false});
+        const res = await sendAndConfirmWithRetry(
+            connection,
+            rawTransaction,
+            {maxRetries: 5},
+            'processed'
+        );
         scheduleBalanceUpdate(1000);
+        return res.txid;
     }
 
     const getFees = async  () => {
