@@ -6,6 +6,7 @@ import { useEndpoint } from '../components/useEndpoint';
 
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import {GlowWalletAdapter } from '@solana/wallet-adapter-glow'
 import { useMemo } from "react";
 const QRCode = require("qrcode.react");
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -23,7 +24,7 @@ export interface GlobalContextWrapperProps {
 const WithEndpoint  : FC<GlobalContextWrapperProps> = ({ children }) => {
     const { endpointUrl } = useEndpoint();
     const wallets = useMemo(
-        () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()], [endpointUrl]
+        () => [new PhantomWalletAdapter(), new SolflareWalletAdapter(), new GlowWalletAdapter()], [endpointUrl]
     );
     return (
         <ConnectionProvider endpoint={endpointUrl}>
