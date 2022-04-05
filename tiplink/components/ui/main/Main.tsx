@@ -17,6 +17,7 @@ const Main = () => {
   useEffect(() => {
     setUrl(window.location.href);
     scheduleBalanceUpdate(100);
+    scheduleBalanceUpdate(1000);
   }, []);
 
   const topText = isNaN(balanceUSD) ? 'Loading balance...' : 'This is ' + balanceUSD.toFixed(2) + ' in crypto.';

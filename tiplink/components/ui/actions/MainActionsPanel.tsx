@@ -16,7 +16,7 @@ import { useState } from 'react';
 
 const MainActionsPanel = () => {
   const { setActionState } = useActionState();
-  const { sendSOL, getFees, balanceSOL, extPublicKey, extConnected } = useLink();
+  const { sendSOL, getFees, balanceSOL, extPublicKey, extConnected, scheduleBalanceUpdate} = useLink();
   const [ recreateLoading, setRecreateLoading ] = useState<boolean>(false);
   const [ withdrawLoading, setWithdrawLoading ] = useState<boolean>(false);
 
@@ -31,8 +31,9 @@ const MainActionsPanel = () => {
         return;
     }
 
-    if(balanceSOL < 0.000010) {
+    if(balanceSOL < 0.0001) {
       alert("Wallet is empty, cannot withdraw.")
+      return;
     }
     setWithdrawLoading(true);
 
@@ -44,6 +45,7 @@ const MainActionsPanel = () => {
       catch(e => {alert(e.message); setWithdrawLoading(false);});
     }
     getFees().then(onFees).catch(e => {alert(e.message); setWithdrawLoading(false);});
+    scheduleBalanceUpdate(10);
   }
 
   const recreate = () => {
