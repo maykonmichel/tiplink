@@ -24,7 +24,9 @@ const ActionsPanelRow: React.FC<Props> = ({icon, title, subtitle, loading = fals
             <Typography variant='body1' component='span'>{title}</Typography>
             <Typography variant='body2' component='span'>{subtitle}</Typography>
           </Box>
-          {loading && <CircularProgress/>}
+          <div style={{paddingLeft: '1rem'}}>
+            {loading && <CircularProgress/>}
+          </div>
         </Box>
       </ListItemButton>
     </ListItem>
