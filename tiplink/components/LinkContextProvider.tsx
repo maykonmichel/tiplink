@@ -129,11 +129,12 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         );
         const signed = await extSignTransaction(transaction);
         const rawTransaction = signed.serialize({requireAllSignatures: false});
+        // change to confirmed commitment level so it's less likely that page reloads and balance isn't on there
         const res = await sendAndConfirmWithRetry(
             connection,
             rawTransaction,
             {skipPreflight: true},
-            'processed'
+            'confirmed'
         );
         scheduleBalanceUpdate(1000);
         return res.txid;

@@ -11,11 +11,12 @@ import { useState, useEffect } from "react";
 
 const Main = () => {
   // const explorerLink = 'https://explorer.solana.com/address/' + linkKeypair.publicKey.toString() + '?cluster=' + endpoint;
-  const { balanceUSD } = useLink();
+  const { balanceUSD, scheduleBalanceUpdate } = useLink();
   const [ url, setUrl ] = useState<string>("");
 
   useEffect(() => {
     setUrl(window.location.href);
+    scheduleBalanceUpdate(100);
   }, []);
 
   const topText = isNaN(balanceUSD) ? 'Loading balance...' : 'This is ' + balanceUSD.toFixed(2) + ' in crypto.';
