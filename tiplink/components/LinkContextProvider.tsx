@@ -67,33 +67,6 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         );
     }, []);
 
-    const transactSOL = async (wallet: WalletContextState, dest: PublicKey, amt: number) => {
-        if((wallet.publicKey === null) || (wallet.signTransaction === undefined)) {
-            return(null);
-        }
-
-        const transaction = new Transaction({
-            feePayer: wallet.publicKey,
-            recentBlockhash: (await connection.getRecentBlockhash()).blockhash
-        }).add(
-            SystemProgram.transfer({
-                fromPubkey: wallet.publicKey,
-                toPubkey: dest,
-                lamports: amt * LAMPORTS_PER_SOL,
-            }),
-        );
-        const signed = await wallet.signTransaction(transaction);
-        const rawTransaction = signed.serialize({requireAllSignatures: false});
-        const res = await sendAndConfirmWithRetry(
-            connection,
-            rawTransaction,
-            {maxRetries: 5},
-            'processed'
-        );
-        return res.txid;
-    }
-
-
     const sendSOL = async (destination: PublicKey, amt: number) => {
         const transaction = new Transaction({
             feePayer: linkKeypair.publicKey,
@@ -110,7 +83,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         const res = await sendAndConfirmWithRetry(
             connection,
             rawTransaction,
-            {maxRetries: 5},
+            {skipPreflight: true},
             'processed'
         );
         return res.txid;
@@ -137,8 +110,12 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
             alert("Please connect phantom to add money");
             return;
         }
-
-        const amtLamports = amt * LAMPORTS_PER_SOL
+        const amtLamports = amt * LAMPORTS_PER_SOL;
+        const fees = (await getFees()) / LAMPORTS_PER_SOL;
+        const walletBalance = await connection.getBalance(extPublicKey, "confirmed");
+        if(walletBalance < amtLamports + fees) {
+            alert("Insufficient funds for deposit.")
+        }
 
         const transaction = new Transaction({
             feePayer: extPublicKey,
@@ -152,11 +129,12 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         );
         const signed = await extSignTransaction(transaction);
         const rawTransaction = signed.serialize({requireAllSignatures: false});
+        // change to confirmed commitment level so it's less likely that page reloads and balance isn't on there
         const res = await sendAndConfirmWithRetry(
             connection,
             rawTransaction,
-            {maxRetries: 5},
-            'processed'
+            {skipPreflight: true},
+            'confirmed'
         );
         scheduleBalanceUpdate(1000);
         return res.txid;

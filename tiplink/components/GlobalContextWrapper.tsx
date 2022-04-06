@@ -21,11 +21,17 @@ export interface GlobalContextWrapperProps {
     children: ReactNode;
 };
 
+
 const WithEndpoint  : FC<GlobalContextWrapperProps> = ({ children }) => {
     const { endpointUrl } = useEndpoint();
     const wallets = useMemo(
-        () => [new PhantomWalletAdapter(), new SolflareWalletAdapter(), new GlowWalletAdapter()], [endpointUrl]
+        () => [
+            new PhantomWalletAdapter(),
+            new SolflareWalletAdapter(),
+            new GlowWalletAdapter()
+        ], [endpointUrl]
     );
+
     return (
         <ConnectionProvider endpoint={endpointUrl}>
             <WalletProvider wallets={wallets} autoConnect>

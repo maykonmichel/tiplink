@@ -16,8 +16,9 @@ import { useState } from 'react';
 
 const MainActionsPanel = () => {
   const { setActionState } = useActionState();
-  const { sendSOL, getFees, balanceSOL, extPublicKey, extConnected } = useLink();
+  const { sendSOL, getFees, balanceSOL, extPublicKey, extConnected, scheduleBalanceUpdate} = useLink();
   const [ recreateLoading, setRecreateLoading ] = useState<boolean>(false);
+  const [ withdrawLoading, setWithdrawLoading ] = useState<boolean>(false);
 
   const withdrawAll = ()=> {
     if(!extConnected) { 
@@ -29,14 +30,22 @@ const MainActionsPanel = () => {
         alert("Please connect Phantom to withdraw money");
         return;
     }
+
+    if(balanceSOL < 0.0001) {
+      alert("Wallet is empty, cannot withdraw.")
+      return;
+    }
+    setWithdrawLoading(true);
+
     let fees: number;
 
     const onFees = (f: number) =>  {
       fees = f;
-      sendSOL(extPublicKey, balanceSOL - fees).catch(e => alert(e.message));
+      sendSOL(extPublicKey, balanceSOL - fees).then(() => setWithdrawLoading(false)).
+      catch(e => {alert(e.message); setWithdrawLoading(false);});
     }
-
-    getFees().then(onFees).catch(e => alert(e.message));
+    getFees().then(onFees).catch(e => {alert(e.message); setWithdrawLoading(false);});
+    scheduleBalanceUpdate(10);
   }
 
   const recreate = () => {
@@ -83,6 +92,7 @@ const MainActionsPanel = () => {
           icon={<IconWallet />}
           title="Withdraw to your wallet"
           subtitle="Withdraw the entire value of this TipLink."
+          loading={withdrawLoading}
           onClick={withdrawAll}
         />
         <Divider />
