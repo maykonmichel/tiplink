@@ -11,8 +11,8 @@ import { useLink } from "../../useLink";
 import { DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, randBuf, kdfz} from "../../../lib/crypto";
 import { Keypair } from "@solana/web3.js";
 import Router from "next/router";
-import { encode as b58encode } from 'bs58';
 import { useState } from 'react';
+import { getLinkPath } from "../../../lib/link";
 
 const MainActionsPanel = () => {
   const { setActionState } = useActionState();
@@ -56,7 +56,7 @@ const MainActionsPanel = () => {
         const kp = Keypair.fromSeed(seed);
         getFees().then((fees) => {
           sendSOL(kp.publicKey, balanceSOL - fees).then(() => {
-            Router.push("/#" + b58encode(b));
+            Router.push(getLinkPath(b));
             window.location.reload();
           }).catch(e => alert(e.message));
         }).catch(e => alert("Error getting fees: " + e.message));

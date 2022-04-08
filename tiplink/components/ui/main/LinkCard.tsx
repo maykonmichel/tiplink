@@ -9,7 +9,7 @@ const LinkCard = () => {
     if (url.search("wallet") != -1) {
       return linkKeypair.publicKey.toBase58();
     }
-    return window.location.pathname.substr(1) + window.location.hash;
+    return window.location.hash;
   };
 
   const cdt = getCardDisplayText();

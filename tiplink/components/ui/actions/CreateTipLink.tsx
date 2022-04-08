@@ -9,7 +9,7 @@ import { useLink } from '../../useLink';
 import LinkExportPanel from '../main/LinkExportPanel';
 import { randBuf, DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, kdfz } from '../../../lib/crypto';
 import { Keypair } from '@solana/web3.js';
-import { encode as b58encode} from 'bs58';
+import { getLinkPath } from '../../../lib/link';
 
 const CreateTipLink = () => {
   const { goBack } = useActionState();
@@ -36,7 +36,7 @@ const CreateTipLink = () => {
         const kp = Keypair.fromSeed(seed);
         sendSOL(kp.publicKey, amt).then(() => {
           setLoading(false);
-          setNewLink(window.location.origin + "#" + b58encode(b));
+          setNewLink(window.location.origin + getLinkPath(b));
         }).catch((err) => {
           if(err instanceof Error) {
               alert(err.message);

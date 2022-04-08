@@ -9,10 +9,11 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { SystemProgram, Transaction, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { randBuf, DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, kdfz } from '../lib/crypto';
-import { encode as b58encode, decode as b58decode } from 'bs58';
+import { encode as b58encode } from 'bs58';
+import { getLinkPath } from '../lib/link';
 
 const createWalletShort = async () => { 
-  randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => Router.push("#" + b58encode(b)));
+  randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => Router.push(getLinkPath(b)));
 }
 
 export default function FrontPage() {
@@ -58,7 +59,7 @@ export default function FrontPage() {
             const result = responseAndContext.value;
             const err = result.err;
             if(err === null) {
-              Router.push("/#" + b58encode(b));
+              Router.push(getLinkPath(b));
             } else {
               alert("Got error on transaction: " + err);
               console.error(err);

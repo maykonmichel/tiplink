@@ -57,3 +57,9 @@ export const insertPublicKey = (k: PublicKey, onInsert: (success: boolean) => vo
     onInsert(false);
   });
 }
+
+export const getLinkPath = (pw: Buffer) => {
+  return(
+    "/i#" + b58encode(pw)
+  );
+}
