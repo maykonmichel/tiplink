@@ -4,7 +4,7 @@ import { useActionState } from './state/useActionState';
 import Typography from '@mui/material/Typography';
 import CurrencyInput from '../common/CurrencyInput';
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import { useLink } from '../../useLink';
 import LinkExportPanel from '../main/LinkExportPanel';
 import { randBuf, DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, kdfz } from '../../../lib/crypto';

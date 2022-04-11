@@ -9,8 +9,8 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { SystemProgram, Transaction, LAMPORTS_PER_SOL, Keypair } from '@solana/web3.js';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { randBuf, DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, kdfz } from '../lib/crypto';
-import { encode as b58encode } from 'bs58';
 import { getLinkPath } from '../lib/link';
+import { useWaitForTxn } from './useWaitForTxn';
 
 const createWalletShort = async () => { 
   randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => Router.push(getLinkPath(b)));
@@ -19,8 +19,9 @@ const createWalletShort = async () => {
 export default function FrontPage() {
   const [ loading, setLoading ] = useState(false);
   const [inputAmountSOL, setInputAmountSOL ] = useState<number>(NaN);
-  const { connected,  publicKey, sendTransaction  } = useWallet();
+  const { connected,  publicKey, signTransaction } = useWallet();
   const { connection } = useConnection();
+  const { setPendingTxn } = useWaitForTxn();
 
   const onClickEmptyTipLink = (e: MouseEvent<HTMLElement>) => {
     if(loading) {
@@ -28,10 +29,11 @@ export default function FrontPage() {
     }
     e.preventDefault();
     setLoading(true);
+    setPendingTxn(null);
     createWalletShort();
   }
 
-  const onClickCreateTipLink = (e: MouseEvent<HTMLElement>) => {
+  const onClickCreateTipLink = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
 
     if(!connected) {
@@ -39,35 +41,32 @@ export default function FrontPage() {
       return;
     }
 
-    if(publicKey === null) {
+    if((publicKey === null) || (signTransaction === undefined)) {
       alert("Wallet appears connected, but couldn't get publicKey.");
       return;
     }
 
     setLoading(true);
 
-    randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => {
-      kdfz(SEED_LENGTH, b).then((seed: Buffer) => {
-        const kp = Keypair.fromSeed(seed);
-        const transaction = new Transaction().add(SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: kp.publicKey,
-          lamports: inputAmountSOL * LAMPORTS_PER_SOL
-        }));
-        sendTransaction(transaction, connection).then((signature) => {
-          connection.confirmTransaction(signature, 'processed').then((responseAndContext) => {
-            const result = responseAndContext.value;
-            const err = result.err;
-            if(err === null) {
-              Router.push(getLinkPath(b));
-            } else {
-              alert("Got error on transaction: " + err);
-              console.error(err);
-            }
-          }).catch(e => alert("Error confirming transaction: " + e.message));
-        });
-      }).catch(e => alert("Error sending transaction: " + e.message));
-    });
+    const b = await randBuf(DEFAULT_TIPLINK_KEYLENGTH);
+    const seed = await kdfz(SEED_LENGTH, b);
+    const kp = Keypair.fromSeed(seed);
+    const amt = inputAmountSOL * LAMPORTS_PER_SOL;
+
+    const transaction = new Transaction({
+        feePayer: publicKey,
+        recentBlockhash: (await connection.getRecentBlockhash()).blockhash
+    }).add(
+        SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: kp.publicKey,
+            lamports: amt,
+        }),
+    );
+    const signed = await signTransaction(transaction);
+    const rawTransaction = signed.serialize({requireAllSignatures: false});
+    setPendingTxn(rawTransaction);
+    Router.push(getLinkPath(b));
   }
 
   return (

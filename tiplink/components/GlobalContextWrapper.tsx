@@ -16,6 +16,7 @@ import {
 
 import React, { FC, ReactNode } from "react";
 import { ExchangeRateProvider } from "./useExchangeRate";
+import { TxnProvider } from "./useWaitForTxn";
 
 export interface GlobalContextWrapperProps {
     children: ReactNode;
@@ -49,7 +50,9 @@ export const GlobalContextWrapper  : FC<GlobalContextWrapperProps> = ({ children
             <ExchangeRateProvider>
                 <EndpointProvider>
                     <WithEndpoint>
-                        {children}
+                        <TxnProvider>
+                            {children}
+                        </TxnProvider>
                     </WithEndpoint> 
                 </EndpointProvider>
             </ExchangeRateProvider>
