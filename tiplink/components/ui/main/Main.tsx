@@ -8,9 +8,9 @@ import LinkCard from './LinkCard';
 import ActionsPanel from "../actions/ActionsPanel";
 import { useState, useEffect } from "react";
 
+import DebugDisplay from '../common/DebugDisplay';
 
 const Main = () => {
-  // const explorerLink = 'https://explorer.solana.com/address/' + linkKeypair.publicKey.toString() + '?cluster=' + endpoint;
   const { balanceUSD, scheduleBalanceUpdate } = useLink();
   const [ url, setUrl ] = useState<string>("");
 
@@ -37,6 +37,8 @@ const Main = () => {
                 <Typography component='div'>The link to this page contains this value, make sure you don't lose it!</Typography>
                 <LinkExportPanel url={url}/>
               </Box>
+              <DebugDisplay/>
+
 
               <Box
                 width='100%'
