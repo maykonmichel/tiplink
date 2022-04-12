@@ -31,7 +31,7 @@ const MainActionsPanel = () => {
         return;
     }
 
-    if(balanceSOL < 0.0001) {
+    if(balanceSOL < 0.00001) {
       alert("Wallet is empty, cannot withdraw.")
       return;
     }
