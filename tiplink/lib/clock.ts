@@ -1,8 +1,8 @@
 import { Connection, SYSVAR_CLOCK_PUBKEY } from '@solana/web3.js';
 
-export async function sleep(ts: number) {
+export async function sleep(timeMs: number) {
   return new Promise((resolve) => {
-   setTimeout(resolve, ts);
+   setTimeout(resolve, timeMs);
   })
 }
 
@@ -11,8 +11,8 @@ export async function getClockTime(connection: Connection): Promise<bigint> {
   return clock.data.readBigInt64LE(8 * 4);
 }
 
-export async function waitForUnixTime(connection: Connection, unixTime: bigint, sleepInterval: number = 500) {
+export async function waitForUnixTime(connection: Connection, unixTime: bigint, sleepIntervalMs: number = 500) {
   while (await getClockTime(connection) < unixTime) {
-    await sleep(sleepInterval);
+    await sleep(sleepIntervalMs);
   }
 }
