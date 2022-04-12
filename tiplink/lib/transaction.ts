@@ -153,10 +153,10 @@ async function simulateTransaction(
 }
 
 // 3 minutes
-// const DEFAULT_TIMEOUT = 3 * 60 * 1000; 
+// const DEFAULT_TIMEOUT_MS = 3 * 60 * 1000; 
 
-// 60 seconds
-const DEFAULT_TIMEOUT = 60 * 1000;
+// 30 seconds
+const DEFAULT_TIMEOUT_MS = 30 * 1000;
   /*
     A validator has up to 120s to accept the transaction and send it into a block.
     If it doesn’t happen within that timeframe, your transaction is dropped and you’ll need 
@@ -170,7 +170,7 @@ export async function sendAndConfirmWithRetry(
   txn: Buffer,
   sendOptions: SendOptions,
   commitment: Commitment,
-  timeout = DEFAULT_TIMEOUT
+  timeout = DEFAULT_TIMEOUT_MS
 ): Promise<{ txid: string }> {
   let done = false;
   let slot = 0;
@@ -205,7 +205,7 @@ export async function sendAndConfirmWithRetry(
   } catch (err: any) {
     console.error("Timeout Error caught", err);
     if (err.timeout) {
-      throw new Error("Timed out awaiting confirmation on transaction");
+      throw new Error("Timed out awaiting confirmation on transaction. Please try again.");
     }
     let simulateResult: SimulatedTransactionResponse | null = null;
     try {

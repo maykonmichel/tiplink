@@ -68,7 +68,7 @@ const Main = () => {
         scheduleBalanceUpdate(100);
       }).catch(e => {
         alert(e.message);
-        Router.push('');
+        Router.push('/');
       });
     }
   }, [])
