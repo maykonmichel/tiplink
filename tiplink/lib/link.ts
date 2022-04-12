@@ -57,3 +57,32 @@ export const insertPublicKey = (k: PublicKey, onInsert: (success: boolean) => vo
     onInsert(false);
   });
 }
+
+export const getLinkPath = (pw: Buffer) => {
+  return(
+    "/i#" + b58encode(pw)
+  );
+}
+
+// https://stackoverflow.com/questions/1634748/how-can-i-delete-a-query-string-parameter-in-javascript
+export const removeURLParameter = (url: string, parameter: string) => {
+  //prefer to use l.search if you have a location/link object
+  const fragment = url.includes('#') ?  '#' + url.split('#')[1] : '';
+  const urlparts = url.split('?');   
+  if (urlparts.length >= 2) {
+
+      const prefix = encodeURIComponent(parameter) + '=';
+      var pars = urlparts[1].split(/[&;]/g);
+
+      //reverse iteration as may be destructive
+      for (var i = pars.length; i-- > 0;) {    
+          //idiom for string.startsWith
+          if (pars[i].lastIndexOf(prefix, 0) !== -1) {  
+              pars.splice(i, 1);
+          }
+      }
+
+      return(urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : '') + fragment);
+  }
+  return(url);
+}

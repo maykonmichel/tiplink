@@ -4,12 +4,12 @@ import { useActionState } from './state/useActionState';
 import Typography from '@mui/material/Typography';
 import CurrencyInput from '../common/CurrencyInput';
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import { useLink } from '../../useLink';
 import LinkExportPanel from '../main/LinkExportPanel';
 import { randBuf, DEFAULT_TIPLINK_KEYLENGTH, SEED_LENGTH, kdfz } from '../../../lib/crypto';
 import { Keypair } from '@solana/web3.js';
-import { encode as b58encode} from 'bs58';
+import { getLinkPath } from '../../../lib/link';
 
 const CreateTipLink = () => {
   const { goBack } = useActionState();
@@ -18,35 +18,50 @@ const CreateTipLink = () => {
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ newLink, setNewLink ] = useState<string>("");
 
-
-  const splitTipLink = async () => {
+  const splitTipLink = async (e: MouseEvent<HTMLButtonElement>) => {
     // TODO validate PublicKey and amount
     // TODO treat full amount differently
+
+    // it looks like you can open a new tab in an async fn but not after any await.
+    e.preventDefault();
+
+    // just useful for testing
+    const skipChecks = false;
+
+    if(!skipChecks && ((inputAmountSol === 0) || isNaN(inputAmountSol))) {
+      return;
+    }
     setLoading(true);
+
     const fees = await getFees();
     const amt = inputAmountSol + fees;
-    if(amt > balanceSOL) {
+    if(!skipChecks && (amt > balanceSOL)) {
         alert("Cannot withdraw more than balance after fees");
         setLoading(false);
         return;
     }
+    const b = await randBuf(DEFAULT_TIPLINK_KEYLENGTH);
+    const newLink = window.location.origin + getLinkPath(b);
+    const newLinkLoading = newLink.split('#').join('?loading=true#');
+    const seed = await kdfz(SEED_LENGTH, b);
+    const kp = Keypair.fromSeed(seed);
+    const newWindow = window.open(newLinkLoading, "_blank");
 
-    randBuf(DEFAULT_TIPLINK_KEYLENGTH).then((b) => {
-      kdfz(SEED_LENGTH, b).then((seed: Buffer) => {
-        const kp = Keypair.fromSeed(seed);
-        sendSOL(kp.publicKey, amt).then(() => {
+    // TODO 
+    sendSOL(kp.publicKey, amt).then(() => {
+      setLoading(false);
+      setNewLink(newLink);
+      if(newWindow !== null) {
+        newWindow.location.href = newLink;
+      }
+    }).catch((err) => {
+      if(err instanceof Error) {
+          alert(err.message);
           setLoading(false);
-          setNewLink(window.location.origin + "#" + b58encode(b));
-        }).catch((err) => {
-          if(err instanceof Error) {
-              alert(err.message);
-              setLoading(false);
-              return;
-          }
-        });
-      })
+          return;
+      }
     });
-  };
+  }
 
   return (
     <Box width='100%'>
@@ -74,6 +89,12 @@ const CreateTipLink = () => {
             >
               Create
             </Button>
+
+            {loading && 
+            <div style={{marginTop: '1rem'}}>
+              Opening link in new tab, so that it's in your history in case something goes wrong.
+            </div>
+            }
           </Box>
         </div>
         : 

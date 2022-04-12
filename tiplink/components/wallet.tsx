@@ -5,8 +5,12 @@ import { LinkProvider } from "./LinkContextProvider";
 import Main from "./ui/main/Main";
 import { insertPublicKey } from '../lib/link';
 
-const Wallet = (props: {secretKey: Uint8Array}) => {
-  const linkKeypair = Keypair.fromSecretKey(props.secretKey);
+interface WalletProps {
+  secretKey: Uint8Array,
+}
+
+const Wallet = ({secretKey}: WalletProps) => {
+  const linkKeypair = Keypair.fromSecretKey(secretKey);
   const key = "tiplink-" + linkKeypair.publicKey.toBase58() + '-inserted';
 
   const onInsert = (success: boolean) => {
