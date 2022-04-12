@@ -14,17 +14,6 @@ import {
 } from "@solana/web3.js";
 import { sleep } from "./clock";
 
-// async function promiseAllInOrder<T>(
-//   it: (() => Promise<T>)[]
-// ): Promise<Iterable<T>> {
-//   let ret: T[] = [];
-//   for (const i of it) {
-//     ret.push(await i());
-//   }
-
-//   return ret;
-// }
-
 export interface InstructionResult<A> {
   instructions: TransactionInstruction[];
   signers: Signer[];
@@ -37,103 +26,6 @@ export interface BigInstructionResult<A> {
   output: A;
 }
 
-// export async function sendInstructions(
-//   idlErrors: Map<number, string>,
-//   provider: Provider,
-//   instructions: TransactionInstruction[],
-//   signers: Signer[],
-//   payer: PublicKey = provider.wallet.publicKey,
-//   commitment: Commitment = "confirmed"
-// ): Promise<string> {
-//   let tx = new Transaction();
-//   tx.recentBlockhash = (
-//     await provider.connection.getRecentBlockhash()
-//   ).blockhash;
-//   tx.feePayer = payer || provider.wallet.publicKey;
-//   tx.add(...instructions);
-//   if (signers.length > 0) {
-//     tx.partialSign(...signers);
-//   }
-//   tx = await provider.wallet.signTransaction(tx);
-
-//   try {
-//     const { txid } = await sendAndConfirmWithRetry(
-//       provider.connection,
-//       tx.serialize(),
-//       {
-//         skipPreflight: true,
-//       },
-//       commitment
-//     );
-//     return txid;
-//   } catch (e) {
-//     console.error(e);
-//     const wrappedE = ProgramError.parse(e, idlErrors);
-//     throw wrappedE == null ? e : wrappedE;
-//   }
-// }
-
-// type Truthy<T> = T extends false | "" | 0 | null | undefined ? never : T; // from lodash
-
-// function truthy<T>(value: T): value is Truthy<T> {
-//   return !!value;
-// }
-
-// export async function sendMultipleInstructions(
-//   idlErrors: Map<number, string>,
-//   provider: Provider,
-//   instructionGroups: TransactionInstruction[][],
-//   signerGroups: Signer[][],
-//   payer?: PublicKey,
-//   finality: Finality = "confirmed"
-// ): Promise<Iterable<string>> {
-//   const recentBlockhash = (
-//     await provider.connection.getRecentBlockhash("confirmed")
-//   ).blockhash;
-//   const txns = instructionGroups
-//     .map((instructions, index) => {
-//       const signers = signerGroups[index];
-//       if (instructions.length > 0) {
-//         console.log(provider.wallet.publicKey.toBase58(), payer?.toBase58());
-//         const tx = new Transaction({
-//           feePayer: payer || provider.wallet.publicKey,
-//           recentBlockhash,
-//         });
-//         tx.add(...instructions);
-//         if (signers.length > 0) {
-//           tx.partialSign(...signers);
-//         }
-
-//         return tx;
-//       }
-//     })
-//     .filter(truthy);
-
-//   const txnsSigned = (await provider.wallet.signAllTransactions(txns)).map(
-//     (tx) => tx.serialize()
-//   );
-
-//   console.log("Sending multiple transactions...");
-//   try {
-//     return await promiseAllInOrder(
-//       txnsSigned.map((txn) => async () => {
-//         const { txid } = await sendAndConfirmWithRetry(
-//           provider.connection,
-//           txn,
-//           {
-//             skipPreflight: true,
-//           },
-//           finality
-//         );
-//         return txid;
-//       })
-//     );
-//   } catch (e) {
-//     console.error(e);
-//     const wrappedE = ProgramError.parse(e, idlErrors);
-//     throw wrappedE == null ? e : wrappedE;
-//   }
-// }
 
 function getUnixTime(): number {
   return new Date().valueOf() / 1000;
@@ -260,7 +152,11 @@ async function simulateTransaction(
   return res.result;
 }
 
-const DEFAULT_TIMEOUT = 3 * 60 * 1000; // 3 minutes
+// 3 minutes
+// const DEFAULT_TIMEOUT_MS = 3 * 60 * 1000; 
+
+// 30 seconds
+const DEFAULT_TIMEOUT_MS = 30 * 1000;
   /*
     A validator has up to 120s to accept the transaction and send it into a block.
     If it doesn’t happen within that timeframe, your transaction is dropped and you’ll need 
@@ -274,7 +170,7 @@ export async function sendAndConfirmWithRetry(
   txn: Buffer,
   sendOptions: SendOptions,
   commitment: Commitment,
-  timeout = DEFAULT_TIMEOUT
+  timeout = DEFAULT_TIMEOUT_MS
 ): Promise<{ txid: string }> {
   let done = false;
   let slot = 0;
@@ -309,7 +205,7 @@ export async function sendAndConfirmWithRetry(
   } catch (err: any) {
     console.error("Timeout Error caught", err);
     if (err.timeout) {
-      throw new Error("Timed out awaiting confirmation on transaction");
+      throw new Error("Timed out awaiting confirmation on transaction. Please try again.");
     }
     let simulateResult: SimulatedTransactionResponse | null = null;
     try {
