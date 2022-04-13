@@ -1,9 +1,8 @@
 import React, { FC, ReactNode, useState, useEffect } from 'react';
 import { LinkContext, BalanceCallback } from './useLink';
-import { Keypair, PublicKey, AccountInfo, Context, 
-    Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL, 
+import { Keypair, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, 
 } from '@solana/web3.js';
-import { useConnection, useWallet, WalletContextState } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet} from '@solana/wallet-adapter-react';
 import useExchangeRate from './useExchangeRate';
 import { sendAndConfirmWithRetry } from '../lib/transaction';
 
@@ -14,6 +13,7 @@ export interface LinkProviderProps {
     linkKeypair: Keypair; 
 }
 const DEFAULT_COMMITMENT_LEVEL = 'confirmed';
+const BALANCE_POLL_INTERVAL_MS = 1000;
 
 export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) => {
     const { connection } = useConnection();
@@ -21,7 +21,6 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
     // in Lamportsj
     const [ balance, setBalance ] = useState(NaN);
     // in USD / SOL
-    const [ subscriptionId, setSubscriptionId ] = useState(0);
     const { exchangeRate } = useExchangeRate();
 
     const getBalanceSOLAsync = async () => {
@@ -52,21 +51,16 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         fetchBalance((b) => {setBalance(b);});
     }
 
-    useEffect(() => {
+    const pollBalance = () => {
         updateBalance();
-    }, []);
+        setTimeout(pollBalance, BALANCE_POLL_INTERVAL_MS)
+    }
 
-    const onAccountChange = (accountInfo: AccountInfo<Buffer>, context: Context) => {
-        const l = accountInfo.lamports;
-        // console.log("onAccountChange lamports=", l);
-        setBalance(l);
-    };
-
+    // poll for balance every second
     useEffect(() => {
-        setSubscriptionId(
-            connection.onAccountChange(linkKeypair.publicKey, onAccountChange, DEFAULT_COMMITMENT_LEVEL)
-        );
+        pollBalance();
     }, []);
+
 
     const sendSOL = async (destination: PublicKey, amt: number) => {
         const transaction = new Transaction({
