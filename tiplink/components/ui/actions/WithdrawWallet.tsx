@@ -3,48 +3,51 @@ import Box from '@mui/material/Box';
 import { useActionState } from './state/useActionState';
 import Typography from '@mui/material/Typography';
 import CurrencyInput from '../common/CurrencyInput';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { useLink } from '../../useLink';
-import { PublicKey } from '@solana/web3.js';
-import TextField from '@mui/material/TextField';
+import LoadingButton from '@mui/lab/LoadingButton';
 
-const SendPublicKey = () => {
+const WithdrawWallet = () => {
   const { goBack } = useActionState();
   const [inputAmountSol, setInputAmountSol] = useState<number>(NaN);
-  const { sendSOL, balanceSOL } = useLink();
-  const [ address, setAddress ] = useState<string>("");
+  const { sendSOL, balanceSOL, extPublicKey, extConnected, scheduleBalanceUpdate} = useLink();
+  const [ loading, setLoading ] = useState<boolean>(false);
 
   const send = async () => {
     // TODO validate PublicKey and amount
     // TODO treat full amount differently
-    const pubKey = new PublicKey(address);
-    if(!PublicKey.isOnCurve(pubKey.toBuffer())) {
-        alert("Invalid public key");
-        return;
-    }
 
     if(inputAmountSol > balanceSOL) {
         alert("Cannot withdraw more than balance");
         return;
     }
+    
+    if(!extConnected || (extPublicKey === null)) {
+      alert("Please connect wallet to withdraw this way.")
+      return;
+    }
+
 
     try {
-        await sendSOL(new PublicKey(address), inputAmountSol);
+      setLoading(true);
+      await sendSOL(extPublicKey, inputAmountSol);
+      scheduleBalanceUpdate(100);
     } catch(err) {
         if(err instanceof Error) {
             alert(err.message);
+            setLoading(false);
             return;
         }
-    }
+    } 
+    setLoading(false);
   };
 
 
   return (
     <Box width='100%'>
-      <ActionsPanelTitleBar title='Send to Public Key' backOnClick={goBack} />
+      <ActionsPanelTitleBar title='Withdraw to Wallet' backOnClick={goBack} />
       <Typography textAlign='center' style={{marginTop: '1rem', marginBottom: '1rem'}}>
-        How much do you want to send?
+        How much do you want to withdraw?
       </Typography>
       <Box
         style={{
@@ -52,29 +55,18 @@ const SendPublicKey = () => {
           flexDirection: 'column',
           alignItems: 'center',
         }}>
-        <TextField
-        fullWidth
-        label="Solana Address"
-        value={address}
-        onChange={(e) => {setAddress(e.target.value);}}
-        />
-        <br></br>
         <CurrencyInput
           fiatCurrency='USD'
           cryptoCurrency='SOL'
+          onValueChange={setInputAmountSol}
           useMax={true}
-          onValueChange={setInputAmountSol}/>
-        <Button
-          style={{marginTop: '1rem'}}
-          variant='contained'
-          onClick={send}
-          disabled={(address.length != 44)}
-        >
-          Send
-        </Button>
+        />
+        <LoadingButton sx={{m: 2, marginTop: '1rem'}} variant="contained" onClick={send} loading={loading}>
+          Withdraw
+        </LoadingButton>
       </Box>
     </Box>
   );
 };
 
-export default SendPublicKey;
+export default WithdrawWallet;

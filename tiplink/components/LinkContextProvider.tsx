@@ -1,9 +1,8 @@
 import React, { FC, ReactNode, useState, useEffect } from 'react';
 import { LinkContext, BalanceCallback } from './useLink';
-import { Keypair, PublicKey, AccountInfo, Context, 
-    Transaction, SystemProgram, sendAndConfirmTransaction, LAMPORTS_PER_SOL, 
+import { Keypair, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, 
 } from '@solana/web3.js';
-import { useConnection, useWallet, WalletContextState } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet} from '@solana/wallet-adapter-react';
 import useExchangeRate from './useExchangeRate';
 import { sendAndConfirmWithRetry } from '../lib/transaction';
 
@@ -13,6 +12,8 @@ export interface LinkProviderProps {
     children: ReactNode;
     linkKeypair: Keypair; 
 }
+const DEFAULT_COMMITMENT_LEVEL = 'confirmed';
+const BALANCE_POLL_INTERVAL_MS = 1000;
 
 export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) => {
     const { connection } = useConnection();
@@ -20,11 +21,10 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
     // in Lamportsj
     const [ balance, setBalance ] = useState(NaN);
     // in USD / SOL
-    const [ subscriptionId, setSubscriptionId ] = useState(0);
     const { exchangeRate } = useExchangeRate();
 
     const getBalanceSOLAsync = async () => {
-        return await connection.getBalance(linkKeypair.publicKey, "processed");
+        return await connection.getBalance(linkKeypair.publicKey, DEFAULT_COMMITMENT_LEVEL);
     }
 
     const fetchBalance = (c: BalanceCallback) => {
@@ -37,7 +37,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
     }
 
     useEffect(() => {
-        connection.getBalance(linkKeypair.publicKey, "processed")
+        connection.getBalance(linkKeypair.publicKey, DEFAULT_COMMITMENT_LEVEL)
         .then((b) => {
             // console.log("getBalanceOuter " + b + " " + endpointUrl);
             setBalance(b);
@@ -51,21 +51,16 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         fetchBalance((b) => {setBalance(b);});
     }
 
-    useEffect(() => {
+    const pollBalance = () => {
         updateBalance();
-    }, []);
+        setTimeout(pollBalance, BALANCE_POLL_INTERVAL_MS)
+    }
 
-    const onAccountChange = (accountInfo: AccountInfo<Buffer>, context: Context) => {
-        const l = accountInfo.lamports;
-        // console.log("onAccountChange lamports=", l);
-        setBalance(l);
-    };
-
+    // poll for balance every second
     useEffect(() => {
-        setSubscriptionId(
-            connection.onAccountChange(linkKeypair.publicKey, onAccountChange, "processed")
-        );
+        pollBalance();
     }, []);
+
 
     const sendSOL = async (destination: PublicKey, amt: number) => {
         const transaction = new Transaction({
@@ -84,7 +79,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
             connection,
             rawTransaction,
             {skipPreflight: true},
-            'processed'
+            DEFAULT_COMMITMENT_LEVEL
         );
         return res.txid;
     };
@@ -112,7 +107,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         }
         const amtLamports = amt * LAMPORTS_PER_SOL;
         const fees = (await getFees()) / LAMPORTS_PER_SOL;
-        const walletBalance = await connection.getBalance(extPublicKey, "confirmed");
+        const walletBalance = await connection.getBalance(extPublicKey, DEFAULT_COMMITMENT_LEVEL);
         if(walletBalance < amtLamports + fees) {
             alert("Insufficient funds for deposit.")
         }
@@ -134,7 +129,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
             connection,
             rawTransaction,
             {skipPreflight: true},
-            'confirmed'
+            DEFAULT_COMMITMENT_LEVEL
         );
         scheduleBalanceUpdate(1000);
         return res.txid;
@@ -162,6 +157,12 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         return fee;
     }
 
+    // very dumb for now
+    const getFeeEstimate = () => {
+        const feeLamports = 5000;
+        return 2 * feeLamports / LAMPORTS_PER_SOL;
+    }
+
 
     const balanceSOL = balance / LAMPORTS_PER_SOL;
     const balanceUSD = balanceSOL * exchangeRate;
@@ -178,7 +179,8 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
                 deposit,
                 extConnected,
                 extPublicKey,
-                scheduleBalanceUpdate
+                scheduleBalanceUpdate,
+                getFeeEstimate
             }}
         >
             {children}

@@ -37,8 +37,14 @@ const SendActionsPanel = () => {
         <ActionsPanelRow
           icon={connected ? <WalletIcon wallet={wallet}/> : <IconWallet/>}
           title="Withdraw to Wallet"
-          subtitle={connected ? "Withdraw to connected wallet" : "Click to connect to your wallet"}
-          onClick={() => {}}/>
+          subtitle={connected ? "Withdraw to connected wallet" : "Connect Wallet to Withdraw"}
+          onClick={() => {
+            if(!connected) {
+              alert("Please connect wallet to withdraw.");
+              return;
+            }
+            setActionState("withdrawWallet")
+          }}/>
         <Divider />
         <br></br>
         <Typography>You'll choose amount to send next.</Typography>

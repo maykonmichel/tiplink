@@ -17,6 +17,7 @@ type LinkContent = {
     extConnected: boolean;
     extPublicKey: PublicKey | null;
     scheduleBalanceUpdate(t: number): void;
+    getFeeEstimate(): number;
 };
 export const LinkContext = createContext<LinkContent>(undefined!);
 export const useLink = () => useContext(LinkContext);
