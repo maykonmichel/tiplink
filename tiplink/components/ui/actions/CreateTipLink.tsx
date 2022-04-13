@@ -14,7 +14,7 @@ import { getLinkPath } from '../../../lib/link';
 const CreateTipLink = () => {
   const { goBack } = useActionState();
   const [inputAmountSol, setInputAmountSol] = useState<number>(NaN);
-  const { getFees, sendSOL, balanceSOL } = useLink();
+  const { getFeeEstimate, sendSOL, balanceSOL } = useLink();
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ newLink, setNewLink ] = useState<string>("");
 
@@ -27,19 +27,20 @@ const CreateTipLink = () => {
 
     // just useful for testing
     const skipChecks = false;
+    const fees = getFeeEstimate();
+    const amt = inputAmountSol + fees;
 
     if(!skipChecks && ((inputAmountSol === 0) || isNaN(inputAmountSol))) {
+      alert("Specify an amount greater than 0 to create another Tiplink");
       return;
     }
-    setLoading(true);
 
-    const fees = await getFees();
-    const amt = inputAmountSol + fees;
     if(!skipChecks && (amt > balanceSOL)) {
         alert("Cannot withdraw more than balance after fees");
-        setLoading(false);
         return;
     }
+
+    setLoading(true);
     const b = await randBuf(DEFAULT_TIPLINK_KEYLENGTH);
     const newLink = window.location.origin + getLinkPath(b);
     const newLinkLoading = newLink.split('#').join('?loading=true#');
@@ -80,10 +81,11 @@ const CreateTipLink = () => {
             <CurrencyInput
               fiatCurrency='USD'
               cryptoCurrency='SOL'
+              useMax={true}
               onValueChange={setInputAmountSol}/>
             <Button
               style={{marginTop: '1rem'}}
-              variant='outlined'
+              variant='contained'
               onClick={splitTipLink}
               disabled={loading}
             >

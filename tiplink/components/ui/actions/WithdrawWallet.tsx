@@ -61,7 +61,7 @@ const WithdrawWallet = () => {
           onValueChange={setInputAmountSol}
           useMax={true}
         />
-        <LoadingButton sx={{m: 2, marginTop: '1rem'}} variant="outlined" onClick={send} loading={loading}>
+        <LoadingButton sx={{m: 2, marginTop: '1rem'}} variant="contained" onClick={send} loading={loading}>
           Withdraw
         </LoadingButton>
       </Box>

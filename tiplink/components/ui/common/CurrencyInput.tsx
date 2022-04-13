@@ -81,6 +81,9 @@ const CurrencyInput: React.FC<Props> = ({
 
     const { balanceSOL, balanceUSD, getFeeEstimate } = useLink();
     const feeSOL = getFeeEstimate();
+    if(balanceSOL < feeSOL) {
+      return '0.00';
+    }
     if(isInputInCryptoCurrency()){
       return (balanceSOL - feeSOL).toFixed(4);
     } 

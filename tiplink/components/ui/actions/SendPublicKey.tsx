@@ -62,10 +62,11 @@ const SendPublicKey = () => {
         <CurrencyInput
           fiatCurrency='USD'
           cryptoCurrency='SOL'
+          useMax={true}
           onValueChange={setInputAmountSol}/>
         <Button
           style={{marginTop: '1rem'}}
-          variant='outlined'
+          variant='contained'
           onClick={send}
           disabled={(address.length != 44)}
         >
