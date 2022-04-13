@@ -50,7 +50,7 @@ const DepositWalletPanel = () => {
         <CurrencyInput
           fiatCurrency='USD'
           cryptoCurrency='SOL'
-          fiatQuickInputOptions={fiatQuickInputDefault }
+          fiatQuickInputOptions={fiatQuickInputDefault}
           cryptoQuickInputOptions={cryptoQuickInputDefault}
           onValueChange={setInputAmountSol}/>
         <LoadingButton sx={{m: 2, marginTop: '1rem'}} variant="outlined" onClick={depositFromWallet} loading={loading}>
