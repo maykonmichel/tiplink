@@ -13,6 +13,7 @@ type Props = {
   cryptoCurrency: string,
   fiatQuickInputOptions?: QuickInputOption[],
   cryptoQuickInputOptions?: QuickInputOption[],
+  useMax?: boolean;
   onValueChange(cryptoValue: number): void,
 }
 
@@ -39,13 +40,14 @@ const CurrencyInput: React.FC<Props> = ({
     cryptoCurrency, 
     fiatQuickInputOptions = null, 
     cryptoQuickInputOptions = null, 
+    useMax = false,
     onValueChange}) => {
   const [ currency, setCurrency ] = useState(fiatCurrency);
   const [ inputValue, setInputValue ] = useState('');
   const { exchangeRate: cryptoPrice } = useExchangeRate();
 
-  const isInputInCrytoCurrency = (): boolean => currency === cryptoCurrency;
-  const getInverseCurrency = (): string => isInputInCrytoCurrency() ? fiatCurrency : cryptoCurrency;
+  const isInputInCryptoCurrency = (): boolean => currency === cryptoCurrency;
+  const getInverseCurrency = (): string => isInputInCryptoCurrency() ? fiatCurrency : cryptoCurrency;
   const toggleInputCurrency = () => setCurrency(getInverseCurrency());
   const isValidAmount = (amount: number): boolean => !isNaN(amount) && amount > 0;
 
@@ -54,11 +56,11 @@ const CurrencyInput: React.FC<Props> = ({
     const invCurrencyAmount = Number(inputValue);
     var invAmount = 0;
     if (isValidAmount(invCurrencyAmount)) {
-      invAmount = isInputInCrytoCurrency() 
+      invAmount = isInputInCryptoCurrency() 
         ? invCurrencyAmount * cryptoPrice 
         : invCurrencyAmount / cryptoPrice;
     }
-    const decimals = isInputInCrytoCurrency() ? 2 : 4;
+    const decimals = isInputInCryptoCurrency() ? 2 : 4;
     return invAmount.toFixed(decimals) + ' ' + invCurrency;
   }
 
@@ -66,16 +68,32 @@ const CurrencyInput: React.FC<Props> = ({
     setInputValue(v);
     const inputAmount = Number(v);
     if (isValidAmount(inputAmount)) {
-      onValueChange(isInputInCrytoCurrency() ? inputAmount : inputAmount / cryptoPrice);
+      onValueChange(isInputInCryptoCurrency() ? inputAmount : inputAmount / cryptoPrice);
     } else {
       onValueChange(0);
     }
   }
 
+  const getMaxInputValue = () => {
+    if(!useMax) {
+      return '0.00';
+    }
+
+    const { balanceSOL, balanceUSD, getFeeEstimate } = useLink();
+    const feeSOL = getFeeEstimate();
+    if(isInputInCryptoCurrency()){
+      return (balanceSOL - feeSOL).toFixed(4);
+    } 
+
+    return (balanceUSD - feeSOL / cryptoPrice).toFixed(2);
+  }
+
   const quickInputOptionsRows = [];
-  const quickInputOptions = isInputInCrytoCurrency() 
-      ? cryptoQuickInputOptions 
-      : fiatQuickInputOptions;
+  const explicitOptions = isInputInCryptoCurrency() ? cryptoQuickInputOptions : fiatQuickInputOptions;
+  const maxOptions = useMax ? [{label: 'MAX', inputValue: getMaxInputValue()},] : null;
+  const quickInputOptions = (explicitOptions !== null) 
+    ? (useMax && (maxOptions !== null) ? explicitOptions.concat(maxOptions) : explicitOptions) 
+    : (useMax ? maxOptions : null);
   if (quickInputOptions) {
     for (let option of quickInputOptions) {
       quickInputOptionsRows.push(renderButton(option.label, () => onChange(option.inputValue)));
@@ -93,7 +111,7 @@ const CurrencyInput: React.FC<Props> = ({
             <Chip label={currency} onClick={toggleInputCurrency}/>
           </InputAdornment>}/>
       {quickInputOptionsRows.length > 0 && 
-        <Box sx={{display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem'}}>
+        <Box sx={{display: 'flex', gap: '0.5rem', width: '100%', marginTop: '0.5rem', alignItems: 'center', justifyContent: 'center'}}>
           {quickInputOptionsRows}
         </Box>}
       <Typography 
@@ -117,7 +135,9 @@ function renderButton(label: string, onClick: () => void): React.ReactNode {
         flexDirection: 'column', 
         flexGrow: '1', 
         flexBasis: '0',
-        textTransform: 'none'}}
+        textTransform: 'none',
+        maxWidth: '50%'
+      }}
       variant='outlined'
       onClick={onClick}>
       {label}

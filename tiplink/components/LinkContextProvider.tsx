@@ -157,6 +157,12 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         return fee;
     }
 
+    // very dumb for now
+    const getFeeEstimate = () => {
+        const feeLamports = 5000;
+        return 2 * feeLamports / LAMPORTS_PER_SOL;
+    }
+
 
     const balanceSOL = balance / LAMPORTS_PER_SOL;
     const balanceUSD = balanceSOL * exchangeRate;
@@ -173,7 +179,8 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
                 deposit,
                 extConnected,
                 extPublicKey,
-                scheduleBalanceUpdate
+                scheduleBalanceUpdate,
+                getFeeEstimate
             }}
         >
             {children}

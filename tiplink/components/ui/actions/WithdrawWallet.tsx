@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import { useActionState } from './state/useActionState';
 import Typography from '@mui/material/Typography';
 import CurrencyInput from '../common/CurrencyInput';
-import Button from '@mui/material/Button';
 import { useState } from 'react';
 import { useLink } from '../../useLink';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -59,7 +58,9 @@ const WithdrawWallet = () => {
         <CurrencyInput
           fiatCurrency='USD'
           cryptoCurrency='SOL'
-          onValueChange={setInputAmountSol}/>
+          onValueChange={setInputAmountSol}
+          useMax={true}
+        />
         <LoadingButton sx={{m: 2, marginTop: '1rem'}} variant="outlined" onClick={send} loading={loading}>
           Withdraw
         </LoadingButton>
