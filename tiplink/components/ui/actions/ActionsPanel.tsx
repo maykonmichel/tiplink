@@ -4,6 +4,7 @@ import DepositWalletPanel from "./DepositWalletPanel";
 import SendActionsPanel from "./SendActionsPanel";
 import SendPublicKey from "./SendPublicKey";
 import CreateTipLink from "./CreateTipLink";
+import WithdrawWallet from "./WithdrawWallet";
 import { ActionStateProvider } from "./state/ActionStateProvider";
 import { useActionState } from "./state/useActionState";
 
@@ -18,7 +19,8 @@ const ActionsPanelComponent = () => {
           depositWallet: <DepositWalletPanel />,
           send: <SendActionsPanel/>,
           sendPubKey: <SendPublicKey/>,
-          createTipLink: <CreateTipLink/>
+          createTipLink: <CreateTipLink/>,
+          withdrawWallet: <WithdrawWallet/>
         }[actionState]
       }
     </div>

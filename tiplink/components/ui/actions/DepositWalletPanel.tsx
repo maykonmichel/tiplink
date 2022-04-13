@@ -2,15 +2,17 @@ import ActionsPanelTitleBar from './ui/ActionsPanelTitleBar';
 import Box from '@mui/material/Box';
 import { useActionState } from './state/useActionState';
 import Typography from '@mui/material/Typography';
-import CurrencyInput from '../common/CurrencyInput';
-import Button from '@mui/material/Button';
+import CurrencyInput, {fiatQuickInputDefault, cryptoQuickInputDefault }from '../common/CurrencyInput';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useState } from 'react';
 import { useLink } from '../../useLink';
+
 
 const DepositWalletPanel = () => {
   const { goBack } = useActionState();
   const [inputAmountSol, setInputAmountSol] = useState<number>(NaN);
-  const { extConnected, deposit } = useLink();
+  const { extConnected, deposit, scheduleBalanceUpdate } = useLink();
+  const [ loading, setLoading ] = useState<boolean>(false);
 
   const depositFromWallet = async () => {
     if (!extConnected) {
@@ -18,7 +20,19 @@ const DepositWalletPanel = () => {
       return;
     }
     console.log('depositFromWallet ', inputAmountSol);
-    await deposit(inputAmountSol);
+    setLoading(true)
+    try {
+      setLoading(true);
+      await deposit(inputAmountSol);
+      scheduleBalanceUpdate(100);
+    } catch(err) {
+      if(err instanceof Error) {
+          alert(err.message);
+          setLoading(false);
+          return;
+      }
+    }
+    setLoading(false);
   };
 
   return (
@@ -36,23 +50,12 @@ const DepositWalletPanel = () => {
         <CurrencyInput
           fiatCurrency='USD'
           cryptoCurrency='SOL'
-          fiatQuickInputOptions={[
-            {label: '$1', inputValue: '1.00'},
-            {label: '$2', inputValue: '2.00'},
-            {label: '$5', inputValue: '5.00'},
-          ]}
-          cryptoQuickInputOptions={[
-            {label: '0.1', inputValue: '0.1'},
-            {label: '0.2', inputValue: '0.2'},
-            {label: '0.5', inputValue: '0.5'},
-          ]}
+          fiatQuickInputOptions={fiatQuickInputDefault }
+          cryptoQuickInputOptions={cryptoQuickInputDefault}
           onValueChange={setInputAmountSol}/>
-        <Button
-          style={{marginTop: '1rem'}}
-          variant='outlined'
-          onClick={depositFromWallet}>
+        <LoadingButton sx={{m: 2, marginTop: '1rem'}} variant="outlined" onClick={depositFromWallet} loading={loading}>
           Deposit
-        </Button>
+        </LoadingButton>
       </Box>
     </Box>
   );

@@ -13,6 +13,7 @@ export interface LinkProviderProps {
     children: ReactNode;
     linkKeypair: Keypair; 
 }
+const DEFAULT_COMMITMENT_LEVEL = 'confirmed';
 
 export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) => {
     const { connection } = useConnection();
@@ -24,7 +25,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
     const { exchangeRate } = useExchangeRate();
 
     const getBalanceSOLAsync = async () => {
-        return await connection.getBalance(linkKeypair.publicKey, "processed");
+        return await connection.getBalance(linkKeypair.publicKey, DEFAULT_COMMITMENT_LEVEL);
     }
 
     const fetchBalance = (c: BalanceCallback) => {
@@ -37,7 +38,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
     }
 
     useEffect(() => {
-        connection.getBalance(linkKeypair.publicKey, "processed")
+        connection.getBalance(linkKeypair.publicKey, DEFAULT_COMMITMENT_LEVEL)
         .then((b) => {
             // console.log("getBalanceOuter " + b + " " + endpointUrl);
             setBalance(b);
@@ -63,7 +64,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
 
     useEffect(() => {
         setSubscriptionId(
-            connection.onAccountChange(linkKeypair.publicKey, onAccountChange, "processed")
+            connection.onAccountChange(linkKeypair.publicKey, onAccountChange, DEFAULT_COMMITMENT_LEVEL)
         );
     }, []);
 
@@ -84,7 +85,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
             connection,
             rawTransaction,
             {skipPreflight: true},
-            'processed'
+            DEFAULT_COMMITMENT_LEVEL
         );
         return res.txid;
     };
@@ -112,7 +113,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
         }
         const amtLamports = amt * LAMPORTS_PER_SOL;
         const fees = (await getFees()) / LAMPORTS_PER_SOL;
-        const walletBalance = await connection.getBalance(extPublicKey, "confirmed");
+        const walletBalance = await connection.getBalance(extPublicKey, DEFAULT_COMMITMENT_LEVEL);
         if(walletBalance < amtLamports + fees) {
             alert("Insufficient funds for deposit.")
         }
@@ -134,7 +135,7 @@ export const LinkProvider: FC<LinkProviderProps> = ({ children, linkKeypair }) =
             connection,
             rawTransaction,
             {skipPreflight: true},
-            'confirmed'
+            DEFAULT_COMMITMENT_LEVEL
         );
         scheduleBalanceUpdate(1000);
         return res.txid;
